@@ -33,8 +33,8 @@ _List 2–3 example scenarios or workflows to demonstrate functionality._
 ## 🛠 Tech Stack  
 _List key technologies and frameworks used._
 
-- Frontend: react
-- Backend: springboot (gradle groovy)
+- Frontend: React + Vite
+- Backend: Springboot (gradle groovy)
 - GenAI API: 
 
 ## 📄 License  
