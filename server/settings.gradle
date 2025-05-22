@@ -1,0 +1,5 @@
+rootProject.name = 'stratton-oakmont-server'
+
+include 'program-catalog-service'
+include 'study-plan-service'
+
