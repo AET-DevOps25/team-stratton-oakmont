@@ -8,10 +8,15 @@
 How to start the backend:
 
 ```bash
-cd server/study-planer
-./gradlew bootRun
-
-# voilâ, open at: localhost:8080
+# start program-catalog-service (localhost:8080)
+cd server
+./gradlew :program-catalog-service:bootRun
+```
+New terminal window:
+```bash
+# start study-plan-service (localhost:8081)
+cd server
+./gradlew :study-plan-service:bootRun
 ```
 
 ## 🧩 Main Functionality  
@@ -33,8 +38,8 @@ _List 2–3 example scenarios or workflows to demonstrate functionality._
 ## 🛠 Tech Stack  
 _List key technologies and frameworks used._
 
-- Frontend: react
-- Backend: springboot (gradle groovy)
+- Frontend: React + Vite
+- Backend: Springboot (Gradle Groovy)
 - GenAI API: 
 
 ## 📄 License  
