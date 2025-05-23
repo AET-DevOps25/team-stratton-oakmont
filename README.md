@@ -1,9 +1,17 @@
 # 📱 TUM Study Planer powered by Stratton Oakmont
 
+## 🚀 Getting Started
 
-
-## 🚀 Getting Started  
 > _Instructions to run the app locally._
+
+How to start the frontend:
+
+```bash
+# start frontend (localhost:5173)
+cd client
+npm install
+npm run dev
+```
 
 How to start the backend:
 
@@ -12,36 +20,58 @@ How to start the backend:
 cd server
 ./gradlew :program-catalog-service:bootRun
 ```
+
 New terminal window:
+
 ```bash
 # start study-plan-service (localhost:8081)
 cd server
 ./gradlew :study-plan-service:bootRun
 ```
 
-## 🧩 Main Functionality  
+> _Instructions to run with docker._
+
+```bash
+cd team-stratton-oakmont
+#Build images locally with docker compose
+docker compose build
+
+#Run the apps with docker compose
+docker compose up -d
+
+#Stop the containers and remove the images
+docker compose down
+```
+
+## 🧩 Main Functionality
+
 > What is the core purpose of this app?  
-_Describe the key features and the problem it solves._
+> _Describe the key features and the problem it solves._
 
-## 🎯 Intended Users  
+## 🎯 Intended Users
+
 > Who will use this app?  
-_Define the target audience and their needs._
+> _Define the target audience and their needs._
 
-## 🤖 Integration of GenAI  
+## 🤖 Integration of GenAI
+
 > How is Generative AI integrated meaningfully?  
-_Explain the role of GenAI in enhancing user experience or solving problems._
+> _Explain the role of GenAI in enhancing user experience or solving problems._
 
-## 💡 Example Scenarios  
+## 💡 Example Scenarios
+
 > How does the app work in real-world use cases?  
-_List 2–3 example scenarios or workflows to demonstrate functionality._
+> _List 2–3 example scenarios or workflows to demonstrate functionality._
 
-## 🛠 Tech Stack  
+## 🛠 Tech Stack
+
 _List key technologies and frameworks used._
 
 - Frontend: React + Vite
 - Backend: Springboot (Gradle Groovy)
-- GenAI API: 
+- GenAI API:
 
-## 📄 License  
+## 📄 License
+
 _MIT, Apache 2.0, etc._
 """
