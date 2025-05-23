@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  # Program Catalog Service
+  program-catalog-service:
+    build:
+      context: ./server
+      dockerfile: program-catalog-service/Dockerfile
+    container_name: program-catalog-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - stratton-oakmont-network
+    restart: unless-stopped
+
+  # Study Plan Service
+  study-plan-service:
+    build:
+      context: ./server
+      dockerfile: study-plan-service/Dockerfile
+    container_name: study-plan-service
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - stratton-oakmont-network
+    restart: unless-stopped
+
+  # Client (React Frontend)
+  client:
+    build:
+      context: ./client
+    container_name: stratton-oakmont-client
+    ports:
+      - "3000:80"
+    depends_on:
+      - program-catalog-service
+      - study-plan-service
+    networks:
+      - stratton-oakmont-network
+    restart: unless-stopped
+
+networks:
+  stratton-oakmont-network:
+    driver: bridge
