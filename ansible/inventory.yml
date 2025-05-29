@@ -1,0 +1,7 @@
+all:
+  hosts:
+    app_server:
+      ansible_host: 18.215.32.147
+      ansible_user: ubuntu
+      ansible_ssh_private_key_file: /Users/florianseitz/Downloads/privateKey.pem
+      ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
