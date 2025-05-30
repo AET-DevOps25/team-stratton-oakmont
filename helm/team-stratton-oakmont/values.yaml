@@ -1,0 +1,36 @@
+# This file contains the default values for the TUM Study Planner Helm chart.
+##################################################################################################################
+
+namespace:
+  create: true
+
+# Backend service (Spring Boot on port 8080)
+backend:
+  image:
+    repository: ghcr.io/aet-devops25/team-stratton-oakmont/backend
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 8080
+    targetPort: 8080
+  replicaCount: 2
+  env:
+    - name: SPRING_PROFILES_ACTIVE
+      value: docker
+
+# Frontend service (on port 80)
+frontend:
+  image:
+    repository: ghcr.io/aet-devops25/team-stratton-oakmont/frontend
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 80
+  replicaCount: 2
+
+ingress:
+  enabled: true
+  className: "nginx"
