@@ -1,0 +1,87 @@
+---
+- name: Deploy TUM Study Planner Application
+  hosts: app_server
+  become: yes
+  vars:
+    app_dir: /opt/tum-study-planner
+    repo_url: https://github.com/AET-DevOps25/team-stratton-oakmont.git
+
+  tasks:
+    - name: Wait for system to be ready
+      wait_for_connection:
+        delay: 30
+        timeout: 300
+
+    - name: Update apt package index
+      apt:
+        update_cache: yes
+
+    - name: Install Docker Compose via apt (recommended for Ubuntu)
+      apt:
+        name: docker-compose-plugin
+        state: present
+
+    - name: Install additional packages
+      apt:
+        name:
+          - python3-pip
+          - python3-venv
+          - git
+          - curl
+        state: present
+
+    - name: Add ubuntu user to docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
+
+    - name: Start and enable Docker service
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Create application directory
+      file:
+        path: "{{ app_dir }}"
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+        mode: "0755"
+
+    - name: Clone application repository
+      git:
+        repo: "{{ repo_url }}"
+        dest: "{{ app_dir }}"
+        force: yes
+      become_user: ubuntu
+
+    - name: Copy docker-compose.yml
+      template:
+        src: docker-compose.yml.j2
+        dest: "{{ app_dir }}/docker-compose.yml"
+        owner: ubuntu
+        group: ubuntu
+
+    - name: Build Docker images using docker compose (new syntax)
+      command: docker compose build
+      args:
+        chdir: "{{ app_dir }}"
+      become_user: ubuntu
+
+    - name: Start application services using docker compose (new syntax)
+      command: docker compose up -d
+      args:
+        chdir: "{{ app_dir }}"
+      become_user: ubuntu
+
+    - name: Wait for services to be ready
+      wait_for:
+        port: "{{ item }}"
+        delay: 10
+        timeout: 300
+      loop:
+        - 80
+        - 8080
+        - 8081
