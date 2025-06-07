@@ -13,7 +13,7 @@ npm install
 npm run dev
 ```
 
-How to start the backend:
+How to start the server:
 
 ```bash
 # start program-catalog-service (localhost:8080)
@@ -27,6 +27,14 @@ New terminal window:
 # start study-plan-service (localhost:8081)
 cd server
 ./gradlew :study-plan-service:bootRun
+```
+
+New terminal window:
+
+```bash
+# start ai-advisor-service (localhost:8082)
+cd server
+./gradlew :ai-advisor-service:bootRun
 ```
 
 > _Instructions to run with docker._
