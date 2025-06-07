@@ -43,6 +43,20 @@ services:
       - stratton-oakmont-network
     restart: unless-stopped
 
+  # User Auth Service
+  user-auth-service:
+    build:
+      context: ./server
+      dockerfile: user-auth-service/Dockerfile
+    container_name: user-auth-service
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - stratton-oakmont-network
+    restart: unless-stopped
+
   # Client (React Frontend)
   client:
     build:
