@@ -29,6 +29,20 @@ services:
       - stratton-oakmont-network
     restart: unless-stopped
 
+  # AI Advisor Service
+  ai-advisor-service:
+    build:
+      context: ./server
+      dockerfile: ai-advisor-service/Dockerfile
+    container_name: ai-advisor-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - stratton-oakmont-network
+    restart: unless-stopped
+
   # Client (React Frontend)
   client:
     build:
