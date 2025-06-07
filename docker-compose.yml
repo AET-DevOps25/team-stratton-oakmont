@@ -49,7 +49,7 @@ services:
       context: ./client
     container_name: stratton-oakmont-client
     ports:
-      - "3000:80"
+      - "5173:5173"
     depends_on:
       - program-catalog-service
       - study-plan-service
