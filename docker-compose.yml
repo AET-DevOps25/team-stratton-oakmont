@@ -53,6 +53,9 @@ services:
       - "8083:8083"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - DB_USER_AUTH_URL=${DB_USER_AUTH_URL}
+      - DB_USER_AUTH_USERNAME=${DB_USER_AUTH_USERNAME}
+      - DB_USER_AUTH_PASSWORD=${DB_USER_AUTH_PASSWORD}
     networks:
       - stratton-oakmont-network
     restart: unless-stopped

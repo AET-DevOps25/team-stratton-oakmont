@@ -14,7 +14,6 @@ npm run dev
 ```
 
 How to start the server:
-
 ```bash
 # start program-catalog-service (localhost:8080)
 cd server
@@ -22,7 +21,6 @@ cd server
 ```
 
 New terminal window:
-
 ```bash
 # start study-plan-service (localhost:8081)
 cd server
@@ -30,11 +28,17 @@ cd server
 ```
 
 New terminal window:
-
 ```bash
 # start ai-advisor-service (localhost:8082)
 cd server
 ./gradlew :ai-advisor-service:bootRun
+```
+
+New terminal window:
+```bash
+# start user-auth-service (localhost:8083)
+cd server
+./gradlew :user-auth-service:bootRun
 ```
 
 > _Instructions to run with docker._
