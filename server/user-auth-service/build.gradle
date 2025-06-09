@@ -4,4 +4,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	// Your application needs this driver to communicate with a PostgreSQL database. The runtimeOnly scope means this dependency is only required when the application is running, not during compilation
 	runtimeOnly 'org.postgresql:postgresql'
+	implementation 'me.paulschwarz:spring-dotenv:4.0.0'
 }
+
