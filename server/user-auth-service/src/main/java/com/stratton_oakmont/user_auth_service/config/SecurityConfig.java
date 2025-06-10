@@ -4,9 +4,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-// Why do we need this file? In order for our client to speak to our service
+// Why do we need this file? 
+// to set up to permit access to /auth/** endpoints, which is necessary for the 
+// registration endpoint to be reachable without authentication
 
 @Configuration
 @EnableWebSecurity
@@ -22,4 +26,12 @@ public class SecurityConfig {
             );
         return http.build();
     }
+
+    // Think of @Bean like saying “put this tool 
+    // in the toolbox, so other parts of the app can use it
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
 }
