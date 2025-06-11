@@ -4,6 +4,7 @@ import com.stratton_oakmont.user_auth_service.dto.LoginRequest;
 import com.stratton_oakmont.user_auth_service.dto.RegisterRequest;
 import com.stratton_oakmont.user_auth_service.model.User;
 import com.stratton_oakmont.user_auth_service.repository.UserRepository;
+import com.stratton_oakmont.user_auth_service.service.JwtService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
@@ -31,6 +33,9 @@ public class AuthController {
 
     @Autowired // Inject PasswordEncoder
     private PasswordEncoder passwordEncoder;
+
+    @Autowired // Inject JwtService
+    private JwtService jwtService;
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
@@ -62,10 +67,28 @@ public class AuthController {
 
     @PostMapping("/login") // New POST endpoint for login
     public ResponseEntity<?> loginUser(@Valid @RequestBody LoginRequest loginRequest) {
-        // Placeholder for login logic
-        // We will implement user retrieval, password verification, and JWT generation in the next steps
+        Optional<User> userOptional = userRepository.findByEmail(loginRequest.getEmail());
+
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error: Invalid email or password.");
+        }
+
+        User user = userOptional.get();
+
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPasswordHash())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error: Invalid email or password.");
+        }
+        
+        String jwt = jwtService.generateToken(user);
+        
+        // Passwords match, authentication successful (for now)
+        // We will generate and return a JWT in the next step
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Login endpoint reached. Email: " + loginRequest.getEmail());
+        response.put("token", jwt);
+        response.put("message", "Login successful");
+        response.put("userId", user.getId().toString());
+        response.put("email", user.getEmail());
+        
         return ResponseEntity.ok(response);
     }
 
