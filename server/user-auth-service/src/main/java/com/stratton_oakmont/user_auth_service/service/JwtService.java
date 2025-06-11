@@ -32,7 +32,7 @@ public class JwtService {
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", user.getId());
-        claims.put("roles", user.getRoles()); // Assuming getRoles() returns a String or Collection of roles
+        claims.put("roles", user.getRoles());
 
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expiration);
