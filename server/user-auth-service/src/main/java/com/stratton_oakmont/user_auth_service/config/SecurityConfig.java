@@ -21,7 +21,7 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity, consider enabling for production
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/auth/**").permitAll() // Permit all requests to /auth/**
+                .requestMatchers("/", "/index.html", "/auth/**").permitAll()
                 .anyRequest().authenticated() // All other requests need authentication
             );
         return http.build();
