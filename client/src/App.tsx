@@ -1,5 +1,6 @@
 //import React, { useState } from "react";
 import "./App.css";
+import Login from './components/Login';
 
 function App() {
   return (
@@ -8,6 +9,9 @@ function App() {
         <h1>TUM Study Planner</h1>
         <p>Frontend is running successfully! 🎉</p>
       </header>
+      <main>
+        <Login />
+      </main>
     </div>
   );
 }
