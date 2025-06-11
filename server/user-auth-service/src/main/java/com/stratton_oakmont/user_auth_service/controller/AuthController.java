@@ -1,5 +1,6 @@
 package com.stratton_oakmont.user_auth_service.controller;
 
+import com.stratton_oakmont.user_auth_service.dto.LoginRequest;
 import com.stratton_oakmont.user_auth_service.dto.RegisterRequest;
 import com.stratton_oakmont.user_auth_service.model.User;
 import com.stratton_oakmont.user_auth_service.repository.UserRepository;
@@ -57,6 +58,17 @@ public class AuthController {
         response.put("userId", newUser.getId().toString());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+
+    @PostMapping("/login") // New POST endpoint for login
+    public ResponseEntity<?> loginUser(@Valid @RequestBody LoginRequest loginRequest) {
+        // Placeholder for login logic
+        // We will implement user retrieval, password verification, and JWT generation in the next steps
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Login endpoint reached. Email: " + loginRequest.getEmail());
+        return ResponseEntity.ok(response);
+    }
+
 
 
     @GetMapping("/ping") // New GET endpoint
