@@ -42,9 +42,10 @@ public class AuthController {
 
         // Check if user with the same email already exists
         if (userRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
-            return ResponseEntity
-                    .status(HttpStatus.CONFLICT) // Or HttpStatus.BAD_REQUEST
-                    .body("Error: Email: " + registerRequest.getEmail() +  " is already in use!");
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "EMAIL_ALREADY_EXISTS");
+            errorResponse.put("message", "Email: " + registerRequest.getEmail() + " is already in use!");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
         }
 
         User newUser = new User();
@@ -69,15 +70,23 @@ public class AuthController {
     public ResponseEntity<?> loginUser(@Valid @RequestBody LoginRequest loginRequest) {
         Optional<User> userOptional = userRepository.findByEmail(loginRequest.getEmail());
 
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error: Invalid email or password.");
+        // if (userOptional.isEmpty()) {
+        //     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error: Invalid email or password.");
+        // }
+
+        if (userOptional.isEmpty() || !passwordEncoder.matches(loginRequest.getPassword(), 
+            userOptional.map(User::getPasswordHash).orElse(""))) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "INVALID_CREDENTIALS");
+            errorResponse.put("message", "Invalid email or password. Please check your credentials and try again.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         }
 
         User user = userOptional.get();
 
-        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPasswordHash())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error: Invalid email or password.");
-        }
+        // if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPasswordHash())) {
+        //     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error: Invalid email or password.");
+        // }
         
         String jwt = jwtService.generateToken(user);
         
