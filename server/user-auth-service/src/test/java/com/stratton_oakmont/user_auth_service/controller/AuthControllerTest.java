@@ -137,7 +137,11 @@ class AuthControllerTest {
         // Assert
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.CONFLICT, responseEntity.getStatusCode());
-        assertEquals("Error: Email: " + existingEmail +  " is already in use!", responseEntity.getBody());
+
+        Map<String, String> responseBody = (Map<String, String>) responseEntity.getBody();
+        assertNotNull(responseBody);
+        assertEquals("EMAIL_ALREADY_EXISTS", responseBody.get("error"));
+        assertEquals("Email: " + existingEmail + " is already in use!", responseBody.get("message"));
 
         // Verify that save and encode were not called
         verify(userRepository, never()).save(any(User.class));
@@ -201,12 +205,56 @@ class AuthControllerTest {
         ResponseEntity<?> responseEntity = authController.loginUser(loginRequest);
 
         // Assert
-        assertNotNull(responseEntity);
-        assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
-        assertEquals("Error: Invalid email or password.", responseEntity.getBody());
+        // assertNotNull(responseEntity);
+        // assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
+        // assertEquals("Error: Invalid email or password.", responseEntity.getBody());
+        Map<String, String> responseBody = (Map<String, String>) responseEntity.getBody();
+        assertNotNull(responseBody);
+        assertEquals("INVALID_CREDENTIALS", responseBody.get("error"));
+        assertEquals("Invalid email or password. Please check your credentials and try again.", responseBody.get("message"));
+
 
         // Verify that password matching and token generation were not attempted
         verify(passwordEncoder, never()).matches(anyString(), anyString());
+        verify(jwtService, never()).generateToken(any(User.class));
+    }
+
+
+    @Test
+    void loginUser_withWrongPassword_shouldReturnUnauthorized() {
+        // Arrange
+        String email = "test@example.com";
+        String wrongPassword = "wrongPassword";
+        Long userId = 1L;
+
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setEmail(email);
+        loginRequest.setPassword(wrongPassword);
+
+        User mockUser = new User();
+        mockUser.setId(userId);
+        mockUser.setEmail(email);
+        mockUser.setPasswordHash("hashedPassword");
+        mockUser.setRoles("USER");
+
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(mockUser));
+        when(passwordEncoder.matches(wrongPassword, mockUser.getPasswordHash())).thenReturn(false);
+
+        // Act
+        ResponseEntity<?> responseEntity = authController.loginUser(loginRequest);
+
+        // Assert
+        assertNotNull(responseEntity);
+        assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
+        
+        Map<String, String> responseBody = (Map<String, String>) responseEntity.getBody();
+        assertNotNull(responseBody);
+        assertEquals("INVALID_CREDENTIALS", responseBody.get("error"));
+        assertEquals("Invalid email or password. Please check your credentials and try again.", responseBody.get("message"));
+
+        // Verify interactions
+        verify(userRepository).findByEmail(email);
+        verify(passwordEncoder).matches(wrongPassword, mockUser.getPasswordHash());
         verify(jwtService, never()).generateToken(any(User.class));
     }
 
