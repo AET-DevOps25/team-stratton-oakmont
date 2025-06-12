@@ -74,6 +74,8 @@ services:
     depends_on:
       - program-catalog-service
       - study-plan-service
+      - user-auth-service
+      - ai-advisor-service
     networks:
       - stratton-oakmont-network
     restart: unless-stopped

@@ -1,15 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import './Form.css';
+import './Form.css'; // Import the new CSS file
 
-function Login() {
+function SignUp() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [isError, setIsError] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -17,7 +15,7 @@ function Login() {
     setIsError(false);
 
     try {
-      const response = await fetch('http://localhost:8083/auth/login', {
+      const response = await fetch('http://localhost:8083/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -28,28 +26,22 @@ function Login() {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage(`Login successful! User: ${email} You will be redirected to home.`);
+        setMessage(`Registration successful for ${data.email || email}! You will be redirected to login.`);
         setIsError(false);
-
-        login(data.token, data.userId, data.email);
-        navigate('/');
+        navigate('/login');
       } else {
-        if (data.error && data.message) {
-            setMessage(data.message);
-        } else {
-            setMessage(`Login failed: ${data.message || response.statusText}`);
-        }
+        setMessage(`Registration failed: ${data.message || response.statusText}`);
         setIsError(true);
       }
     } catch (error) {
-      setMessage(`Login request failed: ${error instanceof Error ? error.message : String(error)}`);
+      setMessage(`Registration request failed: ${error instanceof Error ? error.message : String(error)}`);
       setIsError(true);
     }
   };
 
   return (
     <div className="form-container">
-      <h2>Login</h2>
+      <h2>Sign Up</h2>
       <form onSubmit={handleSubmit} style={{ width: '100%' }}>
         <div className="form-group">
           <label htmlFor="email">Email:</label>
@@ -70,7 +62,7 @@ function Login() {
             required
           />
         </div>
-        <button type="submit" className="form-button">Login</button>
+        <button type="submit" className="form-button">Sign Up</button>
       </form>
       {message && (
         <p className={`form-message ${isError ? 'error' : 'success'}`}>
@@ -81,4 +73,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default SignUp;
