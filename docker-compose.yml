@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   # Program Catalog Service
   program-catalog-service:
