@@ -416,3 +416,33 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Terraform ###
+# Local .terraform directories
+.terraform/
+
+# .tfstate files
+*.tfstate
+*.tfstate.*.backup
+
+# Crash log files
+crash.log
+crash.*.log
+
+# Exclude tfvars files that may contain sensitive variables.
+# Commit a .tfvars.example file instead.
+*.tfvars
+*.tfvars.json
+
+# Ignore override files as they are usually used for local testing or development.
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Terraform CLI configuration files
+.terraformrc
+terraform.rc
+
+# tfplan files
+*.tfplan
