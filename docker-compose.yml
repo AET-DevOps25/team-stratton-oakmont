@@ -52,14 +52,25 @@ services:
     ports:
       - "8083:8083"
     #environment:
-      #- SPRING_PROFILES_ACTIVE=docker
-      #- DB_USER_AUTH_URL=${DB_USER_AUTH_URL}
-      #- DB_USER_AUTH_USERNAME=${DB_USER_AUTH_USERNAME}
-      #- DB_USER_AUTH_PASSWORD=${DB_USER_AUTH_PASSWORD}
-      #- JWT_SECRET=${JWT_SECRET}
-    # TODO [ ]: duplicate .env files in root and user-auth-service 
+    #- SPRING_PROFILES_ACTIVE=docker
+    #- DB_USER_AUTH_URL=${DB_USER_AUTH_URL}
+    #- DB_USER_AUTH_USERNAME=${DB_USER_AUTH_USERNAME}
+    #- DB_USER_AUTH_PASSWORD=${DB_USER_AUTH_PASSWORD}
+    #- JWT_SECRET=${JWT_SECRET}
+    # TODO [ ]: duplicate .env files in root and user-auth-service
     env_file:
       - .env
+    networks:
+      - stratton-oakmont-network
+    restart: unless-stopped
+
+  # LLM Inference Service (Python)
+  llm-inference-service:
+    build:
+      context: ./server/llm-inference-service
+    container_name: llm-inference-service
+    ports:
+      - "8000:8000"
     networks:
       - stratton-oakmont-network
     restart: unless-stopped
