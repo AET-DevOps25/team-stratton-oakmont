@@ -1,0 +1,1 @@
+// Hook to access auth context or perform auth actions
