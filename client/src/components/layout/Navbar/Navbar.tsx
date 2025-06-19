@@ -56,6 +56,10 @@ const Navbar: React.FC = () => {
     navigate('/');
   };
 
+  const handleStudyPlansClick = () => {
+    navigate('/study-plans');
+  };
+
   const handleSidebarToggle = () => {
     setSidebarOpen(!sidebarOpen);
   };
@@ -103,6 +107,23 @@ const Navbar: React.FC = () => {
               onClick={handleLogoClick}
             >
               TUM Study Planner
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 14 }}>
+            <Typography 
+              component="div"
+              sx={{ 
+                cursor: 'pointer',
+                textDecoration: 'none',
+                color: 'white',
+                '&:hover': {
+                  opacity: 0.8
+                },
+              }}
+              onClick={handleStudyPlansClick}
+            >
+              Study Plans
             </Typography>
           </Box>
 

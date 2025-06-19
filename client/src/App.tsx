@@ -7,6 +7,7 @@ import Login from "./pages/Auth/Login";
 import SignUp from "./pages/Auth/SignUp";
 import LandingPage from "./pages/LandingPage/LandingPage";
 import UserProfile from "./pages/Profile/UserProfile";
+import StudyPlansPage from "./pages/StudyPlans/StudyPlansPage";
 import ProtectedRoute from "./components/routing/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
 import { theme } from "./theme/Theme";
@@ -58,6 +59,14 @@ function App() {
                   element={
                     <ProtectedRoute requireAuth={true}>
                       <UserProfile />
+                    </ProtectedRoute>
+                  }
+                />
+                 <Route
+                  path="/study-plans"
+                  element={
+                    <ProtectedRoute requireAuth={true}>
+                      <StudyPlansPage />
                     </ProtectedRoute>
                   }
                 />

@@ -6,16 +6,10 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Divider,
   Toolbar
 } from '@mui/material';
 import {
-  Dashboard,
-  School,
   Assignment,
-  SmartToy,
-  Person,
-  Settings
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
@@ -24,16 +18,16 @@ interface SidebarProps {
   onClose: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
+const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
   const navigate = useNavigate();
 
   const menuItems = [
-    { text: 'Dashboard', icon: <Dashboard />, path: '/' },
+    //{ text: 'Dashboard', icon: <Dashboard />, path: '/' },
     { text: 'Study Plans', icon: <Assignment />, path: '/study-plans' },
-    { text: 'Course Catalog', icon: <School />, path: '/courses' },
-    { text: 'AI Assistant', icon: <SmartToy />, path: '/ai-assistant' },
-    { text: 'Profile', icon: <Person />, path: '/profile' },
-    { text: 'Settings', icon: <Settings />, path: '/settings' },
+    //{ text: 'Course Catalog', icon: <School />, path: '/courses' },
+    //{ text: 'AI Assistant', icon: <SmartToy />, path: '/ai-assistant' },
+    //{ text: 'Profile', icon: <Person />, path: '/profile' },
+    //{ text: 'Settings', icon: <Settings />, path: '/settings' },
   ];
 
   const handleNavigation = (path: string) => {

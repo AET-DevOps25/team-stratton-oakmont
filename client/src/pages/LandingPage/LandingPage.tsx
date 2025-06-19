@@ -84,7 +84,7 @@ const LandingPage: React.FC = () => {
             transition: 'all 0.3s ease'
           }}
         >
-          {isLoggedIn ? 'Go to Dashboard' : 'Get Started'}
+          {isLoggedIn ? 'Go to Profile' : 'Get Started'}
         </Button>
       </Box>
 
