@@ -29,7 +29,10 @@ function App() {
               sx={{ 
                 flexGrow: 1, 
                 pt: 8, // Account for fixed navbar
-                backgroundColor: theme.palette.background.default
+                backgroundColor: theme.palette.background.default,
+                // Add this CSS variable that will be controlled by the navbar
+                marginLeft: 'var(--sidebar-width, 0px)',
+                transition: 'margin-left 0.3s ease',
               }}
             >
               <Routes>
