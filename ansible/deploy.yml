@@ -1,0 +1,48 @@
+---
+- name: Deploy TUM Study Planner Application
+  hosts: webservers
+  become: yes
+  vars:
+    app_dir: /opt/tum-study-planner
+    repo_url: https://github.com/AET-DevOps25/team-stratton-oakmont.git
+
+  tasks:
+    - name: Create application directory
+      file:
+        path: "{{ app_dir }}"
+        state: directory
+        owner: ec2-user
+        group: ec2-user
+        mode: "0755"
+
+    - name: Clone application repository
+      git:
+        repo: "{{ repo_url }}"
+        dest: "{{ app_dir }}"
+        force: yes
+      become_user: ec2-user
+
+    - name: Copy docker-compose.yml
+      copy:
+        src: ../docker-compose.yml
+        dest: "{{ app_dir }}/docker-compose.yml"
+        owner: ec2-user
+        group: ec2-user
+
+    - name: Start application services
+      command: docker-compose up -d
+      args:
+        chdir: "{{ app_dir }}"
+      become_user: ec2-user
+
+    - name: Wait for services to be ready
+      wait_for:
+        port: "{{ item }}"
+        delay: 10
+        timeout: 300
+      loop:
+        - 80
+        - 8080
+        - 8081
+        - 8082
+        - 8083
