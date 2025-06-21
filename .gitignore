@@ -445,4 +445,6 @@ override.tf.json
 terraform.rc
 
 # tfplan files
-*.tfplan
+*.tfplan*.app
+data-collection/Google Chrome for Testing.app/
+**/*.app
