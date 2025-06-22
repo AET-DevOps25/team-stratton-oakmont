@@ -23,6 +23,8 @@ services:
       - "8081:8081"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+    env_file:
+      - .env
     networks:
       - stratton-oakmont-network
     restart: unless-stopped
@@ -49,13 +51,8 @@ services:
     container_name: user-auth-service
     ports:
       - "8083:8083"
-    #environment:
-    #- SPRING_PROFILES_ACTIVE=docker
-    #- DB_USER_AUTH_URL=${DB_USER_AUTH_URL}
-    #- DB_USER_AUTH_USERNAME=${DB_USER_AUTH_USERNAME}
-    #- DB_USER_AUTH_PASSWORD=${DB_USER_AUTH_PASSWORD}
-    #- JWT_SECRET=${JWT_SECRET}
-    # TODO [ ]: duplicate .env files in root and user-auth-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
     env_file:
       - .env
     networks:
