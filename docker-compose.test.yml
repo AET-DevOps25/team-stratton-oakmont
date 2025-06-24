@@ -76,13 +76,14 @@ services:
   client:
     build:
       context: ./client
+      dockerfile: Dockerfile.dev
       args:
         - NODE_ENV=development
         - VITE_MODE=development
         - VITE_API_BASE_URL=http://localhost:8083
     container_name: stratton-oakmont-client
     ports:
-      - "80:80"
+      - "3000:3000"
     depends_on:
       - program-catalog-service
       - study-plan-service

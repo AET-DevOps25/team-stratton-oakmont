@@ -15,8 +15,8 @@ ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 # Copy package files
 COPY package*.json ./
 
-# Clean install with platform-specific binaries
-RUN rm -rf node_modules package-lock.json && npm install --include=dev
+# Use npm ci for reproducible builds (respects package-lock.json exactly)
+RUN npm ci --include=dev
 
 # Copy source code
 COPY . .

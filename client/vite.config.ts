@@ -8,13 +8,33 @@ export default defineConfig(({ mode }) => {
 
     // Development server configuration
     server: {
-      port: 5173, // Use standard Vite port for development
+      port: 3000,
       host: true, // Allow external connections
       proxy: {
-        "/api": {
-          target: "http://localhost:8083", // Correct backend port
+        "/api/auth": {
+          target: "http://user-auth-service:8083",
           changeOrigin: true,
           secure: false,
+          rewrite: (path) => path.replace(/^\/api\/auth/, "/auth"),
+        },
+        "/api/programs": {
+          target: "http://program-catalog-service:8080",
+          changeOrigin: true,
+          secure: false,
+          rewrite: (path) => path.replace(/^\/api\/programs/, "/programs"),
+        },
+        "/api/study-plans": {
+          target: "http://study-plan-service:8081",
+          changeOrigin: true,
+          secure: false,
+          rewrite: (path) =>
+            path.replace(/^\/api\/study-plans/, "/study-plans"),
+        },
+        "/api/ai-advisor": {
+          target: "http://ai-advisor-service:8082",
+          changeOrigin: true,
+          secure: false,
+          rewrite: (path) => path.replace(/^\/api\/ai-advisor/, "/ai-advisor"),
         },
       },
     },
