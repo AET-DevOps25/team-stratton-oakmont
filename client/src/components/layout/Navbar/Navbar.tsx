@@ -29,7 +29,7 @@ const Navbar: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const sidebarWidth = isLoggedIn && sidebarOpen ? '240px' : '0px';
+    const sidebarWidth = isLoggedIn && sidebarOpen ? '260px' : '0px';
     document.documentElement.style.setProperty('--sidebar-width', sidebarWidth);
   }, [isLoggedIn, sidebarOpen]);
 
@@ -54,10 +54,6 @@ const Navbar: React.FC = () => {
 
   const handleLogoClick = () => {
     navigate('/');
-  };
-
-  const handleStudyPlansClick = () => {
-    navigate('/study-plans');
   };
 
   const handleSidebarToggle = () => {
@@ -110,22 +106,6 @@ const Navbar: React.FC = () => {
             </Typography>
           </Box>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 14 }}>
-            <Typography 
-              component="div"
-              sx={{ 
-                cursor: 'pointer',
-                textDecoration: 'none',
-                color: 'white',
-                '&:hover': {
-                  opacity: 0.8
-                },
-              }}
-              onClick={handleStudyPlansClick}
-            >
-              Study Plans
-            </Typography>
-          </Box>
 
           {isLoggedIn ? (
             <Box>
