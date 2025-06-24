@@ -10,9 +10,6 @@ public class CreateStudyPlanRequest {
     @Size(max = 200, message = "Study plan name cannot exceed 200 characters")
     private String name;
     
-    @NotNull(message = "User ID is required")
-    private Long userId;
-    
     @NotNull(message = "Study program ID is required")
     private Long studyProgramId;
     
@@ -24,9 +21,6 @@ public class CreateStudyPlanRequest {
     // Getters and Setters
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
-
-    public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
 
     public Long getStudyProgramId() { return studyProgramId; }
     public void setStudyProgramId(Long studyProgramId) { this.studyProgramId = studyProgramId; }
