@@ -96,9 +96,9 @@
         path: "{{ app_dir }}/docker-compose.temp.yml"
         state: absent
 
-    - name: Copy environment file
+    - name: Copy local environment file
       copy:
-        src: ../.env
+        src: "{{ playbook_dir }}/../.env" # This looks for .env in project root
         dest: "{{ app_dir }}/.env"
         owner: ec2-user
         group: ec2-user
