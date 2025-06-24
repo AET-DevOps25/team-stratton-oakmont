@@ -79,7 +79,7 @@ services:
       args:
         - NODE_ENV=production
         - VITE_MODE=production
-        - VITE_API_BASE_URL=http://PUBLIC_IP_PLACEHOLDER:8083
+        - VITE_API_BASE_URL=${PUBLIC_IP:-localhost}:8083
     container_name: stratton-oakmont-client
     ports:
       - "80:80"

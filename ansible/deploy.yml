@@ -7,17 +7,30 @@
     repo_url: https://github.com/AET-DevOps25/team-stratton-oakmont.git
 
   tasks:
-    - name: Ensure git is installed
-      yum:
-        name: git
-        state: present
+    - name: Install required packages and setup Docker
+      block:
+        - name: Install packages
+          yum:
+            name:
+              - git
+              - docker
+            state: present
 
-    - name: Install Docker if not present
-      yum:
-        name: docker
-        state: present
+    - name: Download and install Docker Compose
+      get_url:
+        url: "https://github.com/docker/compose/releases/download/v2.24.1/docker-compose-linux-x86_64"
+        dest: /usr/local/bin/docker-compose
+        mode: "0755"
+        owner: root
+        group: root
 
-    - name: Ensure Docker is running
+    - name: Create docker-compose symlink
+      file:
+        src: /usr/local/bin/docker-compose
+        dest: /usr/bin/docker-compose
+        state: link
+
+    - name: Start and enable Docker service
       service:
         name: docker
         state: started
@@ -69,33 +82,6 @@
       debug:
         msg: "Detected public IP: {{ public_ip }}"
 
-    - name: Copy production docker-compose from repository
-      copy:
-        src: "{{ app_dir }}/docker-compose.prod.yml"
-        dest: "{{ app_dir }}/docker-compose.temp.yml"
-        remote_src: yes
-        owner: ec2-user
-        group: ec2-user
-
-    - name: Replace placeholder IP with actual IP
-      replace:
-        path: "{{ app_dir }}/docker-compose.temp.yml"
-        regexp: "PLACEHOLDER_IP"
-        replace: "{{ public_ip }}"
-
-    - name: Copy updated docker-compose as main file
-      copy:
-        src: "{{ app_dir }}/docker-compose.temp.yml"
-        dest: "{{ app_dir }}/docker-compose.yml"
-        remote_src: yes
-        owner: ec2-user
-        group: ec2-user
-
-    - name: Remove temporary file
-      file:
-        path: "{{ app_dir }}/docker-compose.temp.yml"
-        state: absent
-
     - name: Copy local environment file
       copy:
         src: "{{ playbook_dir }}/../.env" # This looks for .env in project root
@@ -104,33 +90,51 @@
         group: ec2-user
         mode: "0600"
 
-    - name: Pull Docker images first (with timeout)
-      command: docker-compose pull
+    - name: Stop any existing containers
+      command: docker-compose -f docker-compose.prod.yml down --remove-orphans
       args:
         chdir: "{{ app_dir }}"
       become_user: ec2-user
-      async: 600 # 10 minutes timeout
-      poll: 30 # Check every 30 seconds
-      register: pull_result
+      ignore_errors: yes
 
-    - name: Build Docker images (if needed)
-      command: docker-compose build --no-cache
+    - name: Start application services with PUBLIC_IP environment variable
+      command: docker-compose -f docker-compose.prod.yml up -d --build --force-recreate
       args:
         chdir: "{{ app_dir }}"
       become_user: ec2-user
-      async: 900 # 15 minutes for building
-      poll: 60 # Check every minute
-      register: build_result
-      when: pull_result is failed or pull_result.rc != 0
-
-    - name: Start application services (with timeout)
-      command: docker-compose up -d
-      args:
-        chdir: "{{ app_dir }}"
-      become_user: ec2-user
-      async: 300
-      poll: 15
+      environment:
+        PUBLIC_IP: "http://{{ public_ip }}"
+      async: 500
+      poll: 30
       register: compose_result
+
+    # - name: Pull Docker images first (with timeout)
+    #   command: docker-compose pull
+    #   args:
+    #     chdir: "{{ app_dir }}"
+    #   become_user: ec2-user
+    #   async: 600 # 10 minutes timeout
+    #   poll: 30 # Check every 30 seconds
+    #   register: pull_result
+
+    # - name: Build Docker images (if needed)
+    #   command: docker-compose build --no-cache
+    #   args:
+    #     chdir: "{{ app_dir }}"
+    #   become_user: ec2-user
+    #   async: 900 # 15 minutes for building
+    #   poll: 60 # Check every minute
+    #   register: build_result
+    #   when: pull_result is failed or pull_result.rc != 0
+
+    # - name: Start application services (with timeout)
+    #   command: docker-compose up -d
+    #   args:
+    #     chdir: "{{ app_dir }}"
+    #   become_user: ec2-user
+    #   async: 300
+    #   poll: 15
+    #   register: compose_result
 
     - name: Show Docker Compose output
       debug:
@@ -147,3 +151,4 @@
         - 8081
         - 8082
         - 8083
+        - 8000
