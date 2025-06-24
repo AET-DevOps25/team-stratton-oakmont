@@ -23,7 +23,7 @@ ENV NODE_ENV=$NODE_ENV
 COPY . .
 
 # Build the React application with Vite
-RUN npm run build:vite
+RUN npm run build
 
 # Stage 2: Serve with nginx (better for React SPAs)
 FROM nginx:alpine
