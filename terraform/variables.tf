@@ -9,10 +9,10 @@ variable "aws_region" {
 variable "instance_type" {
   description = "EC2 instance type"
   type        = string
-  default     = "t2.micro"
+  default     = "t3.medium"
 }
 
-variable "key_pair_name" {
+variable "aws_key_name" {
   description = "Name of the AWS key pair for SSH access"
   type        = string
 }

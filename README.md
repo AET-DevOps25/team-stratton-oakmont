@@ -7,13 +7,14 @@
 How to start the frontend:
 
 ```bash
-# start frontend (localhost:5173)
+# start frontend (localhost:80)
 cd client
 npm install
 npm run dev
 ```
 
 How to start the server:
+
 ```bash
 # start program-catalog-service (localhost:8080)
 cd server
@@ -21,6 +22,7 @@ cd server
 ```
 
 New terminal window:
+
 ```bash
 # start study-plan-service (localhost:8081)
 cd server
@@ -28,6 +30,7 @@ cd server
 ```
 
 New terminal window:
+
 ```bash
 # start ai-advisor-service (localhost:8082)
 cd server
@@ -35,6 +38,7 @@ cd server
 ```
 
 New terminal window:
+
 ```bash
 # start user-auth-service (localhost:8083)
 cd server
