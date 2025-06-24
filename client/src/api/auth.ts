@@ -1,34 +1,8 @@
 // API calls related to authentication
-const getApiBaseUrl = (): string => {
-  // Use build-time environment variable if available
-  if (import.meta.env.VITE_API_BASE_URL) {
-    return import.meta.env.VITE_API_BASE_URL;
-  }
-
-  // Runtime detection based on environment
-  if (import.meta.env.DEV || import.meta.env.MODE === "development") {
-    return "http://localhost:8083";
-  }
-
-  // Production: use the same host but different port
-  const protocol = window.location.protocol;
-  const hostname = window.location.hostname;
-  return `${protocol}//${hostname}:8083`;
-};
-
-const API_BASE_URL = getApiBaseUrl();
 export interface LoginRequest {
   email: string;
   password: string;
 }
-
-export const API_ENDPOINTS = {
-  AUTH: `${API_BASE_URL}/auth`,
-  USERS: `${API_BASE_URL}/api/users`,
-  PROGRAMS: `${API_BASE_URL}/api/programs`,
-  STUDY_PLANS: `${API_BASE_URL}/api/study-plans`,
-  AI_ADVISOR: `${API_BASE_URL}/api/ai-advisor`,
-};
 
 export interface RegisterRequest {
   email: string;
@@ -66,7 +40,7 @@ export class AuthApiError extends Error {
 
 export const authApi = {
   async login(credentials: LoginRequest): Promise<LoginResponse> {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    const response = await fetch(`/api/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -88,7 +62,7 @@ export const authApi = {
   },
 
   async register(userData: RegisterRequest): Promise<RegisterResponse> {
-    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+    const response = await fetch("/api/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -110,7 +84,7 @@ export const authApi = {
   },
 
   async ping(): Promise<string> {
-    const response = await fetch(`${API_BASE_URL}/auth/ping`);
+    const response = await fetch(`/api/auth/ping`);
 
     if (!response.ok) {
       throw new AuthApiError(
