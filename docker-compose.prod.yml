@@ -25,6 +25,8 @@ services:
       - .env
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+    env_file:
+      - .env
     networks:
       - stratton-oakmont-network
     restart: unless-stopped
