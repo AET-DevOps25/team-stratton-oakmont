@@ -1,5 +1,5 @@
 # Stage 1: Build the application
-FROM node:22 AS builder
+FROM node:22-alpine AS builder
 WORKDIR /app
 
 # Accept build arguments for environment configuration
@@ -14,10 +14,9 @@ ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 
 # Copy package files
 COPY package*.json ./
-RUN npm ci --include=dev
 
-# Set environment variables for the build process
-ENV NODE_ENV=$NODE_ENV
+# Clean install with platform-specific binaries
+RUN rm -rf node_modules package-lock.json && npm install --include=dev
 
 # Copy source code
 COPY . .

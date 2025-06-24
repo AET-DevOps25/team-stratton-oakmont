@@ -71,7 +71,11 @@ else
     terraform plan -destroy
 fi
 
+# Ask for confirmation before destroying
+read -p "🤔 Do you want to proceed with destroying these resources? (yes/no): " terraform_confirm
+
 if [ "$terraform_confirm" = "yes" ]; then
+    echo "🚀 Proceeding with infrastructure destruction..."
     if [[ -n "$AWS_KEY_NAME" ]]; then
         terraform destroy -auto-approve \
             -var="aws_key_name=$AWS_KEY_NAME"
