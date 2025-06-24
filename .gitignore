@@ -418,31 +418,40 @@ out/
 .vscode/
 
 ### Terraform ###
-# Local .terraform directories
+# Lock file (this can be committed, but some prefer to ignore it)
+.terraform.lock.hcl
+
+# Terraform state files (NEVER commit these - contain sensitive data)
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+
+# Terraform plan files
+*.tfplan
+*.tfplan.*
+
+# Terraform variables files (may contain secrets)
+terraform.tfvars
+terraform.tfvars.json
+*.auto.tfvars
+*.auto.tfvars.json
+
+# Terraform provider cache
 .terraform/
 
-# .tfstate files
-*.tfstate
-*.tfstate.*.backup
+### Ansible Additions ###
+# Ansible retry files
+*.retry
 
-# Crash log files
-crash.log
-crash.*.log
+# Ansible vault files (if you use encrypted vars)
+vault_pass.txt
+.vault_pass
 
-# Exclude tfvars files that may contain sensitive variables.
-# Commit a .tfvars.example file instead.
-*.tfvars
-*.tfvars.json
+# Ansible inventory files with sensitive data
+# inventory.yml  # Uncomment if your inventory contains secrets
 
-# Ignore override files as they are usually used for local testing or development.
-override.tf
-override.tf.json
-*_override.tf
-*_override.tf.json
+# Ansible roles downloaded from Galaxy
+ansible/roles/
 
-# Terraform CLI configuration files
-.terraformrc
-terraform.rc
-
-# tfplan files
-*.tfplan
+# Ansible collections
+ansible/collections/

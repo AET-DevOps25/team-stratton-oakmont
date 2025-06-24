@@ -1,6 +1,4 @@
 // API calls related to authentication
-const API_BASE_URL = 'http://localhost:8083';
-
 export interface LoginRequest {
   email: string;
   password: string;
@@ -34,7 +32,7 @@ export class AuthApiError extends Error {
 
   constructor(statusCode: number, error: string, message: string) {
     super(message);
-    this.name = 'AuthApiError';
+    this.name = "AuthApiError";
     this.statusCode = statusCode;
     this.error = error;
   }
@@ -42,10 +40,10 @@ export class AuthApiError extends Error {
 
 export const authApi = {
   async login(credentials: LoginRequest): Promise<LoginResponse> {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
-      method: 'POST',
+    const response = await fetch(`/api/auth/login`, {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(credentials),
     });
@@ -55,8 +53,8 @@ export const authApi = {
     if (!response.ok) {
       throw new AuthApiError(
         response.status,
-        data.error || 'LOGIN_FAILED',
-        data.message || 'Login failed'
+        data.error || "LOGIN_FAILED",
+        data.message || "Login failed"
       );
     }
 
@@ -64,10 +62,10 @@ export const authApi = {
   },
 
   async register(userData: RegisterRequest): Promise<RegisterResponse> {
-    const response = await fetch(`${API_BASE_URL}/auth/register`, {
-      method: 'POST',
+    const response = await fetch("/api/auth/register", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(userData),
     });
@@ -77,8 +75,8 @@ export const authApi = {
     if (!response.ok) {
       throw new AuthApiError(
         response.status,
-        data.error || 'REGISTRATION_FAILED',
-        data.message || 'Registration failed'
+        data.error || "REGISTRATION_FAILED",
+        data.message || "Registration failed"
       );
     }
 
@@ -86,12 +84,16 @@ export const authApi = {
   },
 
   async ping(): Promise<string> {
-    const response = await fetch(`${API_BASE_URL}/auth/ping`);
-    
+    const response = await fetch(`/api/auth/ping`);
+
     if (!response.ok) {
-      throw new AuthApiError(response.status, 'PING_FAILED', 'Auth service unreachable');
+      throw new AuthApiError(
+        response.status,
+        "PING_FAILED",
+        "Auth service unreachable"
+      );
     }
 
     return response.text();
-  }
+  },
 };
