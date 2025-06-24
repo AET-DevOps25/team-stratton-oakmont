@@ -68,8 +68,7 @@
       git:
         repo: "{{ repo_url }}"
         dest: "{{ app_dir }}"
-        # TODO: change to main
-        version: "79-set-up-terraform-and-ansible-scripts-in-the-team-repository-to-automate-creating-an-ec2-instance-and-deplying-our-app-on-it"
+        version: "main"
         force: yes
       become_user: ec2-user
 
