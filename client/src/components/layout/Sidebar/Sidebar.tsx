@@ -45,6 +45,7 @@ import type {
   StudyPlanDto,
   CreateStudyPlanRequest,
 } from "../../../api/studyPlans";
+import { useStudyPlans } from "../../../contexts/StudyPlansContext";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -55,8 +56,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // State for study plans (combining hook logic here)
-  const [studyPlans, setStudyPlans] = useState<StudyPlanDto[]>([]);
+  const {
+    studyPlans,
+    setStudyPlans,
+    addStudyPlan,
+    removeStudyPlan,
+    updateStudyPlan,
+  } = useStudyPlans();
+
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -163,7 +170,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
 
       const newPlan = await createStudyPlan(request);
 
-      setStudyPlans((prevPlans) => [newPlan, ...prevPlans]);
+      addStudyPlan(newPlan);
 
       // Close modal and reset form
       setCreateModalOpen(false);
@@ -238,9 +245,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
 
       if (response.ok) {
         // Remove the deleted plan from local state instead of refetching
-        setStudyPlans((prevPlans) =>
-          prevPlans.filter((plan) => plan.id !== selectedPlanId)
-        );
+        removeStudyPlan(selectedPlanId);
         handleMenuClose();
       } else {
         const errorData = await response.json();
@@ -292,13 +297,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
 
       if (response.ok) {
         // Update local state instead of refetching
-        setStudyPlans((prevPlans) =>
-          prevPlans.map((plan) =>
-            plan.id === planId
-              ? { ...plan, name: editingPlanName.trim() }
-              : plan
-          )
-        );
+        updateStudyPlan(planId, { name: editingPlanName.trim() });
         setEditingPlanId(null);
         setEditingPlanName("");
       } else {
