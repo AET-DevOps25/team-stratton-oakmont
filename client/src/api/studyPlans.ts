@@ -13,6 +13,20 @@ export interface StudyPlanDto {
   studyProgramId?: number;
   studyProgramName?: string;
 }
+export interface StudyProgramDto {
+  id: number;
+  name: string;
+  degreeType: string;
+  totalCredits: number;
+  semesterDuration: number;
+  description?: string;
+}
+
+export interface CreateStudyPlanRequest {
+  name: string;
+  studyProgramId: number;
+  planData?: string;
+}
 
 export interface ApiError {
   error: string;
@@ -55,6 +69,59 @@ export const getMyStudyPlans = async (): Promise<StudyPlanDto[]> => {
       response.status,
       data.error || 'FETCH_FAILED',
       data.message || 'Failed to fetch study plans'
+    );
+  }
+
+  return data;
+};
+
+// API service function to get all study programs
+export const getStudyPrograms = async (): Promise<StudyProgramDto[]> => {
+  const response = await fetch(`${API_BASE_URL}/study-programs`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new StudyPlanApiError(
+      response.status,
+      data.error || 'FETCH_FAILED',
+      data.message || 'Failed to fetch study programs'
+    );
+  }
+
+  return data;
+};
+
+// API service function to create a new study plan
+export const createStudyPlan = async (request: CreateStudyPlanRequest): Promise<StudyPlanDto> => {
+  // Get JWT token from localStorage
+  const token = localStorage.getItem('jwtToken');
+  
+  if (!token) {
+    throw new StudyPlanApiError(401, 'NO_TOKEN', 'No authentication token found');
+  }
+
+  const response = await fetch(`${API_BASE_URL}/study-plans`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new StudyPlanApiError(
+      response.status,
+      data.error || 'CREATE_FAILED',
+      data.message || 'Failed to create study plan'
     );
   }
 

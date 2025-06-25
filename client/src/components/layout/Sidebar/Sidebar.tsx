@@ -27,8 +27,17 @@ import {
 import type { SelectChangeEvent } from "@mui/material";
 import { Description, Add, Refresh } from "@mui/icons-material";
 import { useNavigate, useLocation } from "react-router-dom";
-import { getMyStudyPlans, StudyPlanApiError } from "../../../api/studyPlans";
-import type { StudyPlanDto } from "../../../api/studyPlans";
+import {
+  getMyStudyPlans,
+  getStudyPrograms,
+  createStudyPlan,
+  StudyPlanApiError,
+} from "../../../api/studyPlans";
+import type {
+  StudyPlanDto,
+  StudyProgramDto,
+  CreateStudyPlanRequest,
+} from "../../../api/studyPlans";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -107,22 +116,20 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
   const fetchStudyPrograms = async () => {
     try {
       setLoadingPrograms(true);
-      const response = await fetch(
-        "http://localhost:8081/api/v1/study-programs",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const programs = await getStudyPrograms();
+      setStudyPrograms(programs);
+    } catch (err) {
+      console.error("Error fetching study programs:", err);
 
-      if (response.ok) {
-        const programs = await response.json();
-        setStudyPrograms(programs);
+      if (err instanceof StudyPlanApiError) {
+        // Handle specific API errors - you could show a toast notification here
+        console.error("Failed to load study programs:", err.message);
+      } else {
+        console.error("Failed to load study programs. Please try again.");
       }
-    } catch (error) {
-      console.error("Error fetching study programs:", error);
+
+      // Set empty programs on error
+      setStudyPrograms([]);
     } finally {
       setLoadingPrograms(false);
     }
@@ -135,31 +142,37 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
     }
 
     try {
-      const token = localStorage.getItem("jwtToken");
-      const response = await fetch("http://localhost:8081/api/v1/study-plans", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: newPlanName.trim(),
-          studyProgramId: selectedProgramId,
-        }),
-      });
+      const request: CreateStudyPlanRequest = {
+        name: newPlanName.trim(),
+        studyProgramId: selectedProgramId as number,
+      };
 
-      if (response.ok) {
-        // Close modal and reset form
-        setCreateModalOpen(false);
-        setNewPlanName("");
-        setSelectedProgramId("");
-        // Refresh study plans list
-        fetchStudyPlans();
+      await createStudyPlan(request);
+
+      // Close modal and reset form
+      setCreateModalOpen(false);
+      setNewPlanName("");
+      setSelectedProgramId("");
+
+      // Refresh study plans list
+      fetchStudyPlans();
+    } catch (err) {
+      console.error("Error creating study plan:", err);
+
+      if (err instanceof StudyPlanApiError) {
+        // Handle specific API errors - you could show a toast notification here
+        if (err.statusCode === 401) {
+          setError("Authentication failed. Please log in again.");
+        } else if (err.statusCode === 403) {
+          setError(
+            "Access denied. You don't have permission to create study plans."
+          );
+        } else {
+          console.error("Failed to create study plan:", err.message);
+        }
       } else {
-        console.error("Failed to create study plan");
+        console.error("Failed to create study plan. Please try again.");
       }
-    } catch (error) {
-      console.error("Error creating study plan:", error);
     }
   };
 
