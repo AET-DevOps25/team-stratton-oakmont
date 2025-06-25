@@ -109,7 +109,7 @@ public class StudyPlanController {
             }
 
             // Get study plans for authenticated user
-            List<StudyPlan> studyPlans = studyPlanService.getStudyPlansByUserId(userId);
+            List<StudyPlan> studyPlans = studyPlanService.getUserStudyPlansOrderedByCreatedDate(userId);
             List<StudyPlanDto> studyPlanDtos = studyPlans.stream()
                     .map(this::convertToDto)
                     .collect(Collectors.toList());

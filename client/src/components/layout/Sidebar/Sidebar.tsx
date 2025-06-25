@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Drawer,
   List,
@@ -32,6 +32,7 @@ import {
   Refresh,
   MoreVert,
   Delete,
+  Edit,
 } from "@mui/icons-material";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
@@ -67,6 +68,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
 
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
+
+  const [editingPlanId, setEditingPlanId] = useState<number | null>(null);
+  const [editingPlanName, setEditingPlanName] = useState<string>("");
+  const renameInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch study plans function
   const fetchStudyPlans = async () => {
@@ -156,15 +161,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
         studyProgramId: selectedProgramId as number,
       };
 
-      await createStudyPlan(request);
+      const newPlan = await createStudyPlan(request);
+
+      setStudyPlans((prevPlans) => [newPlan, ...prevPlans]);
 
       // Close modal and reset form
       setCreateModalOpen(false);
       setNewPlanName("");
       setSelectedProgramId("");
-
-      // Refresh study plans list
-      fetchStudyPlans();
     } catch (err) {
       console.error("Error creating study plan:", err);
 
@@ -233,8 +237,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
       );
 
       if (response.ok) {
-        // Refresh study plans list after successful deletion
-        fetchStudyPlans();
+        // Remove the deleted plan from local state instead of refetching
+        setStudyPlans((prevPlans) =>
+          prevPlans.filter((plan) => plan.id !== selectedPlanId)
+        );
         handleMenuClose();
       } else {
         const errorData = await response.json();
@@ -243,6 +249,82 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
     } catch (err) {
       console.error("Error deleting study plan:", err);
       setError("Failed to delete study plan. Please try again.");
+    }
+  };
+
+  const handleRenameClick = (plan: StudyPlanDto) => {
+    setEditingPlanId(plan.id);
+    setEditingPlanName(plan.name);
+    handleMenuClose();
+
+    // Use setTimeout to ensure the TextField is rendered before selecting text
+    setTimeout(() => {
+      if (renameInputRef.current) {
+        renameInputRef.current.select();
+      }
+    }, 0);
+  };
+
+  const handleRenameSubmit = async (planId: number) => {
+    if (!editingPlanName.trim()) {
+      setEditingPlanId(null);
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("jwtToken");
+      if (!token) {
+        setError("Authentication failed. Please log in again.");
+        return;
+      }
+
+      const response = await fetch(
+        `http://localhost:8081/api/v1/study-plans/${planId}/rename`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name: editingPlanName.trim() }),
+        }
+      );
+
+      if (response.ok) {
+        // Update local state instead of refetching
+        setStudyPlans((prevPlans) =>
+          prevPlans.map((plan) =>
+            plan.id === planId
+              ? { ...plan, name: editingPlanName.trim() }
+              : plan
+          )
+        );
+        setEditingPlanId(null);
+        setEditingPlanName("");
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || "Failed to rename study plan");
+        setEditingPlanId(null);
+        setEditingPlanName("");
+      }
+    } catch (err) {
+      console.error("Error renaming study plan:", err);
+      setError("Failed to rename study plan. Please try again.");
+      setEditingPlanId(null);
+      setEditingPlanName("");
+    }
+  };
+
+  const handleRenameCancel = () => {
+    setEditingPlanId(null);
+    setEditingPlanName("");
+  };
+
+  const handleRenameKeyPress = (event: React.KeyboardEvent, planId: number) => {
+    if (event.key === "Enter") {
+      handleRenameSubmit(planId);
+    } else if (event.key === "Escape") {
+      handleRenameCancel();
     }
   };
 
@@ -383,27 +465,54 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
                   <ListItemIcon>
                     <Description fontSize="small" />
                   </ListItemIcon>
-                  <ListItemText
-                    primary={plan.name}
-                    secondary={plan.studyProgramName || "No program"}
-                    primaryTypographyProps={{
-                      variant: "body2",
-                      sx: {
-                        fontWeight: 500,
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      },
-                    }}
-                    secondaryTypographyProps={{
-                      variant: "caption",
-                      sx: {
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      },
-                    }}
-                  />
+                  {editingPlanId === plan.id ? (
+                    <TextField
+                      inputRef={renameInputRef}
+                      value={editingPlanName}
+                      onChange={(e) => setEditingPlanName(e.target.value)}
+                      onKeyDown={(e) => handleRenameKeyPress(e, plan.id)}
+                      autoFocus
+                      fullWidth
+                      variant="standard"
+                      sx={{
+                        "& .MuiInput-root": {
+                          fontSize: "0.875rem",
+                          fontWeight: 500,
+                        },
+                        "& .MuiInput-root:before": {
+                          borderBottomColor: "primary.main",
+                        },
+                        "& .MuiInput-root:hover:before": {
+                          borderBottomColor: "primary.main",
+                        },
+                        "& .MuiInput-root:after": {
+                          borderBottomColor: "primary.main",
+                        },
+                      }}
+                    />
+                  ) : (
+                    <ListItemText
+                      primary={plan.name}
+                      secondary={plan.studyProgramName || "No program"}
+                      primaryTypographyProps={{
+                        variant: "body2",
+                        sx: {
+                          fontWeight: 500,
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        },
+                      }}
+                      secondaryTypographyProps={{
+                        variant: "caption",
+                        sx: {
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        },
+                      }}
+                    />
+                  )}
                   {/* Three-dot menu button */}
                   <Box
                     sx={{
@@ -493,6 +602,18 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
               horizontal: "left",
             }}
           >
+            <MenuItem
+              onClick={() => {
+                const selectedPlan = studyPlans.find(
+                  (p) => p.id === selectedPlanId
+                );
+                if (selectedPlan) handleRenameClick(selectedPlan);
+              }}
+              sx={{ color: "text.primary" }}
+            >
+              <Edit fontSize="small" sx={{ mr: 1 }} />
+              Rename
+            </MenuItem>
             <MenuItem
               onClick={handleDeleteStudyPlan}
               sx={{ color: "error.main" }}
