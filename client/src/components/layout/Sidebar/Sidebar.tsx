@@ -23,9 +23,16 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Menu,
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material";
-import { Description, Add, Refresh } from "@mui/icons-material";
+import {
+  Description,
+  Add,
+  Refresh,
+  MoreVert,
+  Delete,
+} from "@mui/icons-material";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   getMyStudyPlans,
@@ -35,7 +42,6 @@ import {
 } from "../../../api/studyPlans";
 import type {
   StudyPlanDto,
-  StudyProgramDto,
   CreateStudyPlanRequest,
 } from "../../../api/studyPlans";
 
@@ -58,6 +64,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
   const [selectedProgramId, setSelectedProgramId] = useState<number | "">("");
   const [studyPrograms, setStudyPrograms] = useState<any[]>([]);
   const [loadingPrograms, setLoadingPrograms] = useState(false);
+
+  const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
+  const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
 
   // Fetch study plans function
   const fetchStudyPlans = async () => {
@@ -187,6 +196,56 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
     setSelectedProgramId(event.target.value as number);
   };
 
+  // Add this after the handleProgramChange function
+  const handleMenuOpen = (
+    event: React.MouseEvent<HTMLElement>,
+    planId: number
+  ) => {
+    event.stopPropagation(); // Prevent navigation when clicking menu
+    setMenuAnchorEl(event.currentTarget);
+    setSelectedPlanId(planId);
+  };
+
+  const handleMenuClose = () => {
+    setMenuAnchorEl(null);
+    setSelectedPlanId(null);
+  };
+
+  const handleDeleteStudyPlan = async () => {
+    if (!selectedPlanId) return;
+
+    try {
+      const token = localStorage.getItem("jwtToken");
+      if (!token) {
+        setError("Authentication failed. Please log in again.");
+        return;
+      }
+
+      const response = await fetch(
+        `http://localhost:8081/api/v1/study-plans/${selectedPlanId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        // Refresh study plans list after successful deletion
+        fetchStudyPlans();
+        handleMenuClose();
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || "Failed to delete study plan");
+      }
+    } catch (err) {
+      console.error("Error deleting study plan:", err);
+      setError("Failed to delete study plan. Please try again.");
+    }
+  };
+
   return (
     <Drawer
       variant="persistent"
@@ -298,7 +357,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
           ) : (
             studyPlans.map((plan) => (
               <ListItem key={plan.id} disablePadding>
-                {/* <Tooltip title={`Open ${plan.name} - ${plan.studyProgramName || 'No program'}`}> */}
                 <ListItemButton
                   onClick={() => handleStudyPlanClick(plan.id)}
                   selected={isStudyPlanActive(plan.id)}
@@ -346,8 +404,30 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
                       },
                     }}
                   />
+                  {/* Three-dot menu button */}
+                  <Box
+                    sx={{
+                      opacity: 0,
+                      transition: "opacity 0.2s",
+                      ".MuiListItemButton-root:hover &": {
+                        opacity: 1,
+                      },
+                    }}
+                  >
+                    <IconButton
+                      size="small"
+                      onClick={(e) => handleMenuOpen(e, plan.id)}
+                      sx={{
+                        color: "text.secondary",
+                        "&:hover": {
+                          backgroundColor: "rgba(0, 0, 0, 0.08)",
+                        },
+                      }}
+                    >
+                      <MoreVert fontSize="small" />
+                    </IconButton>
+                  </Box>
                 </ListItemButton>
-                {/* </Tooltip> */}
               </ListItem>
             ))
           )}
@@ -398,6 +478,29 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
               </Button>
             </DialogActions>
           </Dialog>
+
+          {/* Menu */}
+          <Menu
+            anchorEl={menuAnchorEl}
+            open={Boolean(menuAnchorEl)}
+            onClose={handleMenuClose}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "left",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "left",
+            }}
+          >
+            <MenuItem
+              onClick={handleDeleteStudyPlan}
+              sx={{ color: "error.main" }}
+            >
+              <Delete fontSize="small" sx={{ mr: 1 }} />
+              Delete Study Plan
+            </MenuItem>
+          </Menu>
         </List>
       )}
     </Drawer>
