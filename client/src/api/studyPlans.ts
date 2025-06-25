@@ -128,6 +128,63 @@ export const createStudyPlan = async (request: CreateStudyPlanRequest): Promise<
   return data;
 };
 
+// Add this function to the existing studyPlans.ts file
+export const getStudyPlanById = async (id: string): Promise<StudyPlanDto> => {
+  const token = localStorage.getItem('jwtToken');
+  
+  if (!token) {
+    throw new StudyPlanApiError(401, 'NO_TOKEN', 'No authentication token found');
+  }
+
+  const response = await fetch(`${API_BASE_URL}/study-plans/${id}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new StudyPlanApiError(
+      response.status,
+      data.error || 'FETCH_FAILED',
+      data.message || 'Failed to fetch study plan'
+    );
+  }
+
+  return data;
+};
+
+export const getStudyProgramById = async (id: number): Promise<StudyProgramDto> => {
+  const token = localStorage.getItem('jwtToken');
+  
+  if (!token) {
+    throw new StudyPlanApiError(401, 'NO_TOKEN', 'No authentication token found');
+  }
+
+  const response = await fetch(`${API_BASE_URL}/study-programs/${id}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new StudyPlanApiError(
+      response.status,
+      data.error || 'FETCH_FAILED',
+      data.message || 'Failed to fetch study program'
+    );
+  }
+
+  return data;
+};
+
 // Additional utility function for error handling
 export const isApiError = (error: unknown): error is ApiError => {
   return typeof error === 'object' && error !== null && 'error' in error && 'message' in error;

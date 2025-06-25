@@ -5,151 +5,77 @@ import {
   Typography,
   Box,
   LinearProgress,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Paper,
-  Chip,
-  IconButton,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   CircularProgress,
   Alert,
   Button,
-  Breadcrumbs,
-  Link,
+  Grid,
+  Divider,
 } from "@mui/material";
 import {
   ExpandMore,
-  ExpandLess,
-  Info,
-  ArrowBack,
-  Edit,
-  Delete,
+  ExpandLess
 } from "@mui/icons-material";
+import {
+  getStudyPlanById,
+  getStudyProgramById,
+  StudyPlanApiError,
+} from "../../api/studyPlans";
+import type { StudyPlanDto, StudyProgramDto } from "../../api/studyPlans";
 
 interface StudyPlanDetailPageProps {}
-
-// Mock interfaces - replace with real data later
-interface Course {
-  name: string;
-  category: string;
-  credits: number;
-}
-
-interface Semester {
-  number: number;
-  courses: Course[];
-  totalCredits: number;
-}
 
 const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
   // State for the specific study plan
-  const [studyPlan, setStudyPlan] = useState<any>(null);
+  const [studyPlan, setStudyPlan] = useState<StudyPlanDto | null>(null);
+  const [studyProgram, setStudyProgram] = useState<StudyProgramDto | null>(
+    null
+  );
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Mock function to fetch study plan by ID - replace with real API call
   const fetchStudyPlanById = async (planId: string) => {
     try {
       setLoading(true);
       setError(null);
 
-      // TODO: Replace with actual API call to GET /api/v1/study-plans/{id}
-      // const response = await getStudyPlanById(planId);
+      // Use the actual API call
+      const planResponse = await getStudyPlanById(planId);
+      setStudyPlan(planResponse);
 
-      // Mock data for now - customize based on the ID
-      const mockStudyPlan = {
-        id: planId,
-        name: `My Study Plan ${planId}`,
-        studyProgramName: "M.Sc. Information Systems",
-        userId: 123,
-        isActive: true,
-        createdDate: "2024-01-15",
-        lastModified: "2024-02-20",
-        totalCredits: 120,
-        completedCredits: 40,
-        plannedCredits: 78,
-        semesters: [
-          {
-            number: 1,
-            courses: [
-              {
-                name: "Advanced Algorithms",
-                category: "Algorithmen",
-                credits: 6,
-              },
-              {
-                name: "Database Systems",
-                category: "Informationssysteme",
-                credits: 6,
-              },
-              { name: "Machine Learning", category: "Algorithmen", credits: 6 },
-              {
-                name: "Software Engineering",
-                category: "Praktische Informatik",
-                credits: 6,
-              },
-              { name: "Statistics", category: "Mathematik", credits: 6 },
-            ],
-            totalCredits: 30,
-          },
-          {
-            number: 2,
-            courses: [
-              { name: "Deep Learning", category: "Algorithmen", credits: 6 },
-              {
-                name: "Distributed Systems",
-                category: "Informationssysteme",
-                credits: 6,
-              },
-              { name: "Computer Vision", category: "Algorithmen", credits: 6 },
-              {
-                name: "Business Intelligence",
-                category: "Informationssysteme",
-                credits: 6,
-              },
-            ],
-            totalCredits: 24,
-          },
-          {
-            number: 3,
-            courses: [
-              {
-                name: "Natural Language Processing",
-                category: "Algorithmen",
-                credits: 6,
-              },
-              {
-                name: "Cloud Computing",
-                category: "Informationssysteme",
-                credits: 6,
-              },
-              {
-                name: "Data Visualization",
-                category: "Informationssysteme",
-                credits: 6,
-              },
-              { name: "Seminar", category: "Seminar", credits: 6 },
-            ],
-            totalCredits: 24,
-          },
-        ],
-      };
-
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setStudyPlan(mockStudyPlan);
+      // Fetch the study program if studyProgramId exists
+      if (planResponse.studyProgramId) {
+        try {
+          const programResponse = await getStudyProgramById(
+            planResponse.studyProgramId
+          );
+          setStudyProgram(programResponse);
+        } catch (programErr) {
+          console.warn("Could not fetch study program details:", programErr);
+          // Continue without study program details
+        }
+      }
     } catch (err) {
       console.error("Error fetching study plan:", err);
-      setError("Failed to load study plan. Please try again.");
+
+      if (err instanceof StudyPlanApiError) {
+        if (err.statusCode === 401) {
+          setError("Authentication failed. Please log in again.");
+        } else if (err.statusCode === 403) {
+          setError(
+            "Access denied. You don't have permission to view this study plan."
+          );
+        } else if (err.statusCode === 404) {
+          setError("Study plan not found.");
+        } else {
+          setError(err.message);
+        }
+      } else {
+        setError("Failed to load study plan. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -161,56 +87,8 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
     }
   }, [id]);
 
-  // Progress circle component
-  const ProgressCircle = ({
-    current,
-    total,
-    label,
-  }: {
-    current: number;
-    total: number;
-    label: string;
-  }) => (
-    <Box sx={{ textAlign: "center", minWidth: 120 }}>
-      <Box
-        sx={{
-          position: "relative",
-          display: "inline-flex",
-          width: 80,
-          height: 80,
-          borderRadius: "50%",
-          background: `conic-gradient(#646cff ${
-            (current / total) * 360
-          }deg, #333 0deg)`,
-          alignItems: "center",
-          justifyContent: "center",
-          mb: 1,
-        }}
-      >
-        <Box
-          sx={{
-            width: 60,
-            height: 60,
-            borderRadius: "50%",
-            backgroundColor: "#2a2a2a",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "white",
-            fontSize: "12px",
-            fontWeight: "bold",
-          }}
-        >
-          {current}/{total}
-        </Box>
-      </Box>
-      <Typography variant="caption" sx={{ color: "white", fontSize: "11px" }}>
-        {label}
-      </Typography>
-    </Box>
-  );
-
   const handleBack = () => {
+    // TODO: Find something better then this navigation
     navigate("/study-plans");
   };
 
@@ -283,6 +161,11 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
     );
   }
 
+  // Calculate progress values - using study program data if available
+  const totalCredits = studyProgram?.totalCredits || 120; // fallback value
+  const completedCredits = 0; // TODO: Calculate from actual course data
+  const plannedCredits = 0; // TODO: Calculate from actual course data
+
   return (
     <Box
       sx={{
@@ -293,66 +176,82 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
       }}
     >
       <Container maxWidth="lg">
-        {/* Breadcrumbs */}
-        <Breadcrumbs sx={{ mb: 2, color: "white" }}>
-          <Link
-            color="inherit"
-            onClick={handleBack}
-            sx={{
-              cursor: "pointer",
-              "&:hover": { textDecoration: "underline" },
-            }}
-          >
-            Study Plans
-          </Link>
-          <Typography color="white">{studyPlan.name}</Typography>
-        </Breadcrumbs>
 
         {/* Header */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 4,
-          }}
-        >
-          <Box>
-            <Typography variant="h4" sx={{ fontWeight: "bold", mb: 1 }}>
-              {studyPlan.name}
-            </Typography>
-            <Typography variant="h6" sx={{ color: "#aaa", mb: 1 }}>
-              {studyPlan.studyProgramName}
-            </Typography>
-            <Typography variant="body2" sx={{ color: "#666" }}>
-              Last modified:{" "}
-              {new Date(studyPlan.lastModified).toLocaleDateString()}
-            </Typography>
-          </Box>
-
-          <Box sx={{ display: "flex", gap: 1 }}>
-            <IconButton onClick={handleBack} sx={{ color: "white" }}>
-              <ArrowBack />
-            </IconButton>
-            <IconButton onClick={handleEdit} sx={{ color: "white" }}>
-              <Edit />
-            </IconButton>
-            <IconButton onClick={handleDelete} sx={{ color: "#ff6b6b" }}>
-              <Delete />
-            </IconButton>
-            <Chip
-              label={studyPlan.isActive ? "Active" : "Inactive"}
-              sx={{
-                backgroundColor: studyPlan.isActive ? "#4caf50" : "#333",
-                color: "white",
-                border: `1px solid ${studyPlan.isActive ? "#4caf50" : "#555"}`,
-              }}
-            />
-          </Box>
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" sx={{ fontWeight: "bold", mb: 1 }}>
+            {studyPlan.name}
+          </Typography>
+          <Typography variant="h6" sx={{ color: "#aaa", mb: 1 }}>
+            {studyProgram?.name ||
+              studyPlan.studyProgramName ||
+              "No Program Assigned"}
+          </Typography>
+          <Typography variant="body2" sx={{ color: "#666" }}>
+            Last modified:{" "}
+            {new Date(studyPlan.lastModified).toLocaleDateString()}
+          </Typography>
         </Box>
+
+        {/* Study Program Information */}
+        {studyProgram && (
+          <Paper
+            sx={{ p: 3, mb: 4, backgroundColor: "#2a2a2a", color: "white" }}
+          >
+            <Typography variant="h6" sx={{ mb: 2 }}>
+              Program Information
+            </Typography>
+            <Grid container spacing={3}>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Typography variant="body2" sx={{ color: "#aaa", mb: 1 }}>
+                  Degree Type
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 2 }}>
+                  {studyProgram.degreeType}
+                </Typography>
+
+                <Typography variant="body2" sx={{ color: "#aaa", mb: 1 }}>
+                  Total Credits Required
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 2 }}>
+                  {studyProgram.totalCredits} ECTS
+                </Typography>
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Typography variant="body2" sx={{ color: "#aaa", mb: 1 }}>
+                  Duration
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 2 }}>
+                  {studyProgram.semesterDuration} Semesters
+                </Typography>
+
+                <Typography variant="body2" sx={{ color: "#aaa", mb: 1 }}>
+                  Program ID
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 2 }}>
+                  {studyProgram.id}
+                </Typography>
+              </Grid>
+              {studyProgram.description && (
+                <Grid size={{ xs: 12 }}>
+                  <Typography variant="body2" sx={{ color: "#aaa", mb: 1 }}>
+                    Description
+                  </Typography>
+                  <Typography variant="body1">
+                    {studyProgram.description}
+                  </Typography>
+                </Grid>
+              )}
+            </Grid>
+          </Paper>
+        )}
 
         {/* Progress Bars */}
         <Box sx={{ mb: 4 }}>
+          <Typography variant="h6" sx={{ mb: 3 }}>
+            Progress Overview
+          </Typography>
+
           <Box sx={{ mb: 2 }}>
             <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
               <ExpandMore sx={{ mr: 1 }} />
@@ -360,12 +259,12 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
             </Box>
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Typography variant="caption" sx={{ mr: 2, minWidth: 20 }}>
-                {studyPlan.completedCredits}
+                {completedCredits}
               </Typography>
               <LinearProgress
                 variant="determinate"
                 value={
-                  (studyPlan.completedCredits / studyPlan.totalCredits) * 100
+                  totalCredits > 0 ? (completedCredits / totalCredits) * 100 : 0
                 }
                 sx={{
                   flexGrow: 1,
@@ -378,7 +277,7 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
                 }}
               />
               <Typography variant="caption" sx={{ ml: 2, minWidth: 30 }}>
-                {studyPlan.totalCredits}
+                {totalCredits}
               </Typography>
             </Box>
           </Box>
@@ -390,12 +289,12 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
             </Box>
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Typography variant="caption" sx={{ mr: 2, minWidth: 20 }}>
-                {studyPlan.plannedCredits}
+                {plannedCredits}
               </Typography>
               <LinearProgress
                 variant="determinate"
                 value={
-                  (studyPlan.plannedCredits / studyPlan.totalCredits) * 100
+                  totalCredits > 0 ? (plannedCredits / totalCredits) * 100 : 0
                 }
                 sx={{
                   flexGrow: 1,
@@ -408,146 +307,82 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
                 }}
               />
               <Typography variant="caption" sx={{ ml: 2, minWidth: 30 }}>
-                {studyPlan.totalCredits}
+                {totalCredits}
               </Typography>
             </Box>
           </Box>
         </Box>
 
-        {/* Progress Circles - Mock categories */}
-        <Box sx={{ display: "flex", gap: 4, mb: 4, justifyContent: "center" }}>
-          <ProgressCircle current={12} total={18} label="Algorithms" />
-          <ProgressCircle current={8} total={12} label="Info Systems" />
-          <ProgressCircle current={6} total={6} label="Mathematics" />
-          <ProgressCircle current={4} total={8} label="Seminars" />
-          <ProgressCircle current={10} total={15} label="Electives" />
-        </Box>
+        {/* Study Plan Data */}
+        <Paper sx={{ p: 3, mb: 4, backgroundColor: "#2a2a2a", color: "white" }}>
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Study Plan Details
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Typography variant="body2" sx={{ color: "#aaa", mb: 1 }}>
+                Status
+              </Typography>
+              <Typography variant="body1" sx={{ mb: 2 }}>
+                {studyPlan.isActive ? "Active" : "Inactive"}
+              </Typography>
 
-        {/* Semesters */}
-        <Box>
-          {studyPlan.semesters.map((semester: Semester) => (
-            <Accordion
-              key={semester.number}
-              defaultExpanded
-              sx={{
-                backgroundColor: "#2a2a2a",
-                color: "white",
-                mb: 2,
-                "&:before": {
-                  display: "none",
-                },
-              }}
-            >
-              <AccordionSummary
-                expandIcon={<ExpandMore sx={{ color: "white" }} />}
-                sx={{
-                  "& .MuiAccordionSummary-content": {
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  },
-                }}
-              >
-                <Typography variant="h6">
-                  {semester.number}. Semester
+              <Typography variant="body2" sx={{ color: "#aaa", mb: 1 }}>
+                Created
+              </Typography>
+              <Typography variant="body1" sx={{ mb: 2 }}>
+                {new Date(studyPlan.createdDate).toLocaleDateString()}
+              </Typography>
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Typography variant="body2" sx={{ color: "#aaa", mb: 1 }}>
+                Plan ID
+              </Typography>
+              <Typography variant="body1" sx={{ mb: 2 }}>
+                {studyPlan.id}
+              </Typography>
+
+              <Typography variant="body2" sx={{ color: "#aaa", mb: 1 }}>
+                User ID
+              </Typography>
+              <Typography variant="body1" sx={{ mb: 2 }}>
+                {studyPlan.userId}
+              </Typography>
+            </Grid>
+
+            {studyPlan.planData && (
+              <Grid size={{ xs: 12 }}>
+                <Divider sx={{ my: 2, borderColor: "#555" }} />
+                <Typography variant="body2" sx={{ color: "#aaa", mb: 1 }}>
+                  Plan Data
                 </Typography>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                  <Typography variant="body2" sx={{ color: "#aaa" }}>
-                    {semester.totalCredits} Credits
-                  </Typography>
-                  <IconButton size="small" sx={{ color: "white" }}>
-                    <Info fontSize="small" />
-                  </IconButton>
-                </Box>
-              </AccordionSummary>
-              <AccordionDetails>
-                <TableContainer
-                  component={Paper}
-                  sx={{ backgroundColor: "#333" }}
+                <Box
+                  sx={{
+                    backgroundColor: "#333",
+                    p: 2,
+                    borderRadius: 1,
+                    fontFamily: "monospace",
+                    fontSize: "0.875rem",
+                    whiteSpace: "pre-wrap",
+                    overflow: "auto",
+                    maxHeight: "200px",
+                  }}
                 >
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell
-                          sx={{
-                            color: "white",
-                            borderBottom: "1px solid #555",
-                          }}
-                        >
-                          Course
-                        </TableCell>
-                        <TableCell
-                          sx={{
-                            color: "white",
-                            borderBottom: "1px solid #555",
-                          }}
-                        >
-                          Category
-                        </TableCell>
-                        <TableCell
-                          align="right"
-                          sx={{
-                            color: "white",
-                            borderBottom: "1px solid #555",
-                          }}
-                        >
-                          Credits
-                        </TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {semester.courses.map((course, index) => (
-                        <TableRow key={index}>
-                          <TableCell
-                            sx={{
-                              color: "white",
-                              borderBottom: "1px solid #555",
-                            }}
-                          >
-                            <Box sx={{ display: "flex", alignItems: "center" }}>
-                              <ExpandMore sx={{ mr: 1, fontSize: 16 }} />
-                              {course.name}
-                            </Box>
-                          </TableCell>
-                          <TableCell
-                            sx={{
-                              color: "white",
-                              borderBottom: "1px solid #555",
-                            }}
-                          >
-                            <Chip
-                              label={course.category}
-                              size="small"
-                              sx={{
-                                backgroundColor: "#555",
-                                color: "white",
-                                fontSize: "0.7rem",
-                              }}
-                            />
-                          </TableCell>
-                          <TableCell
-                            align="right"
-                            sx={{
-                              color: "white",
-                              borderBottom: "1px solid #555",
-                            }}
-                          >
-                            {course.credits}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </AccordionDetails>
-            </Accordion>
-          ))}
-        </Box>
+                  {studyPlan.planData}
+                </Box>
+              </Grid>
+            )}
+          </Grid>
+        </Paper>
 
-        {/* Footer Info */}
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-          <IconButton sx={{ color: "#666" }}>
-            <Info />
-          </IconButton>
+        {/* Action Buttons */}
+        <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 4 }}>
+          <Button variant="outlined" onClick={handleEdit}>
+            Edit Plan
+          </Button>
+          <Button variant="outlined" color="error" onClick={handleDelete}>
+            Delete Plan
+          </Button>
         </Box>
       </Container>
     </Box>
