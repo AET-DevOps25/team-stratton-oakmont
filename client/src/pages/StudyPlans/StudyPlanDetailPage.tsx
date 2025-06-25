@@ -12,10 +12,7 @@ import {
   Grid,
   Divider,
 } from "@mui/material";
-import {
-  ExpandMore,
-  ExpandLess
-} from "@mui/icons-material";
+import { ExpandMore, ExpandLess } from "@mui/icons-material";
 import {
   getStudyPlanById,
   getStudyProgramById,
@@ -176,7 +173,6 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
       }}
     >
       <Container maxWidth="lg">
-
         {/* Header */}
         <Box sx={{ mb: 4 }}>
           <Typography variant="h4" sx={{ fontWeight: "bold", mb: 1 }}>
