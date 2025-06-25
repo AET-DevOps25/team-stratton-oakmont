@@ -1,4 +1,6 @@
 // API calls related to authentication
+const API_BASE_URL = "http://localhost:8083";
+
 export interface LoginRequest {
   email: string;
   password: string;
@@ -40,7 +42,7 @@ export class AuthApiError extends Error {
 
 export const authApi = {
   async login(credentials: LoginRequest): Promise<LoginResponse> {
-    const response = await fetch(`/api/auth/login`, {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -62,7 +64,7 @@ export const authApi = {
   },
 
   async register(userData: RegisterRequest): Promise<RegisterResponse> {
-    const response = await fetch("/api/auth/register", {
+    const response = await fetch(`${API_BASE_URL}/auth/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -84,7 +86,7 @@ export const authApi = {
   },
 
   async ping(): Promise<string> {
-    const response = await fetch(`/api/auth/ping`);
+    const response = await fetch(`${API_BASE_URL}/auth/ping`);
 
     if (!response.ok) {
       throw new AuthApiError(

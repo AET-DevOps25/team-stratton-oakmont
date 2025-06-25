@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import type { ReactNode } from "react";
 
 interface AuthContextType {
   isLoggedIn: boolean;
@@ -16,7 +16,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
@@ -33,10 +33,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     // Check if user is already logged in on app start
-    const storedToken = localStorage.getItem('jwtToken');
-    const storedUserId = localStorage.getItem('userId');
-    const storedEmail = localStorage.getItem('userEmail');
-    
+    const storedToken = localStorage.getItem("jwtToken");
+    const storedUserId = localStorage.getItem("userId");
+    const storedEmail = localStorage.getItem("userEmail");
+
     if (storedToken && storedEmail && storedUserId) {
       setIsLoggedIn(true);
       setUserEmail(storedEmail);
@@ -46,9 +46,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   const login = (token: string, userId: string, email: string) => {
-    localStorage.setItem('jwtToken', token);
-    localStorage.setItem('userId', userId);
-    localStorage.setItem('userEmail', email);
+    localStorage.setItem("jwtToken", token);
+    localStorage.setItem("userId", userId);
+    localStorage.setItem("userEmail", email);
     setIsLoggedIn(true);
     setUserEmail(email);
     setToken(token);
@@ -56,9 +56,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem('jwtToken');
-    localStorage.removeItem('userId');
-    localStorage.removeItem('userEmail');
+    localStorage.removeItem("jwtToken");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("userEmail");
     setIsLoggedIn(false);
     setUserEmail(null);
     setToken(null);
@@ -66,15 +66,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      isLoggedIn, 
-      userEmail, 
-      token, 
-      userId, 
-      email: userEmail, // Alias for consistency
-      login, 
-      logout 
-    }}>
+    <AuthContext.Provider
+      value={{
+        isLoggedIn,
+        userEmail,
+        token,
+        userId,
+        email: userEmail, // Alias for consistency
+        login,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

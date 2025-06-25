@@ -1,5 +1,5 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Container,
   Paper,
@@ -15,17 +15,17 @@ import {
   Chip,
   Alert,
   AlertTitle,
-  Divider
-} from '@mui/material';
+  Divider,
+} from "@mui/material";
 import {
   AccountCircle,
   ExitToApp,
   ArrowBack,
   CheckCircle,
   Cancel,
-  DeveloperMode
-} from '@mui/icons-material';
-import { useAuth } from '../../contexts/AuthContext';
+  DeveloperMode,
+} from "@mui/icons-material";
+import { useAuth } from "../../contexts/AuthContext";
 
 const UserProfile: React.FC = () => {
   const { userEmail, userId, isLoggedIn, token, logout } = useAuth();
@@ -33,7 +33,7 @@ const UserProfile: React.FC = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/');
+    navigate("/");
   };
 
   const handleGoBack = () => {
@@ -43,17 +43,19 @@ const UserProfile: React.FC = () => {
   if (!isLoggedIn || !userEmail) {
     return (
       <Container component="main" maxWidth="md" sx={{ mt: 8 }}>
-        <Paper elevation={3} sx={{ p: 4, textAlign: 'center' }}>
-          <AccountCircle sx={{ fontSize: 60, color: 'text.secondary', mb: 2 }} />
+        <Paper elevation={3} sx={{ p: 4, textAlign: "center" }}>
+          <AccountCircle
+            sx={{ fontSize: 60, color: "text.secondary", mb: 2 }}
+          />
           <Typography variant="h4" gutterBottom>
             User Profile
           </Typography>
           <Typography variant="body1" color="text.secondary">
             Please log in to view your profile.
           </Typography>
-          <Button 
-            variant="contained" 
-            onClick={() => navigate('/login')}
+          <Button
+            variant="contained"
+            onClick={() => navigate("/login")}
             sx={{ mt: 3 }}
           >
             Go to Login
@@ -64,31 +66,36 @@ const UserProfile: React.FC = () => {
   }
 
   const userRows = [
-    { property: 'User ID', value: userId || 'Not available' },
-    { property: 'Email Address', value: userEmail || 'Not available' },
-    { property: 'Session Info', value: 'Active session since login' }
+    { property: "User ID", value: userId || "Not available" },
+    { property: "Email Address", value: userEmail || "Not available" },
+    { property: "Session Info", value: "Active session since login" },
   ];
 
   return (
     <Container component="main" maxWidth="md" sx={{ mt: 8 }}>
       <Paper elevation={3} sx={{ p: 4 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-          <AccountCircle sx={{ fontSize: 40, color: 'primary.main', mr: 2 }} />
+        <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+          <AccountCircle sx={{ fontSize: 40, color: "primary.main", mr: 2 }} />
           <Typography component="h1" variant="h4">
             User Profile
           </Typography>
         </Box>
 
         <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-          Welcome to your profile page! Here you can view your account information.
+          Welcome to your profile page! Here you can view your account
+          information.
         </Typography>
 
         <TableContainer component={Paper} variant="outlined" sx={{ mb: 4 }}>
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell><strong>Property</strong></TableCell>
-                <TableCell><strong>Value</strong></TableCell>
+                <TableCell>
+                  <strong>Property</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Value</strong>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -97,12 +104,12 @@ const UserProfile: React.FC = () => {
                   <TableCell component="th" scope="row">
                     {row.property}
                   </TableCell>
-                  <TableCell sx={{ fontFamily: 'monospace' }}>
+                  <TableCell sx={{ fontFamily: "monospace" }}>
                     {row.value}
                   </TableCell>
                 </TableRow>
               ))}
-              
+
               <TableRow>
                 <TableCell component="th" scope="row">
                   Authentication Status
@@ -110,31 +117,35 @@ const UserProfile: React.FC = () => {
                 <TableCell>
                   <Chip
                     icon={isLoggedIn ? <CheckCircle /> : <Cancel />}
-                    label={isLoggedIn ? 'Authenticated' : 'Not Authenticated'}
-                    color={isLoggedIn ? 'success' : 'error'}
+                    label={isLoggedIn ? "Authenticated" : "Not Authenticated"}
+                    color={isLoggedIn ? "success" : "error"}
                     variant="outlined"
                   />
                 </TableCell>
               </TableRow>
-              
+
               <TableRow>
                 <TableCell component="th" scope="row">
                   JWT Token
                 </TableCell>
-                <TableCell sx={{ 
-                  fontFamily: 'monospace', 
-                  fontSize: '0.75rem',
-                  wordBreak: 'break-all',
-                  backgroundColor: 'grey.50'
-                }}>
-                  {token ? `${token.substring(0, 50)}...` : 'No token available'}
+                <TableCell
+                  sx={{
+                    fontFamily: "monospace",
+                    fontSize: "0.75rem",
+                    wordBreak: "break-all",
+                    backgroundColor: "grey.50",
+                  }}
+                >
+                  {token
+                    ? `${token.substring(0, 50)}...`
+                    : "No token available"}
                 </TableCell>
               </TableRow>
             </TableBody>
           </Table>
         </TableContainer>
 
-        <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', mb: 4 }}>
+        <Box sx={{ display: "flex", gap: 2, justifyContent: "center", mb: 4 }}>
           <Button
             variant="contained"
             color="error"
@@ -143,7 +154,7 @@ const UserProfile: React.FC = () => {
           >
             Logout
           </Button>
-          
+
           <Button
             variant="outlined"
             startIcon={<ArrowBack />}

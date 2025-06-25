@@ -60,7 +60,7 @@ public class StudyPlanService {
 
     @Transactional(readOnly = true)
     public List<StudyPlan> getStudyPlansByUserId(Long userId) {
-        return studyPlanRepository.findByUserId(userId);
+        return studyPlanRepository.findByUserIdOrderByCreatedDateDesc(userId);
     }
 
     @Transactional(readOnly = true)
@@ -93,6 +93,11 @@ public class StudyPlanService {
     @Transactional(readOnly = true)
     public List<StudyPlan> getRecentlyModifiedStudyPlans(LocalDateTime since) {
         return studyPlanRepository.findByLastModifiedAfter(since);
+    }
+
+    @Transactional(readOnly = true)
+    public List<StudyPlan> getUserStudyPlansOrderedByCreatedDate(Long userId) {
+        return studyPlanRepository.findByUserIdOrderByCreatedDateDesc(userId);
     }
 
     @Transactional(readOnly = true)

@@ -16,6 +16,8 @@ public interface StudyPlanRepository extends JpaRepository<StudyPlan, Long> {
     
     // Find all study plans for a specific user
     List<StudyPlan> findByUserId(Long userId);
+
+    List<StudyPlan> findByUserIdOrderByCreatedDateDesc(Long userId);
     
     // Find active study plans for a user
     List<StudyPlan> findByUserIdAndIsActiveTrue(Long userId);
