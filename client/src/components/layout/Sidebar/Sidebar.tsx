@@ -22,9 +22,9 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
 } from "@mui/material";
-import type { SelectChangeEvent } from '@mui/material';
+import type { SelectChangeEvent } from "@mui/material";
 import { Description, Add, Refresh } from "@mui/icons-material";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getMyStudyPlans, StudyPlanApiError } from "../../../api/studyPlans";
@@ -88,11 +88,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
     fetchStudyPlans();
   }, []);
 
-  const handleNavigation = (path: string) => {
-    navigate(path);
-    // Don't auto-close for push-style sidebar
-  };
-
   const handleStudyPlanClick = (studyPlanId: number) => {
     // Navigate to study plan detail page
     navigate(`/study-plans/${studyPlanId}`);
@@ -100,11 +95,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
 
   const handleRefresh = () => {
     fetchStudyPlans();
-  };
-
-  // Check if current path matches
-  const isPathActive = (path: string) => {
-    return location.pathname === path;
   };
 
   const isStudyPlanActive = (studyPlanId: number) => {
