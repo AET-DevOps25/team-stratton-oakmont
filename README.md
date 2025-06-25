@@ -2,18 +2,62 @@
 
 ## 🚀 Getting Started
 
-> _Instructions to run the app locally._
+> _Instructions to run the app locally with Docker._
+
+```bash
+cd team-stratton-oakmont
+
+# Start all services locally
+docker-compose -f docker-compose.test.yml up -d --build
+
+# Stop services
+docker-compose -f docker-compose.test.yml down
+```
+
+**Local URLs:**
+
+- Frontend: http://localhost:3000
+- Program Catalog Service: http://localhost:8080
+- Study Plan Service: http://localhost:8081
+- AI Advisor Service: http://localhost:8082
+- User Auth Service: http://localhost:8083
+- LLM Service: http://localhost:8000
+
+### ☁️ AWS Deployment
+
+> _One-command deployment to AWS Academy._
+
+```bash
+# Deploy complete infrastructure and application
+./scripts/deploy.sh
+
+# Clean up resources when done
+./scripts/destroy.sh
+```
+
+**What the deploy script does:**
+
+- 🏗️ Creates AWS EC2 instance with Terraform
+- 🎭 Deploys application with Ansible
+- 🐳 Builds and runs all services in Docker
+- 🌐 Sets up nginx reverse proxy with CORS
+
+### 🛠️ Manual Development (Alternative)
+
+<details>
+<summary>Click to expand manual startup instructions</summary>
 
 How to start the frontend:
 
 ```bash
-# start frontend (localhost:5173)
+# start frontend (localhost:3000)
 cd client
 npm install
 npm run dev
 ```
 
 How to start the server:
+
 ```bash
 # start program-catalog-service (localhost:8080)
 cd server
@@ -21,6 +65,7 @@ cd server
 ```
 
 New terminal window:
+
 ```bash
 # start study-plan-service (localhost:8081)
 cd server
@@ -28,6 +73,7 @@ cd server
 ```
 
 New terminal window:
+
 ```bash
 # start ai-advisor-service (localhost:8082)
 cd server
@@ -35,24 +81,23 @@ cd server
 ```
 
 New terminal window:
+
 ```bash
 # start user-auth-service (localhost:8083)
 cd server
 ./gradlew :user-auth-service:bootRun
 ```
 
-> _Instructions to run with docker._
+New terminal window:
 
 ```bash
-cd team-stratton-oakmont
-#Build images locally with docker compose
-docker compose build
+# start llm-service (localhost:8000)
+cd llm-service
+pip install -r requirements.txt
+python app.py
+```
 
-#Run the apps with docker compose
-docker compose up -d
-
-#Stop the containers and remove the images
-docker compose down
+</details>
 ```
 
 ## 🧩 Main Functionality
@@ -79,9 +124,14 @@ docker compose down
 
 _List key technologies and frameworks used._
 
-- Frontend: React + Vite
-- Backend: Springboot (Gradle Groovy)
-- GenAI API:
+- **Frontend**: React + TypeScript + Vite + Material-UI
+- **Backend**: Spring Boot (Java) + Gradle
+- **AI Service**: Python + FastAPI
+- **Database**: PostgreSQL (in production)
+- **Infrastructure**: AWS EC2 + Terraform + Ansible
+- **Containerization**: Docker + Docker Compose
+- **Web Server**: Nginx (reverse proxy)
+- **GenAI API**: OpenAI GPT (via Python service)
 
 ## 📄 License
 

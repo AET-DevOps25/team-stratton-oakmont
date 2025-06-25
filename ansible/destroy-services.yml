@@ -1,0 +1,20 @@
+---
+- name: Stop TUM Study Planner Application Services
+  hosts: webservers
+  become: yes
+  vars:
+    app_dir: /opt/tum-study-planner
+
+  tasks:
+    - name: Stop application services
+      command: docker-compose down
+      args:
+        chdir: "{{ app_dir }}"
+      become_user: ec2-user
+      ignore_errors: yes
+
+    - name: Remove application containers and images (optional cleanup)
+      command: docker system prune -af
+      become_user: ec2-user
+      when: target_state is defined and target_state == "stopped"
+      ignore_errors: yes

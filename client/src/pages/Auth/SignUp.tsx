@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Container,
   Paper,
@@ -12,45 +12,41 @@ import {
   List,
   ListItem,
   ListItemIcon,
-  ListItemText
-} from '@mui/material';
-import { PersonAddOutlined, CheckCircleOutline } from '@mui/icons-material';
+  ListItemText,
+} from "@mui/material";
+import { PersonAddOutlined, CheckCircleOutline } from "@mui/icons-material";
+import { authApi } from "../../api/auth";
 
 const SignUp: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setMessage('');
+    setMessage("");
     setIsError(false);
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8083/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const data = await authApi.register({ email, password });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setMessage(`Registration successful for ${data.email || email}! Redirecting to login...`);
-        setIsError(false);
-        setTimeout(() => navigate('/login'), 500);
-      } else {
-        setMessage(`Registration failed: ${data.message || response.statusText}`);
-        setIsError(true);
-      }
+      setMessage(
+        `Registration successful for ${
+          data.email || email
+        }! Redirecting to login...`
+      );
+      setIsError(false);
+      setTimeout(() => navigate("/login"), 500);
     } catch (error) {
-      setMessage(`Registration request failed: ${error instanceof Error ? error.message : String(error)}`);
+      if (error instanceof Error) {
+        setMessage(`Registration failed: ${error.message}`);
+      } else {
+        setMessage("Registration failed: Unknown error");
+      }
       setIsError(true);
     } finally {
       setIsLoading(false);
@@ -59,26 +55,28 @@ const SignUp: React.FC = () => {
 
   return (
     <Container component="main" maxWidth="sm" sx={{ mt: 8 }}>
-      <Paper 
-        elevation={3} 
-        sx={{ 
-          p: 4, 
-          display: 'flex', 
-          flexDirection: 'column', 
-          alignItems: 'center' 
+      <Paper
+        elevation={3}
+        sx={{
+          p: 4,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
         }}
       >
-        <PersonAddOutlined sx={{ fontSize: 40, color: 'primary.main', mb: 2 }} />
-        
+        <PersonAddOutlined
+          sx={{ fontSize: 40, color: "primary.main", mb: 2 }}
+        />
+
         <Typography component="h1" variant="h4" gutterBottom>
           Sign Up
         </Typography>
-        
+
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
           Join TUM Study Planner to manage your academic journey
         </Typography>
 
-        <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
+        <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
           <TextField
             margin="normal"
             required
@@ -93,7 +91,7 @@ const SignUp: React.FC = () => {
             variant="outlined"
             helperText="Use your TUM email address"
           />
-          
+
           <TextField
             margin="normal"
             required
@@ -117,9 +115,9 @@ const SignUp: React.FC = () => {
                 <ListItemIcon sx={{ minWidth: 30 }}>
                   <CheckCircleOutline fontSize="small" color="primary" />
                 </ListItemIcon>
-                <ListItemText 
-                  primary="At least 1 characters long" 
-                  primaryTypographyProps={{ variant: 'body2' }}
+                <ListItemText
+                  primary="At least 1 characters long"
+                  primaryTypographyProps={{ variant: "body2" }}
                 />
               </ListItem>
             </List>
@@ -132,28 +130,26 @@ const SignUp: React.FC = () => {
             disabled={isLoading}
             sx={{ mt: 3, mb: 2, py: 1.5 }}
           >
-            {isLoading ? 'Signing Up...' : 'Sign Up'}
+            {isLoading ? "Signing Up..." : "Sign Up"}
           </Button>
 
           {message && (
-            <Alert 
-              severity={isError ? 'error' : 'success'} 
-              sx={{ mt: 2 }}
-            >
+            <Alert severity={isError ? "error" : "success"} sx={{ mt: 2 }}>
               {message}
             </Alert>
           )}
 
-          <Box sx={{ mt: 3, textAlign: 'center' }}>
+          <Box sx={{ mt: 3, textAlign: "center" }}>
             <Typography variant="body2" color="text.secondary" gutterBottom>
-              By signing up, you agree to our Terms of Service and Privacy Policy
+              By signing up, you agree to our Terms of Service and Privacy
+              Policy
             </Typography>
-            
-            <MuiLink 
+
+            <MuiLink
               component="button"
               variant="body2"
-              onClick={() => navigate('/login')}
-              sx={{ mt: 1, textDecoration: 'none' }}
+              onClick={() => navigate("/login")}
+              sx={{ mt: 1, textDecoration: "none" }}
             >
               Already have an account? Log In
             </MuiLink>
