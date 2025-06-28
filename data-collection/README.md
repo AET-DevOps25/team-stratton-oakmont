@@ -1,3 +1,5 @@
 ### TODO @Johannes
 
-Describe the overall data retrieval process incl. important design decisions, e.g., regarding the linking of the tables
+pip install -r requirements.txt
+
+python3 main.py
