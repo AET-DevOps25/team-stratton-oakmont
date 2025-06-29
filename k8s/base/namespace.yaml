@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tum-study-planner
+  labels:
+    app: tum-study-planner
+    team: stratton-oakmont
