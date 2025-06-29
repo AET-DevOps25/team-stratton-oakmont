@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import { CssBaseline, Box } from "@mui/material";
 import Navbar from "./components/layout/Navbar/Navbar";
@@ -11,6 +11,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { theme } from "./theme/Theme";
 import StudyPlanDetailPage from "./pages/StudyPlans/StudyPlanDetailPage";
 import { StudyPlansProvider } from "./contexts/StudyPlansContext";
+import CurriculumPage from "./pages/Curriculum/CurriculumPage";
 
 function App() {
   return (
@@ -40,28 +41,25 @@ function App() {
                 }}
               >
                 <Routes>
+                  {/* Public routes */}
                   <Route path="/" element={<LandingPage />} />
-                  <Route
-                    path="/login"
-                    element={
-                      <ProtectedRoute requireAuth={false}>
-                        <Login />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/signup"
-                    element={
-                      <ProtectedRoute requireAuth={false}>
-                        <SignUp />
-                      </ProtectedRoute>
-                    }
-                  />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<SignUp />} />
+                  
+                  {/* Protected routes */}
                   <Route
                     path="/profile"
                     element={
                       <ProtectedRoute requireAuth={true}>
                         <UserProfile />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/curriculum"
+                    element={
+                      <ProtectedRoute requireAuth={true}>
+                        <CurriculumPage />
                       </ProtectedRoute>
                     }
                   />

@@ -24,6 +24,7 @@ import {
   Select,
   MenuItem,
   Menu,
+  Divider,
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material";
 import {
@@ -33,6 +34,7 @@ import {
   MoreVert,
   Delete,
   Edit,
+  MenuBook,
 } from "@mui/icons-material";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
@@ -322,6 +324,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
     }
   };
 
+  const isCurriculumActive = () => {
+    return location.pathname === "/curriculum";
+  };
+
   return (
     <Drawer
       variant="persistent"
@@ -339,6 +345,53 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
       }}
     >
       <Toolbar /> {/* Space for navbar */}
+      {/* Main Navigation Section */}
+      <Box sx={{ px: 2, py: 1 }}>
+        <Typography
+          variant="subtitle2"
+          color="text.secondary"
+          sx={{ fontWeight: 600, mb: 1 }}
+        >
+          Navigation
+        </Typography>
+        <List sx={{ pt: 0 }}>
+          <ListItem disablePadding>
+            <ListItemButton
+              onClick={() => navigate("/curriculum")}
+              selected={isCurriculumActive()}
+              sx={{
+                minHeight: 48,
+                borderRadius: 1,
+                mb: 0.5,
+                "&:hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.04)",
+                },
+                "&.Mui-selected": {
+                  backgroundColor: "rgba(100, 108, 255, 0.12)",
+                  borderRight: "3px solid #646cff",
+                  "& .MuiListItemIcon-root": { color: "#646cff" },
+                  "& .MuiListItemText-primary": {
+                    color: "#646cff",
+                    fontWeight: 600,
+                  },
+                },
+              }}
+            >
+              <ListItemIcon>
+                <MenuBook />
+              </ListItemIcon>
+              <ListItemText
+                primary="Curriculum"
+                primaryTypographyProps={{
+                  variant: "body2",
+                  sx: { fontWeight: 500 },
+                }}
+              />
+            </ListItemButton>
+          </ListItem>
+        </List>
+      </Box>
+      <Divider sx={{ mx: 2 }} />
       {/* Study Plans Section */}
       <Box
         sx={{
