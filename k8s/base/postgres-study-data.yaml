@@ -1,0 +1,76 @@
+# PVC for Study Data DB
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-study-data-pvc
+  namespace: tum-study-planner
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi # Larger storage for course catalogs, degree programs
+---
+# Study Data PostgreSQL Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-study-data
+  namespace: tum-study-planner
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-study-data
+  template:
+    metadata:
+      labels:
+        app: postgres-study-data
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15
+          env:
+            - name: POSTGRES_DB
+              value: "study_data_db"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: tum-study-planner-secrets
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: tum-study-planner-secrets
+                  key: POSTGRES_PASSWORD
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: postgres-study-data-pvc
+---
+# Study Data PostgreSQL Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-study-data-service
+  namespace: tum-study-planner
+spec:
+  selector:
+    app: postgres-study-data
+  ports:
+    - port: 5432
+      targetPort: 5432
+  type: ClusterIP
