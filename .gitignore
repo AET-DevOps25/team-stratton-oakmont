@@ -454,4 +454,4 @@ vault_pass.txt
 ansible/roles/
 
 # Ansible collections
-ansible/collections/k8s/base/secrets.yaml
+k8s/base/secrets.yaml
