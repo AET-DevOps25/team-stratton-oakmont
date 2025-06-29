@@ -205,6 +205,76 @@ export const getStudyProgramById = async (
   return data;
 };
 
+// Delete study plan
+export const deleteStudyPlan = async (id: number): Promise<void> => {
+  const token = localStorage.getItem("jwtToken");
+
+  if (!token) {
+    throw new StudyPlanApiError(
+      401,
+      "NO_TOKEN",
+      "No authentication token found"
+    );
+  }
+
+  const response = await fetch(`${API_BASE_URL}/study-plans/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    const data = await response.json();
+    throw new StudyPlanApiError(
+      response.status,
+      data.error || "DELETE_FAILED",
+      data.message || "Failed to delete study plan"
+    );
+  }
+};
+
+// Rename study plan
+export const renameStudyPlan = async (
+  id: number,
+  name: string
+): Promise<StudyPlanDto> => {
+  const token = localStorage.getItem("jwtToken");
+
+  if (!token) {
+    throw new StudyPlanApiError(
+      401,
+      "NO_TOKEN",
+      "No authentication token found"
+    );
+  }
+
+  const response = await fetch(`${API_BASE_URL}/study-plans/${id}/rename`, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ name }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new StudyPlanApiError(
+      response.status,
+      data.error || "RENAME_FAILED",
+      data.message || "Failed to rename study plan"
+    );
+  }
+
+  return {
+    id: parseInt(data.id),
+    name: data.newName,
+  } as StudyPlanDto;
+};
+
 // Additional utility function for error handling
 export const isApiError = (error: unknown): error is ApiError => {
   return (

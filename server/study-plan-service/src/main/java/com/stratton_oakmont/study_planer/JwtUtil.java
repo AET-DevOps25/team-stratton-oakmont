@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 @Component
 public class JwtUtil {
 
-    @Value("${jwt.secret:mySecretKey}")
+    @Value("${JWT_SECRET:mySecretKey}")
     private String jwtSecret;
 
     private SecretKey getSigningKey() {
@@ -29,7 +29,21 @@ public class JwtUtil {
 
     public Long extractUserIdFromToken(String token) {
         Claims claims = extractAllClaimsFromToken(token);
-        return claims.get("userId", Long.class);
+
+        // Handle both Integer and Long cases
+        Object userIdObj = claims.get("userId");
+
+        System.out.println("DEBUG: userId object type: " + (userIdObj != null ? userIdObj.getClass() : "null"));
+        System.out.println("DEBUG: userId value: " + userIdObj);
+        if (userIdObj instanceof Integer) {
+            return ((Integer) userIdObj).longValue();
+        } else if (userIdObj instanceof Long) {
+            return (Long) userIdObj;
+        } else if (userIdObj instanceof Number) {
+            return ((Number) userIdObj).longValue();
+        }
+    
+        return null;
     }
 
     public String extractUsernameFromToken(String token) {

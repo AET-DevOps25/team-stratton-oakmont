@@ -39,6 +39,8 @@ import {
   getMyStudyPlans,
   getStudyPrograms,
   createStudyPlan,
+  deleteStudyPlan,
+  renameStudyPlan,
   StudyPlanApiError,
 } from "../../../api/studyPlans";
 import type {
@@ -72,6 +74,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
   const [selectedProgramId, setSelectedProgramId] = useState<number | "">("");
   const [studyPrograms, setStudyPrograms] = useState<any[]>([]);
   const [loadingPrograms, setLoadingPrograms] = useState(false);
+  const [creatingPlan, setCreatingPlan] = useState(false);
 
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
@@ -119,6 +122,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
   }, []);
 
   const handleStudyPlanClick = (studyPlanId: number) => {
+    // Prevent navigation if currently editing this plan
+    if (editingPlanId === studyPlanId) {
+      return;
+    }
     // Navigate to study plan detail page
     navigate(`/study-plans/${studyPlanId}`);
   };
@@ -163,6 +170,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
     }
 
     try {
+      setCreatingPlan(true);
       const request: CreateStudyPlanRequest = {
         name: newPlanName.trim(),
         studyProgramId: selectedProgramId as number,
@@ -193,6 +201,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
       } else {
         console.error("Failed to create study plan. Please try again.");
       }
+    } finally {
+      setCreatingPlan(false);
     }
   };
 
@@ -226,34 +236,26 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
     if (!selectedPlanId) return;
 
     try {
-      const token = localStorage.getItem("jwtToken");
-      if (!token) {
-        setError("Authentication failed. Please log in again.");
-        return;
-      }
-
-      const response = await fetch(
-        `http://localhost:8081/api/v1/study-plans/${selectedPlanId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response.ok) {
-        // Remove the deleted plan from local state instead of refetching
-        removeStudyPlan(selectedPlanId);
-        handleMenuClose();
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Failed to delete study plan");
-      }
+      await deleteStudyPlan(selectedPlanId);
+      // Remove the deleted plan from local state instead of refetching
+      removeStudyPlan(selectedPlanId);
+      handleMenuClose();
     } catch (err) {
       console.error("Error deleting study plan:", err);
-      setError("Failed to delete study plan. Please try again.");
+
+      if (err instanceof StudyPlanApiError) {
+        if (err.statusCode === 401) {
+          setError("Authentication failed. Please log in again.");
+        } else if (err.statusCode === 403) {
+          setError(
+            "Access denied. You don't have permission to delete this study plan."
+          );
+        } else {
+          setError(err.message);
+        }
+      } else {
+        setError("Failed to delete study plan. Please try again.");
+      }
     }
   };
 
@@ -261,6 +263,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
     setEditingPlanId(plan.id);
     setEditingPlanName(plan.name);
     handleMenuClose();
+
+    // Navigate to the study plan immediately when starting to rename
+    navigate(`/study-plans/${plan.id}`);
 
     // Use setTimeout to ensure the TextField is rendered before selecting text
     setTimeout(() => {
@@ -277,38 +282,28 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
     }
 
     try {
-      const token = localStorage.getItem("jwtToken");
-      if (!token) {
-        setError("Authentication failed. Please log in again.");
-        return;
-      }
-
-      const response = await fetch(
-        `http://localhost:8081/api/v1/study-plans/${planId}/rename`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ name: editingPlanName.trim() }),
-        }
-      );
-
-      if (response.ok) {
-        // Update local state instead of refetching
-        updateStudyPlan(planId, { name: editingPlanName.trim() });
-        setEditingPlanId(null);
-        setEditingPlanName("");
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Failed to rename study plan");
-        setEditingPlanId(null);
-        setEditingPlanName("");
-      }
+      const updatedPlan = await renameStudyPlan(planId, editingPlanName.trim());
+      // Update local state instead of refetching
+      updateStudyPlan(planId, { name: updatedPlan.name });
+      setEditingPlanId(null);
+      setEditingPlanName("");
     } catch (err) {
       console.error("Error renaming study plan:", err);
-      setError("Failed to rename study plan. Please try again.");
+
+      if (err instanceof StudyPlanApiError) {
+        if (err.statusCode === 401) {
+          setError("Authentication failed. Please log in again.");
+        } else if (err.statusCode === 403) {
+          setError(
+            "Access denied. You don't have permission to rename this study plan."
+          );
+        } else {
+          setError(err.message);
+        }
+      } else {
+        setError("Failed to rename study plan. Please try again.");
+      }
+
       setEditingPlanId(null);
       setEditingPlanName("");
     }
@@ -576,13 +571,20 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
               </FormControl>
             </DialogContent>
             <DialogActions>
-              <Button onClick={() => setCreateModalOpen(false)}>Cancel</Button>
+              <Button
+                onClick={() => setCreateModalOpen(false)}
+                disabled={creatingPlan}
+              >
+                Cancel
+              </Button>
               <Button
                 onClick={handleCreateStudyPlan}
                 variant="contained"
-                disabled={!newPlanName.trim() || !selectedProgramId}
+                disabled={
+                  !newPlanName.trim() || !selectedProgramId || creatingPlan
+                }
               >
-                Create
+                {creatingPlan ? "Creating..." : "Create"}
               </Button>
             </DialogActions>
           </Dialog>
