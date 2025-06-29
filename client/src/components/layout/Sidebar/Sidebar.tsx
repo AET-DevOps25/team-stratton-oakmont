@@ -352,7 +352,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
           color="text.secondary"
           sx={{ fontWeight: 600, mb: 1 }}
         >
-          Navigation
+          Curriculum
         </Typography>
         <List sx={{ pt: 0 }}>
           <ListItem disablePadding>
@@ -362,7 +362,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
               sx={{
                 minHeight: 48,
                 borderRadius: 1,
-                mb: 0.5,
+                mb: 0,
                 "&:hover": {
                   backgroundColor: "rgba(0, 0, 0, 0.04)",
                 },
@@ -381,7 +381,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
                 <MenuBook />
               </ListItemIcon>
               <ListItemText
-                primary="Curriculum"
+                primary="M.Sc. Information Systems"
                 primaryTypographyProps={{
                   variant: "body2",
                   sx: { fontWeight: 500 },
@@ -390,6 +390,18 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
             </ListItemButton>
           </ListItem>
         </List>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{
+            fontStyle: "italic",
+            px: 2,
+            pb: 1,
+            fontSize: "0.7rem",
+          }}
+        >
+          More curriculums coming soon
+        </Typography>
       </Box>
       <Divider sx={{ mx: 2 }} />
       {/* Study Plans Section */}
