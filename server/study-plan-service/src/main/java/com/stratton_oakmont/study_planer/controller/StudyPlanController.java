@@ -21,20 +21,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestController
 @RequestMapping("/api/v1")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:3000"})
 public class StudyPlanController {
 
     private final StudyPlanService studyPlanService;
     private final StudyProgramService studyProgramService;
     private final JwtUtil jwtUtil;
+    private static final Logger logger = LoggerFactory.getLogger(StudyPlanController.class);
 
     @Autowired
     public StudyPlanController(StudyPlanService studyPlanService, StudyProgramService studyProgramService, JwtUtil jwtUtil) {
         this.studyPlanService = studyPlanService;
         this.studyProgramService = studyProgramService;
         this.jwtUtil = jwtUtil;
+        logger.info("LOG: StudyPlanController initialized successfully");
     }
 
     // POST /api/v1/study-plans - Create new study plan
@@ -92,6 +97,8 @@ public class StudyPlanController {
         try {
             // Extract and validate JWT token
             String token = jwtUtil.extractTokenFromHeader(authorizationHeader);
+            System.out.println("token:" + token);
+            logger.info("token: {}", token);
             if (token == null || !jwtUtil.isTokenValid(token)) {
                 Map<String, String> error = new HashMap<>();
                 error.put("error", "INVALID_TOKEN");
@@ -142,6 +149,7 @@ public class StudyPlanController {
         try {
             // Extract and validate JWT token
             String token = jwtUtil.extractTokenFromHeader(authorizationHeader);
+
             if (token == null || !jwtUtil.isTokenValid(token)) {
                 Map<String, String> error = new HashMap<>();
                 error.put("error", "INVALID_TOKEN");

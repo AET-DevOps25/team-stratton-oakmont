@@ -9,7 +9,8 @@ export default defineConfig(({ mode }) => {
     // Development server configuration
     server: {
       port: 3000,
-      host: true, // Allow external connections
+      // TODO [ ]: decide whether set to true or localhost
+      host: true, // Allow external connections: true - Don't allow: localhost
       proxy: {
         "/api/auth": {
           target: "http://user-auth-service:8083",
