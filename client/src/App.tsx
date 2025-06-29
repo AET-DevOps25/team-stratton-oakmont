@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import { CssBaseline, Box } from "@mui/material";
 import Navbar from "./components/layout/Navbar/Navbar";
@@ -43,9 +48,25 @@ function App() {
                 <Routes>
                   {/* Public routes */}
                   <Route path="/" element={<LandingPage />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/signup" element={<SignUp />} />
-                  
+
+                  <Route
+                    path="/login"
+                    element={
+                      <ProtectedRoute requireAuth={false}>
+                        <Login />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  <Route
+                    path="/signup"
+                    element={
+                      <ProtectedRoute requireAuth={false}>
+                        <SignUp />
+                      </ProtectedRoute>
+                    }
+                  />
+
                   {/* Protected routes */}
                   <Route
                     path="/profile"
