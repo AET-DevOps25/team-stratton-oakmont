@@ -37,12 +37,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: tum-study-planner-secrets
-                  key: POSTGRES_USER
+                  key: STUDY_DATA_POSTGRES_USER
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: tum-study-planner-secrets
-                  key: POSTGRES_PASSWORD
+                  key: STUDY_DATA_POSTGRES_PASSWORD
           ports:
             - containerPort: 5432
           volumeMounts:
