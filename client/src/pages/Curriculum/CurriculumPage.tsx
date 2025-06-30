@@ -582,7 +582,15 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
         </Box>
 
         {/* Program Information */}
-        <Paper sx={{ p: 3, mb: 4, backgroundColor: "#2a2a2a", color: "white" }}>
+        <Paper
+          sx={{
+            p: 3,
+            mb: 4,
+            backgroundColor: "#2a2a2a",
+            color: "white",
+            borderRadius: 3,
+          }}
+        >
           <Typography variant="h6" sx={{ mb: 2 }}>
             Program Information
           </Typography>
@@ -627,7 +635,15 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
         </Paper>
 
         {/* Program Structure Overview */}
-        <Paper sx={{ p: 3, mb: 4, backgroundColor: "#2a2a2a", color: "white" }}>
+        <Paper
+          sx={{
+            p: 3,
+            mb: 4,
+            backgroundColor: "#2a2a2a",
+            color: "white",
+            borderRadius: 3,
+          }}
+        >
           <Typography variant="h6" sx={{ mb: 3 }}>
             Program Structure Overview
           </Typography>
@@ -636,6 +652,7 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
               <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2.4 }} key={category}>
                 <Card
                   sx={{
+                    borderRadius: 3,
                     backgroundColor:
                       selectedCategory === category
                         ? getCategoryColor(category)
@@ -653,6 +670,7 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                           ? getCategoryColor(category)
                           : "#444",
                       transform: "translateY(-2px)",
+                      border: `2px solid ${getCategoryColor(category)}`,
                     },
                   }}
                   onClick={() => handleCategoryFilter(category)}
@@ -689,7 +707,13 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
         {/* Subcategory Selection for Cross-Disciplinary Electives */}
         {selectedCategory === "Cross-Disciplinary Electives" && (
           <Paper
-            sx={{ p: 3, mb: 4, backgroundColor: "#2a2a2a", color: "white" }}
+            sx={{
+              p: 3,
+              mb: 4,
+              backgroundColor: "#2a2a2a",
+              color: "white",
+              borderRadius: 3,
+            }}
           >
             <Typography variant="h6" sx={{ mb: 3 }}>
               Elective Categories
@@ -755,6 +779,7 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                             selectedSubcategory === subcat ? "#646cff" : "#555",
                           transform: "translateY(-2px)",
                         },
+                        borderRadius: 3,
                       }}
                       onClick={() => {
                         if (selectedSubcategory === subcat) {
@@ -808,7 +833,13 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
             selectedSubcategory as keyof typeof subSubcategories
           ] && (
             <Paper
-              sx={{ p: 3, mb: 4, backgroundColor: "#2a2a2a", color: "white" }}
+              sx={{
+                p: 3,
+                mb: 4,
+                backgroundColor: "#2a2a2a",
+                color: "white",
+                borderRadius: 3,
+              }}
             >
               <Typography variant="h6" sx={{ mb: 3 }}>
                 {selectedSubcategory} - Specific Areas
@@ -837,6 +868,7 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                               : "#666",
                           transform: "translateY(-2px)",
                         },
+                        borderRadius: 3,
                       }}
                       onClick={() => {
                         setSelectedSubSubcategory(
@@ -878,7 +910,14 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
         {/* Enhanced Search and Filter Bar */}
         <Box sx={{ mb: 3 }}>
           {/* Search Bar Row */}
-          <Box sx={{ display: "flex", gap: 2, alignItems: "center", mb: 2 }}>
+          <Box
+            sx={{
+              display: "flex",
+              gap: 2,
+              alignItems: "center",
+              mb: 2,
+            }}
+          >
             <TextField
               placeholder="Search courses by name, code, category, or description..."
               value={searchQuery}
@@ -894,6 +933,7 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                 flexGrow: 1,
                 "& .MuiOutlinedInput-root": {
                   backgroundColor: "#2a2a2a",
+                  borderRadius: 3,
                   "& fieldset": { borderColor: "#555" },
                   "&:hover fieldset": { borderColor: "#646cff" },
                   "&.Mui-focused fieldset": { borderColor: "#646cff" },
@@ -982,7 +1022,9 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
         </Box>
 
         {/* Courses Table */}
-        <Paper sx={{ backgroundColor: "#2a2a2a", color: "white" }}>
+        <Paper
+          sx={{ backgroundColor: "#2a2a2a", color: "white", borderRadius: 3 }}
+        >
           <Box sx={{ p: 2, borderBottom: "1px solid #444" }}>
             <Typography variant="h6">Courses</Typography>
           </Box>
