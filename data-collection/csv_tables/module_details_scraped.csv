@@ -1,0 +1,743 @@
+﻿ID,name,credits,version,valid,responsible,organisation,note,module_level,abbreviation,subtitle,duration,occurrence,language,related_programs,total_hours,contact_hours,self_study_hours,description_of_achievement_and_assessment_methods,exam_retake_next_semester,exam_retake_at_the_end_of_semester,prerequisites_recommended,intended_learning_outcomes,content,teaching_and_learning_methods,media,reading_list,curriculum_ID,transformed_link,extraction_method
+IN2109,Master's Thesis,30.0,-,Always,"Bichler, Martin",Academic Programs Informatik,-,Master,-,-,one semester,winter/summer semester,German/English,-,900.0,,900.0,"The Master’s Thesis is a research paper, which lasts for at most six month, during which students work on a specific and complex topic from information systems. They are able to formulate the scientific discourse and based on it develop and criticize a specific research question. The students have covered the topic with the expert knowledge and methodological skills acquired during their studies. This research elaboration is completed with a presentation of its content and results. The examination proves that participants are capable of analyzing and solving a demanding scientific problem in single person work and defend their results in front of third parties. The Master’s Thesis is supervised by a professor of the Information Systems program from the faculty of Informatics at TUM. It should be between 50 and 100 pages.",Yes,No,"70 percent of the credits from required, required elective, and  elective modules","After the elaboration of the master's thesis the graduates know how to rapidly and independently become acquainted with a subject area in the field of Information Systems. They have the ability, based on a specific problem, to analyze and evaluate all important aspects of those parts in Information Systems which are necessary for finding a solution. They can span, describe, and categorize the space of possible solutions, and choose a well-founded solution path according to given or elaborated criteria. They are able to develop a solution, and analyze and evaluate it precisely. Furthermore they know how to write a professional documentation and description of the developed solution.","Under guidance students familiarize themselves with an area in Information Systems. They are provided with a problem from this area that is still quite general, i.e. not yet specified. They have to investigate and evaluate different approaches to solve the problem, and decide for one path which is then to be executed. The accompanying elaboration summarizes the main aspects of the subject area, discusses the different ways to solve the problem, justifies the decision made, and describes the elaborated solution.Under guidance students familiarize themselves with an area in Information Systems. They are provided with a problem from this area that is still quite general, i.e. not yet specified. They have to investigate and evaluate different approaches to solve the problem, and decide for one path which is then to be executed. The accompanying elaboration summarizes the main aspects of the subject area, discusses the different ways to solve the problem, justifies the decision made, and describes the elaborated solution.","Students identify and analyze a specific problem from a branch of the field of Information Systems in supervised single person work. Consecutively they evaluate potential solution processes and then construct their own solution. This demands the study of the respective literature and the summary and complementation of existing scientific works. In regular meetings the students constructively criticize and productively implement changes to their own work together with their supervisor. Moreover, part of the Masther’s Thesis might be the creation, implementation and evaluation of an own experiment or new case study. Here students particularly train their technical abilities. The contents and results of the research elaboration are summarized in an independently developed presentation and defended in front of third parties. Students also learn to work under time pressure.",PowerPoint and PC,Literature is provided by the supervising professor.,2,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/458129/206?$ctx=lang=en&$scrollTo=toc_details,Browser
+IN2309,Advanced Topics of Software Engineering,8.0,-,from Winter semester 2014/15,"Pretschner, Alexander",Department of Computer Science,-,Master,-,-,one semester,winter semester,German/English,-,240.0,90.0,150.0,"In the written exam (100 minutes) students should prove to be able to identify a given problem and find solutions within limited time. The examination will completely cover the content of the lectures. The anwers will require own formulations. In addition, some modeling may be required.",No,Yes,Introduction to Software Engineering (IN0006),"At the end of the class, students understand the central goals and methods of requirements engineering. They know all relevant software quality attributes. They know how to elicit, specify and manage respective requirements; how they are reflected in architectures and, conversely, how architecture influences these attributes; how requirements, architectures and code can be assessed w.r.t. these attributes; and what the influence of the development process is. They can apply this knowledge in smaller projects in practice.","Developing large software systems necessitates tightly intertwining and synchronizing both the activities in the development process and the generated artifacts. Central success criteria include
+- Iterative elicitation and implementation of the requirements;
+- Architecture as the backbone of development; and
+- Mastering quality in its different facets.
+This class on  Advanced Software Engineering  demonstrates how requirements engineering, specification, architecture, detailed design, coding, software quality, and quality assurance interweave. Specifically, we discuss how  non-functional  requirements are reflected in the architecture; which tradeoffs exist with functional requirements as well as external and internal quality attributes; and how these requirements can be formulated and verified by tests.
+We will consider:
+1.	Requirements Engineering: Techniques for elicitation, analysis, prioritization, specification, validation of functional and non-functional requirements; anti-requirements.
+2.	Software Architecture: Principles, views&styles, architecture documentation, patterns, frameworks, reference architectures, product lines, analysis of an architecture s quality and of trade-offs.
+3.	Software Quality: Internal and external quality attributes, among others: maintainability, testability, understandability and performance, security, availability; software metrics
+4.	Quality Assurance: Assessment, prioritization, conflict resolution and reviews of requirements; assessments of architectures w.r.t. internal and external quality attributes; tests and reviews for functional and non-functional requirements in the code; fault models.
+5.	Influence of the development process.Developing large software systems necessitates tightly intertwining and synchronizing both the activities in the development process and the generated artifacts. Central success criteria include
+- Iterative elicitation and implementation of the requirements;
+- Architecture as the backbone of development; and
+- Mastering quality in its different facets.
+This class on  Advanced Software Engineering  demonstrates how requirements engineering, specification, architecture, detailed design, coding, software quality, and quality assurance interweave. Specifically, we discuss how  non-functional  requirements are reflected in the architecture; which tradeoffs exist with functional requirements as well as external and internal quality attributes; and how these requirements can be formulated and verified by tests.
+We will consider:
+1.	Requirements Engineering: Techniques for elicitation, analysis, prioritization, specification, validation of functional and non-functional requirements; anti-requirements.
+2.	Software Architecture: Principles, views&styles, architecture documentation, patterns, frameworks, reference architectures, product lines, analysis of an architecture s quality and of trade-offs.
+3.	Software Quality: Internal and external quality attributes, among others: maintainability, testability, understandability and performance, security, availability; software metrics
+4.	Quality Assurance: Assessment, prioritization, conflict resolution and reviews of requirements; assessments of architectures w.r.t. internal and external quality attributes; tests and reviews for functional and non-functional requirements in the code; fault models.
+5.	Influence of the development process.","This module comprises lectures and accompanying tutorials. The contents of the lectures will be taught by talks and presentations. Students will be encouraged to study literature and to get involved with the topics in depth. In the tutorials, concrete problems will be solved - partially in teamwork - and selected examples will be discussed.",Lecture with slides,"McConnell, Code Complete: A Practical Handbook of Software Construction, 2nd edition,  Microsoft, 2004
+Summerville, Software Engineering 9, Prentice Hall, 2010
+Brooks, The Mythical Man Month, Addison-Wesley Longman, 1995
+Rombach, Endres: A Handbook of Software and Systems Engineering, Addispn Wesley, 2003
+Bass et al., Software Architecture in Practice, Addison Wesley, 3rd edition, Addison Wesley, 2012
+Clements et al., Documenting Software Architectures, 2nd edition, Addison Wesley, 2010
+Clements et al., Evaluating Software Architectures, Addison Wesley, 2001
+Reussner, Hasselbring, Handbuch der Software-Architektur (in German), 2006
+Jackson, Problem Frames, ACM Press, 2000
+Sommerville, Sawyer: Requirements Engineering: A Good Practice Guide, John Wiley, 1997
+Lamsweerde, Requirements Engineering: From System Goals to UML Models to Software Specifications, John Wiley, 2009
+Goucher, Riley, Beautiful Testing, OReilly, 2009
+Wagner, Software Product Quality Control, Springer, 2013
+
+More references will be provided in class.",4,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1060130/206?$ctx=lang=en&$scrollTo=toc_details,Browser
+IN2105,Business Process Technologies and Management,5.0,v2,from Winter semester 2021/22,Rinderle,Department of Computer Science,-,Master,-,-,one semester,summer semester,English,-,150.0,60.0,90.0,"The examination consists of a written 90 minutes exam. The exam shall ensure that students understand and can apply terminology, challenges, and concepts of business process technologies. To reflect the understanding as well as the practical application, the examination comprises a question-oriented and an application-oriented part. The latter is based on the topics addressed by the exercises such as process mining algorithms and modeling of process choreographies.",No,Yes,"Bachelor
+IN0021 Introduction to Information Systems","After successful completion of the module students are familiar with the different perspectives of business processes, i.e., control flow, data flow, and resources. Students can model these perspectives and implement them within a process-oriented application. The students understand how business process are monitored during runtime and how execution data (i.e., event-based data) is logged during process execution. Based on the logged process data, the students can apply basic process mining algorithms and interpret the results. Moreover, students are familiar with correctness and compliance notions for business processes.  The students understand which and how side effects of changes and adaptations of running business process instances arise and can be controlled. Finally, students are able to model partner-spanning processes (so called process choreographies).","The course focuses on advanced aspects of business process management and business process technologies. Starting from the process-oriented development of applications the following topics are discussed:
+- Management of resources and work lists
+- Logging and monitoring of business process instances
+- Introduction to process mining
+- Business process compliance
+- Runtime adaptations of business process instances and business process evolution
+- Modeling and correctness aspects of process choreographiesThe course focuses on advanced aspects of business process management and business process technologies. Starting from the process-oriented development of applications the following topics are discussed:
+- Management of resources and work lists
+- Logging and monitoring of business process instances
+- Introduction to process mining
+- Business process compliance
+- Runtime adaptations of business process instances and business process evolution
+- Modeling and correctness aspects of process choreographies","The teaching format features a lecture and a content-aligned tutorial. The lecturer present the content of the lecture. In addition, videos of the lecture content are provided on the website of the lecture. The videos serve as means to repeat and deepen the presented contents. Moreover, the videos can be used for in a „flipped-classroom“ mode. The lecture content consists of the theoretical background of process-oriented technologies and business process management as well as their illustration based on practical examples from real-world applications and projects. The intention is to enable students to understand and assess process-oriented problems in a conceptual way as well as in an application context. The tutorial consists of deepening exercises on the theoretical parts of the lecture and of implementation exercises. The exercises are worked on in single person. The tutorial aims at enabling students in understanding and applying the concepts. Moreover, an overview on existing tools should be provided to students. Through the implementation exercises the students understand the paradigm of process-oriented application development and its application in practice.","Slides, videos, exercises, discussion","- M. Weske: Business Process Management - Concepts, Languages, Architectures, Third Edition. Springer 2019, ISBN 978-3-662-59431-5
+- W. Grossmann, S. Rinderle-Ma: Fundamentals of Business Intelligence. Data-Centric Systems and Applications, Springer 2015, ISBN 978-3-662-46530-1
+- M. Reichert, B. Weber: Enabling Flexibility in Process-Aware Information Systems - Challenges, Methods, Technologies. Springer 2012, ISBN 978-3-642-30408-8
+- Wil M. P. van der Aalst: Process Mining - Data Science in Action, Second Edition. Springer 2016, ISBN 978-3-662-49850-7
+- Zusätzlich wird am Ende jeder Vorlesung relevante Literatur zur Verfügung gestellt.",6,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/2839421/206?$ctx=lang=en&$scrollTo=toc_details,Browser
+IN2087,Software Engineering for Business Applications - Master's Course: Web Application Engineering,8.0,2,Always,"Matthes, Florian",Department of Computer Science,-,Master,-,-,one semester,summer semester,English,-,240.0,60.0,180.0,"Type of Assessment: project work
+
+The student’s performance is assessed based on several deliverables and their presentations in the context of a project work assignment including three milestones.
+1. At first, students develop an online-based business idea and further develop it into a business model. Hereby, an appropriate project planning and task distribution must be carried out and justified. In addition, the students structure and evaluate their business idea using methods like the Business Model Canvas and the Value Proposition Canvas. Finally, the results are presented. (10%)
+2. Once the business model has been developed, four concrete use cases are derived. In addition, appropriate patterns for the design of the web application must be selected and applied in concrete mockups. The technical architecture should be documented using UML diagrams. The results are presented. 
+(15%)
+3. Based on the mockups and the technical concepts, the students develop a prototype of the web application including all defined use cases. Modern web frameworks as discussed in the lecture are integrated into the application, encompassing both frontend and backend aspects. The final assessment includes the development of the final prototype and the presentation of the results. In addition, the students have to answer questions regarding their web application and the underlying theoretical concepts. The students must ensure good teamwork and team communication. (75%)
+
+Workload:
+The development of a modern web application represents the biggest effort in this module. Hereby, the students have to acquire the necessary knowledge to accomplish this task. Learning progress is supported through tutorials and feedback 
+appointments with mentors. Additional workload arises from the preparation of the submissions and presentations.",No,No,"Knowledge and skills at the bachelor s level (Informatics/Business Informatics) in software engineering, programming and databases","Upon completion of this module, students are able to design, plan and implement state-of-the-art web applications independently. They are skilled in identifying, explaining and developing business models for the web, selecting and applying patterns for web application design. Furthermore, students are able to explain a user-centered, iterative development process and apply it in a collaborative environment. Students are able to explain and select state-of-the-art technologies for the implementation of web applications. This encompasses both client- and server-side aspects. Upon completion of the module, students are able to explain web based integration techniques and present a web development project and it’s result to an audience","1. Web Site Genres
+-- Business Models on the Web
+-- Web 2.0 and Social Software
+-- Anything as a Service (XaaS)
+2. Web Site Design
+-- Key Issues of Customer-Centered Web Design
+-- An Overview of Web Design Patterns
+-- Knowing Your Customers
+-- Involving Customers with Iterative Design
+-- Processes for Developing Customer-Centered Sites
+-- Additional Viewpoints and Aspects
+3. Patterns for Web Site Design
+-- Explaining Your Value Proposition
+-- Creating a Navigation Framework
+-- Basic and Advanced E-Commerce
+-- Designing Effective Page Layouts
+-- Making Site Search Fast and Effective
+-- Making Navigation Easy
+-- Speeding Up Web Sites
+-- Supporting a Wide Range of Devices (Responsive Design)
+-- Integrating Multiple Touchpoints (Mobile Apps, Progressive Web Apps, and Hybrid Apps)
+-- Integrating Independently Developed Web Services, Content, and Processes
+4. Fundamental Concepts of Single-Page Web Applications
+-- HTML Concepts and their Evolution
+-- CSS Concepts and their Link to HTML
+-- JavaScript Basics
+-- SVG and Canvas
+-- Web Components
+-- Single-Page Applications
+-- Component-based Frameworks
+5. Developing Single-Page Applications with a Specific Web Application Framework
+-- Web Application Framework Comparison
+-- Basic Concepts of the Chosen Framework
+-- State Management
+-- Navigation & Routing
+-- Client-Server Communication
+-- Consuming RESTful Service
+6. Building REST-Enabled Back-End Service
+-- Target Architecture and Development Environment
+-- Event-Driven Architecture and Asynchronous I/O Operations
+-- Creating REST Interfaces
+-- Using Document-Oriented Database Storage
+-- Enabling User Authentication on the Web Service
+7. Advanced Topics in Web Application Engineering
+-- Real-Time Web Applications
+-- Virtual DOM
+-- Hybrid Web Applications
+-- Other Web Frameworks
+-- Traditional Web Stacks, Server-Side Rendering
+8. High Performance Web Applications
+-- Database Options for Web Applications
+-- Scaling Web Applications1. Web Site Genres
+-- Business Models on the Web
+-- Web 2.0 and Social Software
+-- Anything as a Service (XaaS)
+2. Web Site Design
+-- Key Issues of Customer-Centered Web Design
+-- An Overview of Web Design Patterns
+-- Knowing Your Customers
+-- Involving Customers with Iterative Design
+-- Processes for Developing Customer-Centered Sites
+-- Additional Viewpoints and Aspects
+3. Patterns for Web Site Design
+-- Explaining Your Value Proposition
+-- Creating a Navigation Framework
+-- Basic and Advanced E-Commerce
+-- Designing Effective Page Layouts
+-- Making Site Search Fast and Effective
+-- Making Navigation Easy
+-- Speeding Up Web Sites
+-- Supporting a Wide Range of Devices (Responsive Design)
+-- Integrating Multiple Touchpoints (Mobile Apps, Progressive Web Apps, and Hybrid Apps)
+-- Integrating Independently Developed Web Services, Content, and Processes
+4. Fundamental Concepts of Single-Page Web Applications
+-- HTML Concepts and their Evolution
+-- CSS Concepts and their Link to HTML
+-- JavaScript Basics
+-- SVG and Canvas
+-- Web Components
+-- Single-Page Applications
+-- Component-based Frameworks
+5. Developing Single-Page Applications with a Specific Web Application Framework
+-- Web Application Framework Comparison
+-- Basic Concepts of the Chosen Framework
+-- State Management
+-- Navigation & Routing
+-- Client-Server Communication
+-- Consuming RESTful Service
+6. Building REST-Enabled Back-End Service
+-- Target Architecture and Development Environment
+-- Event-Driven Architecture and Asynchronous I/O Operations
+-- Creating REST Interfaces
+-- Using Document-Oriented Database Storage
+-- Enabling User Authentication on the Web Service
+7. Advanced Topics in Web Application Engineering
+-- Real-Time Web Applications
+-- Virtual DOM
+-- Hybrid Web Applications
+-- Other Web Frameworks
+-- Traditional Web Stacks, Server-Side Rendering
+8. High Performance Web Applications
+-- Database Options for Web Applications
+-- Scaling Web Applications","Lecture (with embedded tutorials), supervised project work in small groups (max. 4 members) and presentation of the project results.",Lecture with digital slides and system demonstration,"- Axel Rauschmayer: Exploring ES6, Ecmanauten, http://exploringjs.com/es6/
+- Axel Rauschmayer: Setting Up ES6, Ecmanauten, https://leanpub.com/setting-up-es6/
+- Alexander Osterwalder, Yves Pigneur: Business model generation: A Handbook for Visionaries, Game Changes, and Challenges, John Wiley & Sons 2010
+- D. Roam: The Back of the Napkin: Solving Problems and Selling Ideas with Pictures, Portfolio Hardcover, 2012
+- Steve Krug: Don't make me think! Web Usability: Das intuitive Web, New Riders Press; 2 edition, 2005
+- Robert Hoekman: Designing the Obvious. A Commonsense Approach to Web Application Design, New Riders Press; 1 edition, 2006
+- David Flanagan: JavaScript: The Definitive Guide, O’Reilly Media, 2011
+- Doublas Crockford :JavaScript, http://javascript.crockford.com/
+- React Official Tutorial, ReactJS.org, https://reactjs.org/tutorial/tutorial.html
+- Eve Porcello : React.js Essential Training, Lynda.com, 2017, https://www.lynda.com/React-js-tutorials/React-js-Essential-Training/496905-2.html (kostenloser Zugang for TUM Studenten)
+- Express - Web Framework for Node.js, http://expressjs.com/
+- Cal Henderson: Building Scalable Web Sites, O´Reilly; 2006
+- Eric Vliest, Danny Ayers, Erik Bruchez, Joe Fawcett, Alessandro Vernet: Web 2.0 Programming, Wiley Publishing, 2007",7,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1452141/206?$ctx=lang=en&$scrollTo=toc_details,Browser
+IN2128,Practical Course Enterprise Software,10.0,-,Always,Rinderle,Department of Computer Science,-,Master,-,-,one semester,winter/summer semester,German/English,-,300.0,90.0,210.0,"Type of Assessment: project work
+The assessment consists of homework and a group task.
+The homework gives the participants an understanding of development tools and enterprise applications. Furthermore, by working on the homework, the participants understand the architecture of modern enterprise software and derive technological and economic requirements for their own solutions.
+As part of a group task, participants shall demonstrate that they can work on more complex tasks in a team, based on the results of the homework. In particular, participants shall demonstrate that they are able to develop their own solutions based on the identified requirements and are able to implement them with current development tools.
+The module grade consists of the evaluation of homework and group task.",Yes,No,"IN0006 Introduction to Software Engineering, IN0008 Fundamentals of Databases, IN2085 Software Engineering for Business Applications - Bachelor's Course, IN2088 Software Architectures, IN9012 Enterprise Information Systems (helpful)","After the participation in the module, students will be able to understand the architecture of modern enterprise software and to model and program their own extensions.
+Participants are able to assess technological and economic requirements in terms of feasibility within the existing enterprise software and develop their own solutions.
+Participants are able to use current development tools for the design, implementation and analysis of their own applications.
+The participants are able to carry out a complex project in a team.","The module consists of a theoretical and a practical part. In the theoretical part, concepts and domain-specific features of enterprise applications are explained and common development tools from computer science are introduced. Herein, technical architectures, underlying business processes and methodological principles will be explained. Additionally, in the practical part, the theoretical content is explored in more detail through programming exercises and further individual assignments. Especially, this focuses on the application of learned concepts on different tasks, as well as acquiring additional concepts in order to solve given tasks. Among other things, this includes the ability to identify problems, elaborate requirements, as well as to implement and evaluate one’s ideas. Students practice to work independently and critically reflect upon their own results, as well as to present their ideas, concepts and results in various relevant forms.The module consists of a theoretical and a practical part. In the theoretical part, concepts and domain-specific features of enterprise applications are explained and common development tools from computer science are introduced. Herein, technical architectures, underlying business processes and methodological principles will be explained. Additionally, in the practical part, the theoretical content is explored in more detail through programming exercises and further individual assignments. Especially, this focuses on the application of learned concepts on different tasks, as well as acquiring additional concepts in order to solve given tasks. Among other things, this includes the ability to identify problems, elaborate requirements, as well as to implement and evaluate one’s ideas. Students practice to work independently and critically reflect upon their own results, as well as to present their ideas, concepts and results in various relevant forms.",Practical course,"Powerpoint slides, collection of exercises, flip chart notes, web-bases message forum","Krcmar, H. (2010): Informationsmanagement. 5., neu überarb. und erw. Aufl., Springer, Berlin [u.a.] 2010. 
+Keller, H., Krüger, S. (2006): ABAP Objects: ABAP-Programmierung mit SAP NetWeaver. 3., neu überarb. und erw. Aufl., SAP Press, Bonn 2006.
+Andres Bauer, Holger Günzel (2006): Data Warehouse Systeme - Architektur, Entwicklung, Anwendung, 2. neu überarb. und erw. Aufl., dpunkt Verlag, Heidelberg, 2006.",9,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/457036/206?$ctx=lang=en&$scrollTo=toc_details,Browser
+IN2129,Practical Course Software Engineering for Business Information Systems,10.0,-,Always,"Matthes, Florian",Department of Computer Science,-,Master,-,-,one semester,winter semester,English,-,300.0,90.0,210.0,"Type of examination: Project work
+The module examination consists of a project work in which the students realize an innovative web application in small groups. The results are evaluated on the basis of the criteria of design, programming technique, use of UI libraries, database design and justification of the selection of the respective technologies. Furthermore, the teamwork of the individual students is assessed during the project work. The result of the application is then presented to an audience, which also contributes to the assessment.
+1. First presentation (15-20 minutes): 12.5%
+2. Final presentation (15-20 minutes): 12.5%
+3. Final application (software application): 75%",No,No,IN2087 Software Engineering for Business Applications - Master's Course,"After participating in the module, students are able to apply methods of object-oriented analysis and object-oriented design in the development of a web application in teams. After attending, students have the necessary competence to use web applications with up-to-date programming languages and tools (Libraries, web frameworks and databases). In addition, students are able to evaluate the concepts, techniques and tools for customer-oriented development of innovative web applications and can apply these when creating a corresponding system. In addition, after participating in the module, students have the ability to implement a system in teams and present the results.","The students realize an innovative web-application of medium complexity in JavaScript, CSS, HTML, etc. in small groups. For web applications, they use purposeful libraries and frameworks for web visualization, implementation of application logic and persistent data storage.
+The phases of requirement analysis and design are performed with the help of UML. The students are responsible for project- and quality management. The regular presentation of the project progress is part of the project.The students realize an innovative web-application of medium complexity in JavaScript, CSS, HTML, etc. in small groups. For web applications, they use purposeful libraries and frameworks for web visualization, implementation of application logic and persistent data storage.
+The phases of requirement analysis and design are performed with the help of UML. The students are responsible for project- and quality management. The regular presentation of the project progress is part of the project.","Practical course:
+The students develop the web application in an iterative and incremental process. The project goal is defined by industry partners or scientific staff. A scientific supervisor assumes the role of coach and is available for technical and organizational questions. At regular meetings, the intermediate results of the project are presented to the industrial partner or the scientific employee as project owner.","Slide show, standard software engineering tools (IDE, configuration management, build management, ...)","[Os10] A. Osterwalder, Y. Pigneur: Busines Model Generation: A Handbook for Visionaries, Game Changes, and Challenges, John Wiley & Sons, 2010
+[Ro09] D. Roam: The Back of the Napkin: Solving Problems and Selling Ideas with Pictures, Portfolio Hardcover, 2009
+[Duy07] D. K. Van Duyne, J. A. Landay, J. I. Hong: The design of sites, Prentice Hall Professional, 2007
+[Kru05] S. Krug: Don't make me think! Web Usability: Das intuitive Web, New Riders Press, 2005
+[Hoe06] R. Hoekman: Designing the Obvious. A Commonsense Approach to Web Application Design, New Riders Press, 2006
+[Ba03] P. Baldi, P. Frasconi, P. Smyth: Modeling the Internet and the Web, Wiley, 2003
+[Me06] E. Mendes, N. Mosley: Web Engineering, Springer, 2006
+[Ja04] S. Jablonski, I. Petrov, C. Meiler, U. Mayer: Guide to Web Application and Platform Architectures, Springer, 2004",10,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/457038/206?$ctx=lang=en&$scrollTo=toc_details,Browser
+IN2130,Practical Course Realization of Process-oriented Applications,10.0,v2,from Summer semester 2021,Rinderle,Department of Computer Science,-,Master,-,-,one semester,winter/summer semester,German/English,-,300.0,90.0,210.0,"Type of Assessment: project work
+The assessment consists of a process-oriented application development project with milestones and their presentation. The description of the project phases (milestones) are provided to students on basis of consecutive exercise descriptions. Based on the exercise descriptions the envisioned process-oriented application is developed and presented in a modular and step-by-step way. Developing the process-oriented application is conducted using standard process modeling notation Business Process Modeling and Notation for process design and a open source process engine. The realization of the process-oriented application comprises the development and invocation of web services. 
+The project goals can be generic (e.g., developing a work list component) or realizing a specific application scenario (e.g., implementing a production process). The module demonstrates the students’ understanding of (a) what process-oriented application development means, (b) which benefits can be achieved by process-oriented development, (c) which challenges arise in practice, and (d) how different project phases can be presented to stakeholders. The overall grading of the module is based on the grading the process-oriented application prototype (75%) and the milestone presentation (25%).",Yes,No,"IN0006 Introduction to Software Engineering, IN0008 Fundamentals of Databases, IN2085 Software Engineering for Business Applications - Bachelor's Course, IN2088 Software Architectures","After participating in the module, students will be able to
+‒	describe and model process logic using BPMN.
+‒	verify that the process logic is executable.
+‒	execute the described process logic using a open source process engine.
+‒	realize the invocation of human and computing resources.
+‒	apply message correlation patterns for the asynchronous communication with/between process-oriented systems. 
+‒	parse and transform BPMN-based process models. 
+‒	reflect and realize granularity concepts when realizing specific application scenarios, for example, in manufacturing, how to deal with sensors, tooling machines, and robots. 
+‒	present their development project based on the milestones to different stakeholders.","The module starts with introducing the concepts of process-oriented application development, in particular, on the design, verification, implementation, and execution of processes. Moreover, real-world example from different application scenarios are demonstrated. The conceptual part is then practically realized and deepened by the students, including process modeling using BPMN, programming of web services, programming of stand-alone tools for process verification and transformation (e.g., based on Petri Nets), application of a process engine (mainly cpee.org), usage of standards such as OPC-UA, XES, and techniques from the XML family. The students can choose the programming language. The practical project part extends the basic concepts particularly with respect to advanced aspects of process-oriented applications such as worklist concepts and with respect to challenges from application domains, e.g., invoking sensors and robots as in manufacturing. The students gain insights into concepts and experiences with the independent development of process-oriented applications. This also refers to the presentation of the project results.The module starts with introducing the concepts of process-oriented application development, in particular, on the design, verification, implementation, and execution of processes. Moreover, real-world example from different application scenarios are demonstrated. The conceptual part is then practically realized and deepened by the students, including process modeling using BPMN, programming of web services, programming of stand-alone tools for process verification and transformation (e.g., based on Petri Nets), application of a process engine (mainly cpee.org), usage of standards such as OPC-UA, XES, and techniques from the XML family. The students can choose the programming language. The practical project part extends the basic concepts particularly with respect to advanced aspects of process-oriented applications such as worklist concepts and with respect to challenges from application domains, e.g., invoking sensors and robots as in manufacturing. The students gain insights into concepts and experiences with the independent development of process-oriented applications. This also refers to the presentation of the project results.","Practical course consisting of supervised single projects; students design and implement a process-oriented application based on well-defined mile-stones. This enables students to understand (i) how the process-oriented paradigm differs from classical application development, (ii) how the process-oriented paradigm can support modular software developments, and (iii) which effects on performance and realization are to be expected.  
+The practical course also enables students to explore and visualize the interface of the process-oriented paradigm to classical data analysis and to develop analyses based on annotated process models.","Videos, slides, project descriptions, website with forum, screen sharing","‒	Mathias Weske: Business Process Management - Concepts, Languages, Architectures, Third Edition. Springer 2019, ISBN 978-3-662-59431-5, pp. 1-417
+‒	www.bpmn.org
+‒	https://cpee.org/ 
+‒	Jürgen Mangler, Florian Pauker, Stefanie Rinderle-Ma, Matthias Ehrendorfer: centurio.work - Industry 4.0 integration assessment and evolution. BPM (Industry Forum) 2019: 106-117
+‒	Juergen Mangler, Stefanie Rinderle-Ma: CPEE - Cloud Process Execution Engine. BPM (Demos) 2014: 51",11,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/2862515/206?$ctx=lang=en&$scrollTo=toc_details,Browser
+CIT423002,AI Testing,5.0,-,from Winter semester 2024/25,"Stocco, Andrea",Department of Computer Science,-,Bachelor/Master,-,-,one semester,winter semester,English,-,150.0,60.0,90.0,"The assessment is by means of a written exam of 90 minutes. The assignments assess the theoretical and practical knowledge about the techniques required to test AI-based systems.
+The assignments which refer to the theory assess that the fundamental concepts and algorithms concerning underfitting/overfitting/data quality are understood and can be applied to small example.",No,Yes,"- Basics of CS
+- Basics of software engineering and software testing
+- Basics of artificial intelligence
+
+IN0006 Introduction to Software Engineering
+IN2084 Software testing: Processes and Methods","The course is aimed at master students interested in the quality assurance and quality control processes for AI-based software systems. Participants would gain a deeper understanding of the unique challenges and best practices for testing these types of applications.
+The students learn how to critically analyze a given software system. They acquire the analytical and interdisciplinary skills to adapt the testing concepts from traditional software to the new AI-based systems. The course will introduce them to the theory, exercise, and scientific research for all the topics presented in the course. They mature the necessary writing skills to present the main aspects of their topic in a written form.","The course focuses on the challenges and advancements in testing software applications in which the decision making and logic is heavily based on artificial intelligence (AI-based systems). AI-based systems are becoming increasingly prevalent in various industries, such as automotive, healthcare, and e-commerce. These applications must be thoroughly tested to ensure that they can operate efficiently and accurately.
+
+Among the suggested topics, the course will focus on:
+
+- Strategies for testing AI-enabled such as autonomous driving systems;
+- Tools and techniques for managing and manipulating large volumes of data during testing;
+- Best practices for designing test cases and test data for data-intensive applications;
+- Performance metrics for AI-based systems;
+- Testing non-functional properties (e.g., bias, fairness).The course focuses on the challenges and advancements in testing software applications in which the decision making and logic is heavily based on artificial intelligence (AI-based systems). AI-based systems are becoming increasingly prevalent in various industries, such as automotive, healthcare, and e-commerce. These applications must be thoroughly tested to ensure that they can operate efficiently and accurately.
+
+Among the suggested topics, the course will focus on:
+
+- Strategies for testing AI-enabled such as autonomous driving systems;
+- Tools and techniques for managing and manipulating large volumes of data during testing;
+- Best practices for designing test cases and test data for data-intensive applications;
+- Performance metrics for AI-based systems;
+- Testing non-functional properties (e.g., bias, fairness).","The course is aimed at master students interested in the quality assurance and quality control processes for AI-based software systems. Participants would gain a deeper understanding of the unique challenges and best practices for testing these types of applications.
+
+By means of a presentation with slides, the lecturer presents basic principles and techniques of testing AI-based systems and illustrates these by means of both theoretical and practical examples. Accompanying assignments for individual study deepen the understanding of the concepts explained in the lecture, train students to apply the learnt techniques to solve reasonably sized tasks from the various components of an AI-based system or component.
+
+The students learn how to critically analyze a given software system. They acquire the analytical and interdisciplinary skills to adapt the testing concepts from traditional software to the new AI-based systems. The course will introduce them to the theory, exercise, and scientific research for all the topics presented in the course.","Whiteboard, PowerPoint slides",https://www.istqb.org/certifications/artificial-inteligence-tester,16,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4279940/206?$ctx=lang=en&$scrollTo=toc_details,Browser
+,,,,,,,,,,,,,,,,,,,,,,,,,,,17,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1498126/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,18,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1629492/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,19,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/261483/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,20,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4132629/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,21,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3475235/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,22,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/261731/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,23,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/2636231/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,24,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/456926/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,25,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/473855/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,26,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/608628/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,32,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/452770/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,33,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/463899/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,34,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1628399/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,35,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/463901/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,36,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/812017/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,37,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/614770/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,38,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/586422/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,39,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1108748/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,40,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4394710/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,41,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1021421/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,42,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1737567/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,43,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/261081/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,44,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/450708/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,45,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1348594/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,46,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/759654/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,47,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1746283/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,48,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/737300/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,49,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1814863/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,50,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1746286/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,51,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1108762/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,52,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1073242/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,53,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/737291/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,54,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1412293/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,55,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/584574/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,56,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/737297/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,57,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1548947/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,58,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1506760/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,63,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/456350/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,64,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/455704/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,65,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/455706/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,66,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/456364/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,67,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/458189/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,68,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/458193/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,69,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/629351/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,70,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/487476/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,71,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1498116/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,72,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3384222/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,73,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/557075/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,74,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1408213/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,75,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3863914/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,76,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1493752/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,77,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/965554/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,78,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/977328/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,79,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1085813/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,80,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/452550/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,82,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/480428/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,83,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/2809077/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,84,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/608652/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,85,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/480825/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,86,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/473853/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,87,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/458310/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,88,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/672363/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,89,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/608655/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,90,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1733754/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,91,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/708343/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,92,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1528921/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,93,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/473871/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,94,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/456368/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,95,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1629494/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,96,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3126247/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,97,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1199527/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,98,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/2808442/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,99,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/2632102/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,100,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1199485/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,101,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/487473/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,102,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/611935/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,103,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1528428/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,104,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1412259/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,107,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/456388/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,108,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/473867/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,109,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/767880/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,110,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3453883/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,111,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/2690341/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,112,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3310961/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,113,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3499417/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,114,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3471253/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,115,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/261475/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,116,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/819263/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,117,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4116906/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,118,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/487478/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,119,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/757477/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,121,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1498120/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,122,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3307984/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,123,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1102305/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,124,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/473851/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,125,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/456378/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,126,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/936739/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,127,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/2806034/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,128,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/936744/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,129,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1149546/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,130,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/930647/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,132,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3307469/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,133,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/480385/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,134,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/456400/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,135,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/456408/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,136,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/520233/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,137,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1338241/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,138,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/930144/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,140,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/456426/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,141,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/456482/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,142,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/456414/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,143,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/456506/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,144,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/456509/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,145,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1254191/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,146,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/456513/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,147,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/456398/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,152,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/930142/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,153,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3893427/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,154,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3471254/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,155,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3391371/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,156,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/2930921/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,157,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1498129/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,158,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/2863073/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,159,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3494723/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,160,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1334293/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,161,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/2805476/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,162,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1446338/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,163,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1799629/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,164,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4388388/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,165,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1493755/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,166,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3474598/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,168,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/456672/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,169,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/460544/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,171,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1498135/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,172,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1150616/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,173,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3397185/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,174,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/756837/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,175,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1743552/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,176,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/456670/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,177,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/460548/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,178,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1070916/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,179,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/456992/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,180,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1826031/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,181,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/457032/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,183,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1734236/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,184,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4388109/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,185,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1392538/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,186,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1498138/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,187,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1446290/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,188,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1126210/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,189,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3939503/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,190,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/487482/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,191,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/977331/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,192,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/261091/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,193,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/456531/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,194,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1865608/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,195,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3308453/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,196,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1624241/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,197,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3018441/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,198,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/977264/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,199,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/473874/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,200,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/261359/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,201,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/261771/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,202,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3573501/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,205,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1808723/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,206,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4112127/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,207,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1498142/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,208,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1744305/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,209,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3539143/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,210,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1264715/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,211,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1743551/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,212,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4389126/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,213,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3106362/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,214,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1366633/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,215,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3395263/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,216,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3470518/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,217,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3494362/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,218,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/458249/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,219,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/487459/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,220,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1439257/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,221,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1808722/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,222,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1235884/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,223,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1020200/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,224,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/460596/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,225,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1704173/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,226,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/669621/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,227,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1536250/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,229,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1333663/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,230,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/456346/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,231,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/456348/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,232,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3304082/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,233,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1498144/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,234,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1816255/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,235,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/2981021/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,236,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/456362/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,237,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/2911533/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,238,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1060581/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,239,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/457062/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,240,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1507004/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,241,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/977334/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,242,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3397169/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,243,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/2809143/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,244,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/2809326/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,245,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1060610/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,250,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/2808965/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,251,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4390207/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,252,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1616748/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,253,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/456656/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,254,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3106358/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,255,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/456924/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,256,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3003603/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,257,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/456996/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,258,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/2809336/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,259,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3260506/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,262,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/456372/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,263,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/460540/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,264,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/654521/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,265,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/473857/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,267,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/452822/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,268,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/454045/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,269,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/454055/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,274,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4110214/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,275,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/458261/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,276,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1248712/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,277,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1350593/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,290,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/582571/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,291,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1010786/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,292,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1010801/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,293,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1010878/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,294,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/658736/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,295,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/673202/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,296,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/462989/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,297,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/754181/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,298,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1017267/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,299,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1146968/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,300,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/694854/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,301,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1142612/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,302,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/675551/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,303,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1250255/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,304,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/694222/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,305,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/821876/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,306,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/855941/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,307,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/981530/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,308,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/828873/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,309,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1230673/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,310,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/679851/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,311,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/675554/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,312,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/675557/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,313,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1057238/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,314,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/675558/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,315,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/729420/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,316,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/675565/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,317,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/675568/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,318,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/729423/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,319,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1052723/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,320,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1179853/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,321,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/989062/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,322,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1142954/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,323,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1275820/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,324,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/981536/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,325,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/946906/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,326,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3377420/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,327,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1057249/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,328,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1019406/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,329,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/675587/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,330,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/675590/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,331,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1495708/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,332,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1352394/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,333,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/985151/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,334,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3374625/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,335,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/675718/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,336,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/675721/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,337,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1063322/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,338,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/919424/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,339,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/729426/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,340,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/961390/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,341,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/675724/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,342,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/663809/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,343,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/675730/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,344,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/675733/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,345,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/675736/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,346,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1057258/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,347,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/675742/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,348,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/675745/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,349,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/675751/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,350,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/989075/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,351,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/811995/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,352,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/981571/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,353,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/981671/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,354,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/676090/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,355,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/676097/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,356,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/676100/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,357,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/676106/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,358,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/676109/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,359,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1160685/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,360,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/463267/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,361,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1352897/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,362,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1057244/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,363,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1439632/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,364,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/676154/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,365,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/676157/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,366,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1131513/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,367,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/676118/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,368,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/675861/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,369,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/676133/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,370,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/676138/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,371,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1234148/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,372,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1176440/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,373,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/694860/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,374,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/694863/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,375,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/828865/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,376,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1253060/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,377,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/811971/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,378,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/811968/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,379,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/729432/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,380,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/729429/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,381,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/981716/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,382,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1136986/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,383,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1176444/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,384,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/676172/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,385,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/729442/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,386,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/981547/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,387,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1129399/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,388,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1057334/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,390,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/676175/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,391,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/817924/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,392,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1352835/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,393,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/992305/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,394,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/729451/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,395,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1183838/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,396,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/802618/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,397,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1142985/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,398,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/985145/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,399,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1458680/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,400,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/676181/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,401,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/714353/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,402,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/946830/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,403,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/692417/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,404,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1051756/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,405,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/679824/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,406,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/679848/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,407,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1176450/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,408,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/802539/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,409,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/675571/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,410,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/730139/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,411,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/730248/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,412,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/679938/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,413,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/679950/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,414,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/679953/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,415,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1161213/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,416,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/809768/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,417,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/708036/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,418,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/625501/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,419,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/812014/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,420,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1011131/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,421,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1052720/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,422,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1051792/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,423,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/821879/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,424,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/679956/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,425,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/679959/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,426,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1447894/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,427,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/800872/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,428,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/800875/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,429,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/693302/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,430,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/693305/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,431,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/692969/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,432,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/679968/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,433,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1187595/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,434,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1057421/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,435,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/679975/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,436,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/714392/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,437,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/985148/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,438,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/730315/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,439,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/730312/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,440,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/679978/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,441,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/693315/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,442,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/693318/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,443,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1070377/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,445,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4290888/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,446,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4076016/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,447,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4076029/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,448,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3668755/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,449,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/2714841/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,450,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3639828/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,451,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4176654/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,452,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4076105/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,453,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4076908/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,454,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3591730/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,455,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/996862/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,456,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3555038/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,457,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4078123/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,458,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3884771/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,459,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3239832/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,460,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3239842/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,461,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/461345/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,462,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3470523/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,463,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1412295/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,464,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4064475/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,465,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4064474/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,466,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4025078/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,468,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4064473/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,469,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4061442/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,470,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3901169/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,471,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4059246/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,472,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4076035/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,473,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4075961/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,474,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4051599/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,475,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4064375/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,476,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4064383/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,477,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3770184/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,478,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4067170/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,479,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4075965/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,480,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4059617/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,481,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3640608/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,482,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4044614/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,483,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4075352/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,484,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4064552/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,485,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4060803/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,486,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4057381/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,487,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4059254/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,488,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1458680/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,489,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/814573/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,490,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4076289/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,495,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/582571/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,496,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/735585/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,497,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1281035/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,498,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4079368/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,499,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3771355/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,500,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3846769/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,501,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3567443/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,502,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4106581/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,503,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4106608/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,504,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4025090/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,505,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4096730/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,506,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4025086/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,507,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1252027/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,508,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3842656/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,509,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/969686/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,510,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/2796194/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,511,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4025776/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,512,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4108928/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,513,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4106880/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,514,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1095636/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,515,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3440835/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,516,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3177853/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,517,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3668600/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,518,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/473930/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,519,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3839786/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,520,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3022081/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,521,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/473891/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,522,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3907351/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,523,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1412347/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,524,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/473910/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,525,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3509066/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,526,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3585941/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,527,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4025119/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,528,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4032753/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,529,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3239837/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,530,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1339018/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,531,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/261605/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,533,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4025127/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,534,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1200390/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,535,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3440849/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,536,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3501529/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,537,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3844317/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,538,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3844312/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,539,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/559107/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,540,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3440855/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,541,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4025095/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,542,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4275569/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,543,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3786742/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,544,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1351319/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,545,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3757093/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,546,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3381940/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,547,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3663450/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,548,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3321046/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,549,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4181347/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,550,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4025111/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,551,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3342019/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,552,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/473902/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,553,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/473898/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,554,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/473900/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,555,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4025779/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,556,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1624810/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,557,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4025123/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,558,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1430306/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,559,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3381946/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,560,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4025131/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,561,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/2641078/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,562,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/4025135/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,563,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/584574/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,564,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/1077017/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,565,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/473924/206?$ctx=lang=en&$scrollTo=toc_details,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,566,https://campus.tum.de/tumonline/ee/ui/ca2/app/desktop/#/slc.cm.reg/student/modules/detail/3152996/206?$ctx=lang=en&$scrollTo=toc_details,
