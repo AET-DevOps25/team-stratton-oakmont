@@ -15,12 +15,13 @@ import {
   AccountCircle,
   ExitToApp,
   Person,
-  School,
+  ViewSidebar,
   Menu as MenuIcon,
 } from "@mui/icons-material";
 import { useAuth } from "../../../contexts/AuthContext";
 import { theme } from "../../../theme/Theme";
 import Sidebar from "../Sidebar/Sidebar";
+import sidebarIcon from "../../../assets/icons/sidebar.svg";
 
 const Navbar: React.FC = () => {
   const { isLoggedIn, userEmail, logout } = useAuth();
@@ -65,10 +66,14 @@ const Navbar: React.FC = () => {
       <AppBar
         position="fixed"
         sx={{
-          backgroundColor: "#333",
+          backgroundColor: "rgba(15, 15, 15, 0.95)",
+          backdropFilter: "blur(10px)",
           boxShadow: "none",
-          borderBottom: "1px solid #444",
-          zIndex: (theme) => theme.zIndex.drawer + 1, // Ensure navbar is above sidebar
+          borderBottom: "1px solid rgba(100, 108, 255, 0.1)",
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+
+          transition: "margin-left 0.3s ease",
+          marginLeft: isLoggedIn && sidebarOpen ? "260px" : "0px",
         }}
       >
         <Toolbar>
@@ -79,14 +84,28 @@ const Navbar: React.FC = () => {
               color="inherit"
               aria-label="menu"
               onClick={handleSidebarToggle}
-              sx={{ mr: 2 }}
+              sx={{
+                mr: 2,
+                color: "rgba(255, 255, 255, 0.8)",
+                "&:hover": {
+                  backgroundColor: "rgba(100, 108, 255, 0.1)",
+                  color: "white",
+                },
+              }}
             >
-              <MenuIcon />
+              <img
+                src={sidebarIcon}
+                alt="sidebar"
+                style={{
+                  width: "24px",
+                  height: "24px",
+                  filter: "brightness(0) invert(1)", // Makes it white
+                }}
+              />
             </IconButton>
           )}
 
           <Box sx={{ display: "flex", alignItems: "center", flexGrow: 1 }}>
-            <School sx={{ mr: 2, color: "white" }} />
             <Typography
               variant="h6"
               component="div"
@@ -94,10 +113,25 @@ const Navbar: React.FC = () => {
                 cursor: "pointer",
                 textDecoration: "none",
                 color: "white",
-                fontWeight: theme.typography.h6.fontWeight,
+                fontWeight: 700,
                 fontFamily: theme.typography.fontFamily,
+                background:
+                  "linear-gradient(135deg, #ffffff 0%, #646cff 50%, #ffffff 100%)",
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundSize: "200% 200%",
+                animation: "textShimmer 4s ease-in-out infinite",
                 "&:hover": {
                   opacity: 0.8,
+                },
+                "@keyframes textShimmer": {
+                  "0%, 100%": {
+                    backgroundPosition: "0% 50%",
+                  },
+                  "50%": {
+                    backgroundPosition: "100% 50%",
+                  },
                 },
               }}
               onClick={handleLogoClick}
@@ -147,10 +181,11 @@ const Navbar: React.FC = () => {
                 onClose={handleClose}
                 sx={{
                   "& .MuiPaper-root": {
-                    backgroundColor: "white",
-                    border: "1px solid #ddd",
-                    borderRadius: "8px",
-                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                    backgroundColor: "rgba(42, 42, 42, 0.95)",
+                    backdropFilter: "blur(10px)",
+                    border: "1px solid rgba(100, 108, 255, 0.2)",
+                    borderRadius: "12px",
+                    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
                     minWidth: "160px",
                     mt: 1,
                   },
@@ -161,8 +196,9 @@ const Navbar: React.FC = () => {
                   sx={{
                     py: 1.5,
                     px: 2,
+                    color: "white",
                     "&:hover": {
-                      backgroundColor: "#f5f5f5",
+                      backgroundColor: "rgba(100, 108, 255, 0.1)",
                     },
                   }}
                 >
@@ -174,8 +210,9 @@ const Navbar: React.FC = () => {
                   sx={{
                     py: 1.5,
                     px: 2,
+                    color: "white",
                     "&:hover": {
-                      backgroundColor: "#f5f5f5",
+                      backgroundColor: "rgba(100, 108, 255, 0.1)",
                     },
                   }}
                 >
@@ -185,7 +222,7 @@ const Navbar: React.FC = () => {
               </Menu>
             </Box>
           ) : (
-            <Box sx={{ display: "flex", gap: 1 }}>
+            <Box sx={{ display: "flex", gap: 2 }}>
               <Button
                 variant="outlined"
                 onClick={() => navigate("/login")}
@@ -194,10 +231,15 @@ const Navbar: React.FC = () => {
                   borderColor: "rgba(255, 255, 255, 0.3)",
                   textTransform: "none",
                   px: 3,
+                  py: 1,
+                  borderRadius: "25px",
+                  fontWeight: 500,
                   "&:hover": {
-                    borderColor: "white",
-                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    borderColor: "#646cff",
+                    backgroundColor: "rgba(100, 108, 255, 0.1)",
+                    transform: "translateY(-1px)",
                   },
+                  transition: "all 0.3s ease",
                 }}
               >
                 Log In
@@ -206,12 +248,36 @@ const Navbar: React.FC = () => {
                 variant="contained"
                 onClick={() => navigate("/signup")}
                 sx={{
-                  backgroundColor: "#646cff",
+                  background:
+                    "linear-gradient(135deg, #646cff 0%, #535bf2 100%)",
+                  color: "white",
                   textTransform: "none",
                   px: 3,
-                  "&:hover": {
-                    backgroundColor: "#535bf2",
+                  py: 1,
+                  borderRadius: "25px",
+                  fontWeight: 600,
+                  boxShadow: "0 4px 16px rgba(100, 108, 255, 0.3)",
+                  position: "relative",
+                  overflow: "hidden",
+                  "&::before": {
+                    content: '""',
+                    position: "absolute",
+                    top: 0,
+                    left: "-100%",
+                    width: "100%",
+                    height: "100%",
+                    background:
+                      "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)",
+                    transition: "left 0.6s",
                   },
+                  "&:hover": {
+                    transform: "translateY(-1px)",
+                    boxShadow: "0 8px 24px rgba(100, 108, 255, 0.4)",
+                    "&::before": {
+                      left: "100%",
+                    },
+                  },
+                  transition: "all 0.3s ease",
                 }}
               >
                 Sign Up

@@ -28,7 +28,6 @@ import {
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material";
 import {
-  Description,
   Add,
   Refresh,
   MoreVert,
@@ -344,8 +343,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
         "& .MuiDrawer-paper": {
           width: sidebarWidth,
           boxSizing: "border-box",
-          backgroundColor: "#f5f5f5",
-          borderRight: "1px solid #ddd",
+          backgroundColor: "rgba(15, 15, 15, 0.95)",
+          backdropFilter: "blur(10px)",
+          borderRight: "1px solid rgba(100, 108, 255, 0.2)",
+          color: "white",
         },
       }}
     >
@@ -354,8 +355,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
       <Box sx={{ px: 2, py: 1 }}>
         <Typography
           variant="subtitle2"
-          color="text.secondary"
-          sx={{ fontWeight: 600, mb: 1 }}
+          sx={{
+            fontWeight: 600,
+            mb: 1,
+            color: "rgba(255, 255, 255, 0.7)",
+          }}
         >
           Curriculum
         </Typography>
@@ -366,14 +370,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
               selected={isCurriculumActive()}
               sx={{
                 minHeight: 48,
-                borderRadius: 1,
-                mb: 0,
+                borderRadius: 2,
+                mb: 1,
                 "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.04)",
+                  backgroundColor: "rgba(100, 108, 255, 0.1)",
                 },
                 "&.Mui-selected": {
-                  backgroundColor: "rgba(100, 108, 255, 0.12)",
-                  borderRight: "3px solid #646cff",
+                  backgroundColor: "rgba(100, 108, 255, 0.2)",
+                  borderLeft: "3px solid #646cff",
                   "& .MuiListItemIcon-root": { color: "#646cff" },
                   "& .MuiListItemText-primary": {
                     color: "#646cff",
@@ -382,14 +386,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
                 },
               }}
             >
-              <ListItemIcon>
+              <ListItemIcon sx={{ color: "rgba(255, 255, 255, 0.7)" }}>
                 <MenuBook />
               </ListItemIcon>
               <ListItemText
                 primary="M.Sc. Information Systems"
                 primaryTypographyProps={{
                   variant: "body2",
-                  sx: { fontWeight: 500 },
+                  sx: {
+                    fontWeight: 500,
+                    color: "white",
+                  },
                 }}
               />
             </ListItemButton>
@@ -397,18 +404,18 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
         </List>
         <Typography
           variant="caption"
-          color="text.secondary"
           sx={{
             fontStyle: "italic",
             px: 2,
             pb: 1,
             fontSize: "0.7rem",
+            color: "rgba(255, 255, 255, 0.5)",
           }}
         >
           More curriculums coming soon
         </Typography>
       </Box>
-      <Divider sx={{ mx: 2 }} />
+      <Divider sx={{ mx: 2, borderColor: "rgba(100, 108, 255, 0.2)" }} />
       {/* Study Plans Section */}
       <Box
         sx={{
@@ -421,8 +428,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
       >
         <Typography
           variant="subtitle2"
-          color="text.secondary"
-          sx={{ fontWeight: 600 }}
+          sx={{
+            fontWeight: 600,
+            color: "rgba(255, 255, 255, 0.7)",
+          }}
         >
           My Study Plans
         </Typography>
@@ -432,8 +441,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
               size="small"
               onClick={handleOpenCreateModal}
               sx={{
-                color: "primary.main",
-                "&:hover": { backgroundColor: "rgba(100, 108, 255, 0.04)" },
+                color: "#646cff",
+                "&:hover": {
+                  backgroundColor: "rgba(100, 108, 255, 0.1)",
+                  color: "#646cff",
+                },
               }}
             >
               <Add fontSize="small" />
@@ -445,8 +457,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
               onClick={handleRefresh}
               disabled={loading}
               sx={{
-                color: "text.secondary",
-                "&:hover": { color: "primary.main" },
+                color: "rgba(255, 255, 255, 0.7)",
+                "&:hover": {
+                  color: "#646cff",
+                  backgroundColor: "rgba(100, 108, 255, 0.1)",
+                },
               }}
             >
               <Refresh fontSize="small" />
@@ -457,7 +472,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
       {/* Loading State */}
       {loading && (
         <Box sx={{ display: "flex", justifyContent: "center", py: 2 }}>
-          <CircularProgress size={20} />
+          <CircularProgress size={20} sx={{ color: "#646cff" }} />
         </Box>
       )}
       {/* Error State */}
@@ -467,13 +482,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
             severity="error"
             sx={{
               fontSize: "0.75rem",
+              backgroundColor: "rgba(244, 67, 54, 0.1)",
+              color: "#ff6b6b",
+              border: "1px solid rgba(244, 67, 54, 0.2)",
               "& .MuiAlert-message": { fontSize: "0.75rem" },
+              "& .MuiAlert-icon": { color: "#ff6b6b" },
             }}
             action={
               <IconButton
                 size="small"
                 onClick={handleRefresh}
-                sx={{ color: "inherit" }}
+                sx={{ color: "#ff6b6b" }}
               >
                 <Refresh fontSize="small" />
               </IconButton>
@@ -492,8 +511,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
                 primary={
                   <Typography
                     variant="body2"
-                    color="text.secondary"
-                    sx={{ fontStyle: "italic", px: 1 }}
+                    sx={{
+                      fontStyle: "italic",
+                      px: 1,
+                      color: "rgba(255, 255, 255, 0.5)",
+                    }}
                   >
                     No study plans found
                   </Typography>
@@ -507,28 +529,24 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
                   onClick={() => handleStudyPlanClick(plan.id)}
                   selected={isStudyPlanActive(plan.id)}
                   sx={{
-                    pl: 3, // Indent to show hierarchy
+                    pl: 3,
                     minHeight: 48,
+                    borderRadius: 2,
+                    mx: 1,
+                    mb: 0.5,
                     "&:hover": {
-                      backgroundColor: "rgba(0, 0, 0, 0.04)",
+                      backgroundColor: "rgba(100, 108, 255, 0.1)",
                     },
                     "&.Mui-selected": {
-                      backgroundColor: "rgba(100, 108, 255, 0.12)",
-                      borderRight: "3px solid #646cff",
-                      "& .MuiListItemIcon-root": { color: "#646cff" },
+                      backgroundColor: "rgba(100, 108, 255, 0.2)",
+                      borderLeft: "3px solid #646cff",
                       "& .MuiListItemText-primary": {
                         color: "#646cff",
                         fontWeight: 600,
                       },
-                      "& .MuiListItemText-secondary": {
-                        color: "rgba(100, 108, 255, 0.7)",
-                      },
                     },
                   }}
                 >
-                  {/* <ListItemIcon>
-                    <Description fontSize="small" />
-                  </ListItemIcon> */}
                   {editingPlanId === plan.id ? (
                     <TextField
                       inputRef={renameInputRef}
@@ -542,22 +560,22 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
                         "& .MuiInput-root": {
                           fontSize: "0.875rem",
                           fontWeight: 500,
+                          color: "white",
                         },
                         "& .MuiInput-root:before": {
-                          borderBottomColor: "primary.main",
+                          borderBottomColor: "#646cff",
                         },
                         "& .MuiInput-root:hover:before": {
-                          borderBottomColor: "primary.main",
+                          borderBottomColor: "#646cff",
                         },
                         "& .MuiInput-root:after": {
-                          borderBottomColor: "primary.main",
+                          borderBottomColor: "#646cff",
                         },
                       }}
                     />
                   ) : (
                     <ListItemText
                       primary={plan.name}
-                      //secondary={plan.studyProgramName || "No program"}
                       primaryTypographyProps={{
                         variant: "body2",
                         sx: {
@@ -565,16 +583,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
                           overflow: "hidden",
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
+                          color: "white",
                         },
                       }}
-                      // secondaryTypographyProps={{
-                      //   variant: "caption",
-                      //   sx: {
-                      //     overflow: "hidden",
-                      //     textOverflow: "ellipsis",
-                      //     whiteSpace: "nowrap",
-                      //   },
-                      // }}
                     />
                   )}
                   {/* Three-dot menu button */}
@@ -591,9 +602,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
                       size="small"
                       onClick={(e) => handleMenuOpen(e, plan.id)}
                       sx={{
-                        color: "text.secondary",
+                        color: "rgba(255, 255, 255, 0.7)",
                         "&:hover": {
-                          backgroundColor: "rgba(0, 0, 0, 0.08)",
+                          backgroundColor: "rgba(100, 108, 255, 0.1)",
+                          color: "#646cff",
                         },
                       }}
                     >
@@ -611,8 +623,16 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
             onClose={() => setCreateModalOpen(false)}
             maxWidth="sm"
             fullWidth
+            PaperProps={{
+              sx: {
+                backgroundColor: "#2a2a2a",
+                color: "white",
+              },
+            }}
           >
-            <DialogTitle>Create New Study Plan</DialogTitle>
+            <DialogTitle sx={{ color: "white" }}>
+              Create New Study Plan
+            </DialogTitle>
             <DialogContent>
               <TextField
                 autoFocus
@@ -622,15 +642,50 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
                 variant="outlined"
                 value={newPlanName}
                 onChange={(e) => setNewPlanName(e.target.value)}
-                sx={{ mb: 2 }}
+                sx={{
+                  mb: 2,
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": { borderColor: "#555" },
+                    "&:hover fieldset": { borderColor: "#646cff" },
+                    "&.Mui-focused fieldset": { borderColor: "#646cff" },
+                  },
+                  "& .MuiInputBase-input": { color: "white" },
+                  "& .MuiInputLabel-root": { color: "#aaa" },
+                }}
               />
               <FormControl fullWidth variant="outlined">
-                <InputLabel>Study Program</InputLabel>
+                <InputLabel sx={{ color: "#aaa" }}>Study Program</InputLabel>
                 <Select
                   value={selectedProgramId}
                   onChange={handleProgramChange}
                   label="Study Program"
                   disabled={loadingPrograms}
+                  sx={{
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#555",
+                    },
+                    "&:hover .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#646cff",
+                    },
+                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#646cff",
+                    },
+                    "& .MuiSelect-select": { color: "white" },
+                    "& .MuiSvgIcon-root": { color: "white" },
+                  }}
+                  MenuProps={{
+                    PaperProps: {
+                      sx: {
+                        backgroundColor: "#2a2a2a",
+                        "& .MuiMenuItem-root": {
+                          color: "white",
+                          "&:hover": {
+                            backgroundColor: "rgba(100, 108, 255, 0.1)",
+                          },
+                        },
+                      },
+                    },
+                  }}
                 >
                   {studyPrograms.map((program) => (
                     <MenuItem key={program.id} value={program.id}>
@@ -644,6 +699,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
               <Button
                 onClick={() => setCreateModalOpen(false)}
                 disabled={creatingPlan}
+                sx={{ color: "#aaa" }}
               >
                 Cancel
               </Button>
@@ -653,6 +709,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
                 disabled={
                   !newPlanName.trim() || !selectedProgramId || creatingPlan
                 }
+                sx={{
+                  backgroundColor: "#646cff",
+                  "&:hover": { backgroundColor: "#535bf2" },
+                }}
               >
                 {creatingPlan ? "Creating..." : "Create"}
               </Button>
@@ -672,6 +732,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
               vertical: "top",
               horizontal: "left",
             }}
+            PaperProps={{
+              sx: {
+                backgroundColor: "rgba(42, 42, 42, 0.95)",
+                backdropFilter: "blur(10px)",
+                border: "1px solid rgba(100, 108, 255, 0.2)",
+                borderRadius: "12px",
+                boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
+              },
+            }}
           >
             <MenuItem
               onClick={() => {
@@ -680,14 +749,24 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
                 );
                 if (selectedPlan) handleRenameClick(selectedPlan);
               }}
-              sx={{ color: "text.primary" }}
+              sx={{
+                color: "white",
+                "&:hover": {
+                  backgroundColor: "rgba(100, 108, 255, 0.1)",
+                },
+              }}
             >
               <Edit fontSize="small" sx={{ mr: 1 }} />
               Rename
             </MenuItem>
             <MenuItem
               onClick={handleDeleteStudyPlan}
-              sx={{ color: "error.main" }}
+              sx={{
+                color: "#ff6b6b",
+                "&:hover": {
+                  backgroundColor: "rgba(244, 67, 54, 0.1)",
+                },
+              }}
             >
               <Delete fontSize="small" sx={{ mr: 1 }} />
               Delete Study Plan
