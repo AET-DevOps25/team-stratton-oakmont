@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: program-catalog-service
+  namespace: { { .Values.namespace } }
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: program-catalog-service
+  template:
+    metadata:
+      labels:
+        app: program-catalog-service
+    spec:
+      containers:
+        - name: program-catalog-service
+          image: "{{ .Values.programCatalogService.image.repository }}:{{ .Values.programCatalogService.image.tag }}"
+          ports:
+            - containerPort: 8082
+          env:
+            - name: DB_PROGRAM_CATALOG_URL
+              valueFrom:
+                secretKeyRef:
+                  name: tum-study-planner-secrets
+                  key: PROGRAM_CATALOG_DB_URL
+            - name: DB_PROGRAM_CATALOG_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: tum-study-planner-secrets
+                  key: PROGRAM_CATALOG_DB_USER
+            - name: DB_PROGRAM_CATALOG_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: tum-study-planner-secrets
+                  key: PROGRAM_CATALOG_DB_PASSWORD
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: tum-study-planner-secrets
+                  key: JWT_SECRET
