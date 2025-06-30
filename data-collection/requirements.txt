@@ -3,5 +3,6 @@ requests
 beautifulsoup4
 lxml
 selenium
+undetected-chromedriver
 psycopg2-binary
 python-dotenv
