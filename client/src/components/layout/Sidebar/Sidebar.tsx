@@ -148,6 +148,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
       setLoadingPrograms(true);
       const programs = await getStudyPrograms();
       setStudyPrograms(programs);
+
+      // Auto-select if there's only one program available
+      if (programs.length === 1) {
+        setSelectedProgramId(programs[0].id);
+      }
     } catch (err) {
       console.error("Error fetching study programs:", err);
 
@@ -521,9 +526,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
                     },
                   }}
                 >
-                  <ListItemIcon>
+                  {/* <ListItemIcon>
                     <Description fontSize="small" />
-                  </ListItemIcon>
+                  </ListItemIcon> */}
                   {editingPlanId === plan.id ? (
                     <TextField
                       inputRef={renameInputRef}
@@ -552,7 +557,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
                   ) : (
                     <ListItemText
                       primary={plan.name}
-                      secondary={plan.studyProgramName || "No program"}
+                      //secondary={plan.studyProgramName || "No program"}
                       primaryTypographyProps={{
                         variant: "body2",
                         sx: {
@@ -562,14 +567,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
                           whiteSpace: "nowrap",
                         },
                       }}
-                      secondaryTypographyProps={{
-                        variant: "caption",
-                        sx: {
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                        },
-                      }}
+                      // secondaryTypographyProps={{
+                      //   variant: "caption",
+                      //   sx: {
+                      //     overflow: "hidden",
+                      //     textOverflow: "ellipsis",
+                      //     whiteSpace: "nowrap",
+                      //   },
+                      // }}
                     />
                   )}
                   {/* Three-dot menu button */}
