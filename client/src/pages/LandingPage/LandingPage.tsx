@@ -78,6 +78,12 @@ const LandingPage: React.FC = () => {
       setLoadingPrograms(true);
       const programs = await getStudyPrograms();
       setStudyPrograms(programs);
+
+      if (programs.length === 1) {
+        setSelectedProgramId(programs[0].id);
+      } else {
+        setSelectedProgramId(programs[0].id);
+      }
     } catch (err) {
       console.error("Error fetching study programs:", err);
       setStudyPrograms([]);
@@ -152,7 +158,8 @@ const LandingPage: React.FC = () => {
     <Box
       sx={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #2a2a2a 100%)",
+        background:
+          "linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #2a2a2a 100%)",
         color: "white",
         position: "relative",
         overflow: "hidden",
@@ -192,7 +199,9 @@ const LandingPage: React.FC = () => {
                 opacity: 0.3,
               },
               "50%": {
-                transform: `translateY(${Math.random() * 20 - 10}px) rotate(180deg)`,
+                transform: `translateY(${
+                  Math.random() * 20 - 10
+                }px) rotate(180deg)`,
                 opacity: 0.8,
               },
             },
@@ -241,7 +250,8 @@ const LandingPage: React.FC = () => {
                 transform: "translate(-50%, -50%)",
                 width: "120%",
                 height: "120%",
-                background: "linear-gradient(45deg, transparent, rgba(100, 108, 255, 0.1), transparent)",
+                background:
+                  "linear-gradient(45deg, transparent, rgba(100, 108, 255, 0.1), transparent)",
                 borderRadius: "50%",
                 animation: "pulse 4s ease-in-out infinite",
                 "@keyframes pulse": {
@@ -282,7 +292,8 @@ const LandingPage: React.FC = () => {
               fontWeight: 800,
               mb: 3,
               fontSize: { xs: "3rem", md: "5rem", lg: "6rem" },
-              background: "linear-gradient(135deg, #ffffff 0%, #646cff 50%, #ffffff 100%)",
+              background:
+                "linear-gradient(135deg, #ffffff 0%, #646cff 50%, #ffffff 100%)",
               backgroundClip: "text",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
@@ -325,8 +336,9 @@ const LandingPage: React.FC = () => {
               },
             }}
           >
-            Navigate your TUM studies effortlessly with an AI assistant that helps
-            you choose courses, track requirements, and validate your academic plan.
+            Navigate your TUM studies effortlessly with an AI assistant that
+            helps you choose courses, track requirements, and validate your
+            academic plan.
           </Typography>
 
           <Box
@@ -363,7 +375,8 @@ const LandingPage: React.FC = () => {
                   left: "-100%",
                   width: "100%",
                   height: "100%",
-                  background: "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)",
+                  background:
+                    "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)",
                   transition: "left 0.6s",
                 },
                 "&:hover": {
@@ -462,19 +475,26 @@ const LandingPage: React.FC = () => {
               {
                 icon: <School sx={{ fontSize: "3rem", color: "#646cff" }} />,
                 title: "Smart Study Planning",
-                description: "Create personalized study plans that adapt to your academic goals and track your progress in real-time.",
+                description:
+                  "Create personalized study plans that adapt to your academic goals and track your progress in real-time.",
                 color: "#646cff",
               },
               {
-                icon: <Psychology sx={{ fontSize: "3rem", color: "#4caf50" }} />,
+                icon: (
+                  <Psychology sx={{ fontSize: "3rem", color: "#4caf50" }} />
+                ),
                 title: "AI-Powered Guidance",
-                description: "Get intelligent course recommendations and academic advice powered by advanced AI technology.",
+                description:
+                  "Get intelligent course recommendations and academic advice powered by advanced AI technology.",
                 color: "#4caf50",
               },
               {
-                icon: <TrendingUp sx={{ fontSize: "3rem", color: "#ff9800" }} />,
+                icon: (
+                  <TrendingUp sx={{ fontSize: "3rem", color: "#ff9800" }} />
+                ),
                 title: "Progress Tracking",
-                description: "Monitor your academic journey with detailed analytics and visualizations of your achievements.",
+                description:
+                  "Monitor your academic journey with detailed analytics and visualizations of your achievements.",
                 color: "#ff9800",
               },
             ].map((feature, index) => (
@@ -529,7 +549,8 @@ const LandingPage: React.FC = () => {
             py: 8,
             px: 4,
             borderRadius: 4,
-            background: "linear-gradient(135deg, rgba(100, 108, 255, 0.1) 0%, rgba(100, 108, 255, 0.05) 100%)",
+            background:
+              "linear-gradient(135deg, rgba(100, 108, 255, 0.1) 0%, rgba(100, 108, 255, 0.05) 100%)",
             border: "1px solid rgba(100, 108, 255, 0.2)",
           }}
         >
@@ -552,10 +573,17 @@ const LandingPage: React.FC = () => {
               mx: "auto",
             }}
           >
-            Join thousands of students who are already using TUM Study Planner to
-            optimize their academic journey.
+            Join thousands of students who are already using TUM Study Planner
+            to optimize their academic journey.
           </Typography>
-          <Box sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
+          <Box
+            sx={{
+              display: "flex",
+              gap: 2,
+              justifyContent: "center",
+              flexWrap: "wrap",
+            }}
+          >
             <Chip
               icon={<Star />}
               label="Free to Use"
@@ -595,52 +623,119 @@ const LandingPage: React.FC = () => {
         fullWidth
         PaperProps={{
           sx: {
-            backgroundColor: "#2a2a2a",
+            background: "rgba(42, 42, 42, 0.95)",
+            backdropFilter: "blur(20px)",
+            border: "1px solid rgba(100, 108, 255, 0.2)",
+            borderRadius: 4,
             color: "white",
+            position: "relative",
+            overflow: "hidden",
+            "&::before": {
+              content: '""',
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background:
+                "linear-gradient(135deg, rgba(100, 108, 255, 0.05) 0%, transparent 100%)",
+              zIndex: -1,
+            },
+          },
+        }}
+        BackdropProps={{
+          sx: {
+            backgroundColor: "rgba(0, 0, 0, 0.8)",
+            backdropFilter: "blur(8px)",
           },
         }}
       >
-        <DialogTitle sx={{ color: "white" }}>Create New Study Plan</DialogTitle>
-        <DialogContent>
+        <DialogTitle
+          sx={{
+            color: "white",
+            borderBottom: "1px solid rgba(100, 108, 255, 0.2)",
+            fontWeight: 700,
+            background:
+              "linear-gradient(135deg, #ffffff 0%, #646cff 50%, #ffffff 100%)",
+            backgroundClip: "text",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+          }}
+        >
+          Create New Study Plan
+        </DialogTitle>
+        <DialogContent sx={{ pt: 3 }}>
           <TextField
             autoFocus
             margin="dense"
-            label="Study Plan Name"
+            placeholder="Study Plan Name"
             fullWidth
             variant="outlined"
             value={newPlanName}
             onChange={(e) => setNewPlanName(e.target.value)}
             sx={{
-              mb: 2,
+              mb: 3,
               "& .MuiOutlinedInput-root": {
-                "& fieldset": { borderColor: "#555" },
-                "&:hover fieldset": { borderColor: "#646cff" },
-                "&.Mui-focused fieldset": { borderColor: "#646cff" },
+                backgroundColor: "rgba(255, 255, 255, 0.05)",
+                borderRadius: 3,
+                "& fieldset": {
+                  borderColor: "rgba(255, 255, 255, 0.2)",
+                },
+                "&:hover fieldset": {
+                  borderColor: "rgba(100, 108, 255, 0.5)",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#646cff",
+                  borderWidth: "2px",
+                },
               },
-              "& .MuiInputBase-input": { color: "white" },
-              "& .MuiInputLabel-root": { color: "#aaa" },
+              "& .MuiInputBase-input": {
+                color: "white",
+                fontSize: "1.1rem",
+              },
+              "& .MuiInputLabel-root": {
+                color: "#aaa",
+                "&.Mui-focused": {
+                  color: "#646cff",
+                },
+              },
             }}
           />
           <FormControl fullWidth variant="outlined">
-            <InputLabel sx={{ color: "#aaa" }}>Study Program</InputLabel>
             <Select
               value={selectedProgramId}
               onChange={handleProgramChange}
-              label="Study Program"
+              placeholder="Study Program"
               disabled={loadingPrograms}
               sx={{
-                "& .MuiOutlinedInput-notchedOutline": { borderColor: "#555" },
-                "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#646cff" },
-                "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#646cff" },
-                "& .MuiSelect-select": { color: "white" },
-                "& .MuiSvgIcon-root": { color: "white" },
+                backgroundColor: "rgba(255, 255, 255, 0.05)",
+                borderRadius: 3,
+                "& .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "rgba(255, 255, 255, 0.2)",
+                },
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "rgba(100, 108, 255, 0.5)",
+                },
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#646cff",
+                  borderWidth: "2px",
+                },
+                "& .MuiSelect-select": {
+                  color: "white",
+                  fontSize: "1.1rem",
+                },
+                "& .MuiSvgIcon-root": { color: "#aaa" },
               }}
               MenuProps={{
                 PaperProps: {
                   sx: {
-                    backgroundColor: "#2a2a2a",
+                    backgroundColor: "rgba(42, 42, 42, 0.95)",
+                    backdropFilter: "blur(10px)",
+                    border: "1px solid rgba(100, 108, 255, 0.2)",
+                    borderRadius: 3,
                     "& .MuiMenuItem-root": {
                       color: "white",
+                      fontSize: "1rem",
                       "&:hover": {
                         backgroundColor: "rgba(100, 108, 255, 0.1)",
                       },
@@ -657,10 +752,18 @@ const LandingPage: React.FC = () => {
             </Select>
           </FormControl>
         </DialogContent>
-        <DialogActions>
+        <DialogActions
+          sx={{ p: 3, borderTop: "1px solid rgba(100, 108, 255, 0.2)" }}
+        >
           <Button
             onClick={() => setCreateModalOpen(false)}
-            sx={{ color: "#aaa" }}
+            sx={{
+              color: "#aaa",
+              textTransform: "none",
+              "&:hover": {
+                backgroundColor: "rgba(255, 255, 255, 0.05)",
+              },
+            }}
           >
             Cancel
           </Button>
@@ -669,8 +772,23 @@ const LandingPage: React.FC = () => {
             variant="contained"
             disabled={!newPlanName.trim() || !selectedProgramId}
             sx={{
-              backgroundColor: "#646cff",
-              "&:hover": { backgroundColor: "#535bf2" },
+              background: "linear-gradient(135deg, #646cff 0%, #535bf2 100%)",
+              color: "white",
+              textTransform: "none",
+              px: 3,
+              py: 1.5,
+              borderRadius: "50px",
+              fontWeight: 600,
+              boxShadow: "0 8px 32px rgba(100, 108, 255, 0.4)",
+              "&:hover": {
+                transform: "translateY(-2px)",
+                boxShadow: "0 12px 40px rgba(100, 108, 255, 0.6)",
+              },
+              "&:disabled": {
+                background: "rgba(100, 108, 255, 0.3)",
+                transform: "none",
+              },
+              transition: "all 0.3s ease",
             }}
           >
             Create

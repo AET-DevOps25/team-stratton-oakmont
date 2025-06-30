@@ -84,12 +84,12 @@ const Navbar: React.FC = () => {
               color="inherit"
               aria-label="menu"
               onClick={handleSidebarToggle}
+              disableRipple
               sx={{
                 mr: 2,
                 color: "rgba(255, 255, 255, 0.8)",
                 "&:hover": {
-                  backgroundColor: "rgba(100, 108, 255, 0.1)",
-                  color: "white",
+                  opacity: 0.8,
                 },
               }}
             >
@@ -149,6 +149,7 @@ const Navbar: React.FC = () => {
                 aria-haspopup="true"
                 onClick={handleMenu}
                 sx={{ color: "white" }}
+                disableRipple
               >
                 <Avatar
                   sx={{
@@ -156,6 +157,9 @@ const Navbar: React.FC = () => {
                     height: 32,
                     bgcolor: "#646cff",
                     fontSize: "14px",
+                    "&:hover": {
+                      opacity: 0.8,
+                    },
                   }}
                 >
                   {userEmail ? (
@@ -183,7 +187,6 @@ const Navbar: React.FC = () => {
                   "& .MuiPaper-root": {
                     backgroundColor: "rgba(42, 42, 42, 0.95)",
                     backdropFilter: "blur(10px)",
-                    border: "1px solid rgba(100, 108, 255, 0.2)",
                     borderRadius: "12px",
                     boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
                     minWidth: "160px",
@@ -192,13 +195,16 @@ const Navbar: React.FC = () => {
                 }}
               >
                 <MenuItem
+                  disableRipple
                   onClick={handleProfile}
                   sx={{
-                    py: 1.5,
-                    px: 2,
+                    borderRadius: 2,
+                    mx: 1,
+                    my: 0.5,
                     color: "white",
                     "&:hover": {
                       backgroundColor: "rgba(100, 108, 255, 0.1)",
+                      borderRadius: 2,
                     },
                   }}
                 >
@@ -206,13 +212,15 @@ const Navbar: React.FC = () => {
                   View Profile
                 </MenuItem>
                 <MenuItem
+                  disableRipple
                   onClick={handleLogout}
                   sx={{
-                    py: 1.5,
-                    px: 2,
-                    color: "white",
+                    borderRadius: 2,
+                    mx: 1,
+                    my: 0.5,
+                    color: "#ff6b6b",
                     "&:hover": {
-                      backgroundColor: "rgba(100, 108, 255, 0.1)",
+                      backgroundColor: "rgba(244, 67, 54, 0.1)",
                     },
                   }}
                 >

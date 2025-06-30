@@ -101,7 +101,7 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
       semester: "Any",
       language: "English",
       professor: "Various",
-      occurrence: "Summer/Winter",
+      occurrence: "Winter/Summer",
       description:
         "Independent research project culminating in a master's thesis",
       category: "Master Thesis",
@@ -169,7 +169,7 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
       semester: "Any",
       language: "English",
       professor: "Various",
-      occurrence: "Any",
+      occurrence: "Winter/Summer",
       description: "Professional internship in industry",
       category: "Practical Courses",
     },
@@ -1042,7 +1042,7 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                       >
                         Name
                       </TableSortLabel>
-                      <IconButton
+                      {/* <IconButton
                         size="small"
                         onClick={(e) => handleFilterMenuOpen(e, "name")}
                         sx={{
@@ -1051,7 +1051,7 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                         }}
                       >
                         <FilterList fontSize="small" />
-                      </IconButton>
+                      </IconButton> */}
                     </Box>
                   </TableCell>
                   <TableCell sx={{ color: "white", fontWeight: "bold" }}>
@@ -1064,7 +1064,7 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                       >
                         ID
                       </TableSortLabel>
-                      <IconButton
+                      {/* <IconButton
                         size="small"
                         onClick={(e) => handleFilterMenuOpen(e, "code")}
                         sx={{
@@ -1073,13 +1073,13 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                         }}
                       >
                         <FilterList fontSize="small" />
-                      </IconButton>
+                      </IconButton> */}
                     </Box>
                   </TableCell>
                   <TableCell sx={{ color: "white", fontWeight: "bold" }}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                       Language
-                      <IconButton
+                      {/* <IconButton
                         size="small"
                         onClick={(e) => handleFilterMenuOpen(e, "language")}
                         sx={{
@@ -1090,7 +1090,7 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                         }}
                       >
                         <FilterList fontSize="small" />
-                      </IconButton>
+                      </IconButton> */}
                     </Box>
                   </TableCell>
                   <TableCell sx={{ color: "white", fontWeight: "bold" }}>
@@ -1103,7 +1103,7 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                       >
                         ECTS
                       </TableSortLabel>
-                      <IconButton
+                      {/* <IconButton
                         size="small"
                         onClick={(e) => handleFilterMenuOpen(e, "credits")}
                         sx={{
@@ -1114,13 +1114,13 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                         }}
                       >
                         <FilterList fontSize="small" />
-                      </IconButton>
+                      </IconButton> */}
                     </Box>
                   </TableCell>
                   <TableCell sx={{ color: "white", fontWeight: "bold" }}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                       Professor
-                      <IconButton
+                      {/* <IconButton
                         size="small"
                         onClick={(e) => handleFilterMenuOpen(e, "professor")}
                         sx={{
@@ -1131,13 +1131,13 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                         }}
                       >
                         <FilterList fontSize="small" />
-                      </IconButton>
+                      </IconButton> */}
                     </Box>
                   </TableCell>
                   <TableCell sx={{ color: "white", fontWeight: "bold" }}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                       Occurrence
-                      <IconButton
+                      {/* <IconButton
                         size="small"
                         onClick={(e) => handleFilterMenuOpen(e, "occurrence")}
                         sx={{
@@ -1148,13 +1148,13 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                         }}
                       >
                         <FilterList fontSize="small" />
-                      </IconButton>
+                      </IconButton> */}
                     </Box>
                   </TableCell>
                   <TableCell sx={{ color: "white", fontWeight: "bold" }}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                       Category
-                      <IconButton
+                      {/* <IconButton
                         size="small"
                         onClick={(e) => handleFilterMenuOpen(e, "category")}
                         sx={{
@@ -1165,7 +1165,7 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                         }}
                       >
                         <FilterList fontSize="small" />
-                      </IconButton>
+                      </IconButton> */}
                     </Box>
                   </TableCell>
                 </TableRow>

@@ -30,7 +30,7 @@ import type { SelectChangeEvent } from "@mui/material";
 import {
   Add,
   Refresh,
-  MoreVert,
+  MoreHoriz,
   Delete,
   Edit,
   MenuBook,
@@ -150,6 +150,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
 
       // Auto-select if there's only one program available
       if (programs.length === 1) {
+        setSelectedProgramId(programs[0].id);
+      } else {
         setSelectedProgramId(programs[0].id);
       }
     } catch (err) {
@@ -366,6 +368,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
         <List sx={{ pt: 0 }}>
           <ListItem disablePadding>
             <ListItemButton
+              disableRipple
               onClick={() => navigate("/curriculum")}
               selected={isCurriculumActive()}
               sx={{
@@ -377,7 +380,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
                 },
                 "&.Mui-selected": {
                   backgroundColor: "rgba(100, 108, 255, 0.2)",
-                  borderLeft: "3px solid #646cff",
                   "& .MuiListItemIcon-root": { color: "#646cff" },
                   "& .MuiListItemText-primary": {
                     color: "#646cff",
@@ -526,6 +528,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
             studyPlans.map((plan) => (
               <ListItem key={plan.id} disablePadding>
                 <ListItemButton
+                  disableRipple
                   onClick={() => handleStudyPlanClick(plan.id)}
                   selected={isStudyPlanActive(plan.id)}
                   sx={{
@@ -539,7 +542,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
                     },
                     "&.Mui-selected": {
                       backgroundColor: "rgba(100, 108, 255, 0.2)",
-                      borderLeft: "3px solid #646cff",
                       "& .MuiListItemText-primary": {
                         color: "#646cff",
                         fontWeight: 600,
@@ -599,17 +601,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
                     }}
                   >
                     <IconButton
+                      disableRipple
                       size="small"
                       onClick={(e) => handleMenuOpen(e, plan.id)}
                       sx={{
                         color: "rgba(255, 255, 255, 0.7)",
                         "&:hover": {
-                          backgroundColor: "rgba(100, 108, 255, 0.1)",
                           color: "#646cff",
                         },
                       }}
                     >
-                      <MoreVert fontSize="small" />
+                      <MoreHoriz fontSize="small" />
                     </IconButton>
                   </Box>
                 </ListItemButton>
@@ -625,60 +627,118 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
             fullWidth
             PaperProps={{
               sx: {
-                backgroundColor: "#2a2a2a",
+                background: "rgba(42, 42, 42, 0.95)",
+                backdropFilter: "blur(20px)",
+                border: "1px solid rgba(100, 108, 255, 0.2)",
+                borderRadius: 4,
                 color: "white",
+                position: "relative",
+                overflow: "hidden",
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  background:
+                    "linear-gradient(135deg, rgba(100, 108, 255, 0.05) 0%, transparent 100%)",
+                  zIndex: -1,
+                },
+              },
+            }}
+            BackdropProps={{
+              sx: {
+                backgroundColor: "rgba(0, 0, 0, 0.8)",
+                backdropFilter: "blur(8px)",
               },
             }}
           >
-            <DialogTitle sx={{ color: "white" }}>
+            <DialogTitle
+              sx={{
+                color: "white",
+                borderBottom: "1px solid rgba(100, 108, 255, 0.2)",
+                fontWeight: 700,
+                background:
+                  "linear-gradient(135deg, #ffffff 0%, #646cff 50%, #ffffff 100%)",
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
               Create New Study Plan
             </DialogTitle>
-            <DialogContent>
+            <DialogContent sx={{ pt: 3 }}>
               <TextField
                 autoFocus
                 margin="dense"
-                label="Study Plan Name"
+                placeholder="Study Plan Name"
                 fullWidth
                 variant="outlined"
                 value={newPlanName}
                 onChange={(e) => setNewPlanName(e.target.value)}
                 sx={{
-                  mb: 2,
+                  mb: 3,
                   "& .MuiOutlinedInput-root": {
-                    "& fieldset": { borderColor: "#555" },
-                    "&:hover fieldset": { borderColor: "#646cff" },
-                    "&.Mui-focused fieldset": { borderColor: "#646cff" },
+                    backgroundColor: "rgba(255, 255, 255, 0.05)",
+                    borderRadius: 3,
+                    "& fieldset": {
+                      borderColor: "rgba(255, 255, 255, 0.2)",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "rgba(100, 108, 255, 0.5)",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "#646cff",
+                      borderWidth: "2px",
+                    },
                   },
-                  "& .MuiInputBase-input": { color: "white" },
-                  "& .MuiInputLabel-root": { color: "#aaa" },
+                  "& .MuiInputBase-input": {
+                    color: "white",
+                    fontSize: "1.1rem",
+                  },
+                  "& .MuiInputLabel-root": {
+                    color: "#aaa",
+                    "&.Mui-focused": {
+                      color: "#646cff",
+                    },
+                  },
                 }}
               />
               <FormControl fullWidth variant="outlined">
-                <InputLabel sx={{ color: "#aaa" }}>Study Program</InputLabel>
                 <Select
                   value={selectedProgramId}
                   onChange={handleProgramChange}
-                  label="Study Program"
                   disabled={loadingPrograms}
                   sx={{
+                    backgroundColor: "rgba(255, 255, 255, 0.05)",
+                    borderRadius: 3,
                     "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#555",
+                      borderColor: "rgba(255, 255, 255, 0.2)",
                     },
                     "&:hover .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#646cff",
+                      borderColor: "rgba(100, 108, 255, 0.5)",
                     },
                     "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
                       borderColor: "#646cff",
+                      borderWidth: "2px",
                     },
-                    "& .MuiSelect-select": { color: "white" },
-                    "& .MuiSvgIcon-root": { color: "white" },
+                    "& .MuiSelect-select": {
+                      color: "white",
+                      fontSize: "1.1rem",
+                    },
+                    "& .MuiSvgIcon-root": { color: "#aaa" },
                   }}
                   MenuProps={{
                     PaperProps: {
                       sx: {
-                        backgroundColor: "#2a2a2a",
+                        backgroundColor: "rgba(42, 42, 42, 0.95)",
+                        backdropFilter: "blur(10px)",
+                        border: "1px solid rgba(100, 108, 255, 0.2)",
+                        borderRadius: 3,
                         "& .MuiMenuItem-root": {
                           color: "white",
+                          fontSize: "1rem",
                           "&:hover": {
                             backgroundColor: "rgba(100, 108, 255, 0.1)",
                           },
@@ -695,11 +755,19 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
                 </Select>
               </FormControl>
             </DialogContent>
-            <DialogActions>
+            <DialogActions
+              sx={{ p: 3, borderTop: "1px solid rgba(100, 108, 255, 0.2)" }}
+            >
               <Button
                 onClick={() => setCreateModalOpen(false)}
                 disabled={creatingPlan}
-                sx={{ color: "#aaa" }}
+                sx={{
+                  color: "#aaa",
+                  textTransform: "none",
+                  "&:hover": {
+                    backgroundColor: "rgba(255, 255, 255, 0.05)",
+                  },
+                }}
               >
                 Cancel
               </Button>
@@ -710,8 +778,24 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
                   !newPlanName.trim() || !selectedProgramId || creatingPlan
                 }
                 sx={{
-                  backgroundColor: "#646cff",
-                  "&:hover": { backgroundColor: "#535bf2" },
+                  background:
+                    "linear-gradient(135deg, #646cff 0%, #535bf2 100%)",
+                  color: "white",
+                  textTransform: "none",
+                  px: 3,
+                  py: 1.5,
+                  borderRadius: "50px",
+                  fontWeight: 600,
+                  boxShadow: "0 8px 32px rgba(100, 108, 255, 0.4)",
+                  "&:hover": {
+                    transform: "translateY(-2px)",
+                    boxShadow: "0 12px 40px rgba(100, 108, 255, 0.6)",
+                  },
+                  "&:disabled": {
+                    background: "rgba(100, 108, 255, 0.3)",
+                    transform: "none",
+                  },
+                  transition: "all 0.3s ease",
                 }}
               >
                 {creatingPlan ? "Creating..." : "Create"}
@@ -736,7 +820,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
               sx: {
                 backgroundColor: "rgba(42, 42, 42, 0.95)",
                 backdropFilter: "blur(10px)",
-                border: "1px solid rgba(100, 108, 255, 0.2)",
                 borderRadius: "12px",
                 boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
               },
@@ -751,6 +834,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
               }}
               sx={{
                 color: "white",
+                borderRadius: 2,
+                mx: 1,
+                my: 0.5,
                 "&:hover": {
                   backgroundColor: "rgba(100, 108, 255, 0.1)",
                 },
@@ -763,6 +849,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
               onClick={handleDeleteStudyPlan}
               sx={{
                 color: "#ff6b6b",
+                borderRadius: 2,
+                mx: 1,
+                my: 0.5,
                 "&:hover": {
                   backgroundColor: "rgba(244, 67, 54, 0.1)",
                 },
