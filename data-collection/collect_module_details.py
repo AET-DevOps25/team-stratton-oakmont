@@ -82,6 +82,7 @@ class HybridModuleScraper:
                 from selenium.webdriver.support import expected_conditions as EC
                 
                 logger.info("Initializing browser scraper as fallback...")
+                print("Setting up Chrome options...")
                 
                 options = Options()
                 options.add_argument('--headless=new')
@@ -91,15 +92,19 @@ class HybridModuleScraper:
                 options.add_argument('--window-size=1920,1080')
                 options.add_argument('--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36')
                 
+                print("Starting Chrome WebDriver...")
                 self.browser_scraper = webdriver.Chrome(options=options)
+                print("Setting timeouts...")
                 self.browser_scraper.implicitly_wait(10)
                 self.browser_scraper.set_page_load_timeout(60)
                 
                 logger.info("Browser scraper initialized successfully")
+                print("Browser scraper ready!")
                 return True
                 
             except Exception as e:
                 logger.error(f"Failed to initialize browser scraper: {e}")
+                print(f"Browser initialization failed: {e}")
                 return False
         return True
     
@@ -552,7 +557,156 @@ def test_single_module(url, curriculum_id, save_html=True):
     finally:
         scraper.close()
 
-if __name__ == '__main__':
+def run_module_details_scraping(test_mode=False):
+    """
+    Main function to run module details scraping - can be called from other scripts.
+    
+    Args:
+        test_mode (bool): If True, only process first 3 entries with HTML saving.
+                         If False, process all entries without HTML saving.
+    
+    Returns:
+        tuple: (success: bool, message: str, stats: dict)
+    """
+    try:
+        # Get the directory of this script
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        
+        # Load the module details CSV
+        csv_file_path = os.path.join(script_dir, 'csv_tables', 'module_details.csv')
+        output_csv_path = os.path.join(script_dir, 'csv_tables', 'module_details_scraped.csv')
+        
+        print("Loading module details CSV...")
+        module_details_df = pd.read_csv(csv_file_path)
+        print(f"Loaded {len(module_details_df)} entries from {csv_file_path}")
+        
+        # Check required columns
+        if 'transformed_link' not in module_details_df.columns:
+            return False, "Error: 'transformed_link' column not found in CSV", {}
+        
+        if 'curriculum_ID' not in module_details_df.columns:
+            return False, "Error: 'curriculum_ID' column not found in CSV", {}
+        
+        # Filter for test mode if requested
+        if test_mode:
+            print("TEST MODE: Only processing the first 3 entries with HTML saving enabled")
+            module_details_df = module_details_df.head(3)
+            save_html = True  # Save HTML in test mode for debugging
+        else:
+            print("PRODUCTION MODE: Processing all entries without HTML saving")
+            save_html = False  # Don't save HTML in production to avoid hundreds of files
+        
+        # Initialize scraper
+        scraper = HybridModuleScraper(save_html=save_html)
+        
+        try:
+            print(f"\nStarting scraping process for {len(module_details_df)} entries...")
+            print("="*70)
+            
+            # Iterate over each row in the dataframe
+            for index, row in module_details_df.iterrows():
+                curriculum_id = row.get('curriculum_ID', index)
+                transformed_link = row.get('transformed_link', '')
+                
+                print(f"\nProcessing entry {index + 1}/{len(module_details_df)}")
+                print(f"Curriculum ID: {curriculum_id}")
+                print(f"Link: {transformed_link}")
+                
+                if pd.isna(transformed_link) or not transformed_link:
+                    print("Skipping: No transformed_link provided")
+                    continue
+                
+                # Scrape module details
+                scraped_data = scraper.scrape_module_details(transformed_link, curriculum_id)
+                
+                # Update the dataframe with scraped data
+                for key, value in scraped_data.items():
+                    if key in module_details_df.columns:
+                        # Handle pandas dtype warnings by explicitly converting data types
+                        if key in ['credits', 'total_hours', 'contact_hours', 'self_study_hours']:
+                            # Convert numeric fields to float first
+                            try:
+                                module_details_df.at[index, key] = float(value) if value is not None else None
+                            except (ValueError, TypeError):
+                                module_details_df.at[index, key] = value
+                        else:
+                            # Convert all other fields to string to avoid dtype issues
+                            module_details_df.at[index, key] = str(value) if value is not None else None
+                    else:
+                        # Add new column if it doesn't exist
+                        if key not in module_details_df.columns:
+                            module_details_df[key] = None
+                        if key in ['credits', 'total_hours', 'contact_hours', 'self_study_hours']:
+                            try:
+                                module_details_df.at[index, key] = float(value) if value is not None else None
+                            except (ValueError, TypeError):
+                                module_details_df.at[index, key] = value
+                        else:
+                            module_details_df.at[index, key] = str(value) if value is not None else None
+                
+                # Print results
+                result_id = scraped_data.get('ID', 'None')
+                result_name = scraped_data.get('name', 'None')
+                result_method = scraped_data.get('extraction_method', 'Unknown')
+                
+                print(f"Result - ID: {result_id} | Name: {result_name} | Method: {result_method}")
+                
+                # Save progress after each entry (in case of interruption)
+                module_details_df.to_csv(output_csv_path, index=False, encoding='utf-8-sig')
+                print(f"Progress saved to {output_csv_path}")
+                
+                # Delay between requests to be respectful
+                if index < len(module_details_df) - 1:  # Don't wait after last entry
+                    import time, random
+                    wait_time = random.uniform(2, 4)
+                    print(f"Waiting {wait_time:.1f} seconds before next request...")
+                    time.sleep(wait_time)
+            
+            print("\n" + "="*70)
+            print("Scraping completed successfully!")
+            print(f"Results saved to: {output_csv_path}")
+            
+            # Calculate summary statistics
+            successful_extractions = module_details_df[
+                module_details_df['extraction_method'].isin(['HTTP', 'Browser'])
+            ].shape[0]
+            failed_extractions = module_details_df[
+                module_details_df['extraction_method'] == 'Failed'
+            ].shape[0]
+            
+            stats = {
+                'total_processed': len(module_details_df),
+                'successful': successful_extractions,
+                'failed': failed_extractions,
+                'success_rate': successful_extractions/len(module_details_df)*100 if len(module_details_df) > 0 else 0
+            }
+            
+            print(f"Summary:")
+            print(f"  - Total entries processed: {stats['total_processed']}")
+            print(f"  - Successful extractions: {stats['successful']}")
+            print(f"  - Failed extractions: {stats['failed']}")
+            print(f"  - Success rate: {stats['success_rate']:.1f}%")
+            
+            return True, f"Scraping completed successfully! Results saved to: {output_csv_path}", stats
+            
+        except KeyboardInterrupt:
+            print("\nScraping interrupted by user")
+            print(f"Partial results saved to: {output_csv_path}")
+            return False, "Scraping interrupted by user", {}
+        finally:
+            scraper.close()
+            
+    except FileNotFoundError:
+        error_msg = f"Error: Could not find CSV file at {csv_file_path}"
+        print(error_msg)
+        print("Please make sure the file exists in the csv_tables directory")
+        return False, error_msg, {}
+    except Exception as e:
+        error_msg = f"Error: {e}"
+        print(error_msg)
+        return False, error_msg, {}
+
+def main():
     # Configuration - change these to control behavior
     TEST_MODE = False  # Set to True to only process first entry, False to process all entries
     
@@ -684,3 +838,5 @@ if __name__ == '__main__':
     print(f"\nTo change mode, edit TEST_MODE variable in the script:")
     print(f"  TEST_MODE = True   # Process only first entry with HTML saving")
     print(f"  TEST_MODE = False  # Process all entries without HTML saving")
+
+# ...existing code...
