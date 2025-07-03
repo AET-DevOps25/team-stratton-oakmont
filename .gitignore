@@ -455,3 +455,8 @@ ansible/roles/
 
 # Ansible collections
 ansible/collections/
+
+# data-collection
+data-collection/test_db.py
+data-collection/tmp.py
+data-collection/tmp_test_api.py
