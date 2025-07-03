@@ -473,6 +473,45 @@ def collect_curriculums(url, study_program_id="121", headless=True):
             except:
                 logger.warning("Error closing driver")
 
+def extract_module_ids(df):
+    """
+    Extract Module_ID from curriculum DataFrame by looking for bracketed content
+    in Name columns and storing it only for rows that start with [
+    
+    Args:
+        df (pandas.DataFrame): The curriculum DataFrame
+    
+    Returns:
+        pandas.DataFrame: DataFrame with Module_ID column populated
+    """
+    logger.info("Extracting Module_IDs from curriculum data...")
+    
+    # Add Module_ID column if it doesn't exist
+    if 'Module_ID' not in df.columns:
+        df['Module_ID'] = None
+    
+    # Create mask for rows where at least one Name column starts with "["
+    mask = (df['Name (1)'].str.startswith('[', na=False) | 
+            df['Name (2)'].str.startswith('[', na=False) | 
+            df['Name (3)'].str.startswith('[', na=False))
+    
+    # Function to extract module ID from brackets
+    def extract_module_id(row):
+        for col in ['Name (1)', 'Name (2)', 'Name (3)']:
+            if pd.notna(row[col]) and row[col].startswith('['):
+                bracket_end = row[col].find(']')
+                if bracket_end != -1:
+                    return row[col][1:bracket_end].strip()  # Extract content between [ and ]
+        return None
+    
+    # Apply the function only to rows that match the mask
+    df.loc[mask, 'Module_ID'] = df.loc[mask].apply(extract_module_id, axis=1)
+    
+    module_count = df['Module_ID'].notna().sum()
+    logger.info(f"Successfully extracted {module_count} Module_IDs")
+    
+    return df
+
 if __name__ == '__main__':
     logger.info("Starting robust TUM curriculum scraper...")
     
@@ -483,12 +522,16 @@ if __name__ == '__main__':
     curriculum_df = collect_curriculums(msc_info_systems_url, study_program_id="121", headless=True)
     
     if not curriculum_df.empty:
+        # Extract Module_IDs from the curriculum data
+        curriculum_df = extract_module_ids(curriculum_df)
+        
         # Ensure the csv_tables directory exists
         import os
-        os.makedirs('csv_tables', exist_ok=True)
-        
-        curriculum_df.to_csv('csv_tables/msc_information_systems_curriculum.csv', index=False, encoding='utf-8-sig')
-        logger.info("Successfully saved curriculum to csv_tables/msc_information_systems_curriculum.csv")
+        os.makedirs('data-collection/csv_tables', exist_ok=True)
+
+        curriculum_df.to_csv('data-collection/csv_tables/curriculums.csv', index=False, encoding='utf-8-sig')
+        logger.info("Successfully saved curriculum to data-collection/csv_tables/curriculums.csv")
         logger.info(f"Total entries saved: {len(curriculum_df)}")
+        logger.info(f"Entries with Module_ID: {curriculum_df['Module_ID'].notna().sum()}")
     else:
         logger.error("No curriculum data was collected")

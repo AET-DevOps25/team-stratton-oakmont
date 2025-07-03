@@ -6,6 +6,9 @@ import collect_curriculums
 import collect_module_details
 
 def main():
+    
+    # Module Details Scraping Configuration
+    MODULE_DETAILS_TEST_MODE = False  # Set to True for testing (first 3 entries), False for production (all entries)
 
     # 1. Collect Degree Programs
     print("Collecting degree programs...")
@@ -26,14 +29,19 @@ def main():
         curriculum_df.to_csv('data-collection/csv_tables/msc_information_systems_curriculum.csv', index=False, encoding='utf-8-sig')
         print("Curriculum for M.Sc. Information Systems saved to CSV.")
 
-    # 3. Collect Module Details
-    print("\nCollecting module details...")
-    semesters = ['2024w', '2025s']
-    courses_df = collect_module_details.get_module_details(semesters)
-    if not courses_df.empty:
-        courses_df.to_csv('data-collection/csv_tables/courses.csv', index=False, encoding='utf-8-sig')
-        print("Module details saved to CSV.")
-
+    # 3. Collect Module Details using the hybrid scraper
+    print("\nCollecting module details using hybrid scraper...")
+    try:
+        # Option 1: Call the main function directly
+        import collect_module_details
+        collect_module_details.main()
+        print("✅ Module details collection completed!")
+        
+    except ImportError as e:
+        print(f"❌ Error importing module details scraper: {e}")
+    except Exception as e:
+        print(f"❌ Error during module details collection: {e}")
+        
     # 4. Upload to Database
     print("\nUploading data to the database from CSV files...")
     conn = database.get_db_connection()

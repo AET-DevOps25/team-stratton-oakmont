@@ -839,4 +839,3 @@ def main():
     print(f"  TEST_MODE = True   # Process only first entry with HTML saving")
     print(f"  TEST_MODE = False  # Process all entries without HTML saving")
 
-# ...existing code...
