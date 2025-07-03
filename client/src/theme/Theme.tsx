@@ -1,27 +1,27 @@
-import { createTheme } from '@mui/material/styles';
+import { createTheme } from "@mui/material/styles";
 
 export const theme = createTheme({
   palette: {
     primary: {
-      main: '#646cff',
+      main: "#646cff",
     },
     secondary: {
-      main: '#dc004e',
+      main: "#dc004e",
     },
     custom: {
-        tum_blue: '#0165BD',
+      tum_blue: "#0165BD",
     },
     background: {
-      default: '#ffffff',
-      paper: '#ffffff',
+      default: "#ffffff",
+      paper: "#ffffff",
     },
     text: {
-      primary: '#333333',
-      secondary: '#666666',
+      primary: "#333333",
+      secondary: "#666666",
     },
   },
   typography: {
-    fontFamily: 'system-ui, Avenir, Helvetica, Arial, sans-serif',
+    fontFamily: "system-ui, Avenir, Helvetica, Arial, sans-serif",
     h4: {
       fontWeight: 600,
     },
@@ -33,8 +33,8 @@ export const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          textTransform: 'none',
-          borderRadius: '8px',
+          textTransform: "none",
+          borderRadius: "8px",
           fontWeight: 500,
         },
       },
@@ -42,7 +42,7 @@ export const theme = createTheme({
     MuiAppBar: {
       styleOverrides: {
         root: {
-          backgroundColor: '#333333',
+          backgroundColor: "#333333",
         },
       },
     },

@@ -1,0 +1,98 @@
+services:
+  # Program Catalog Service
+  program-catalog-service:
+    build:
+      context: ./server
+      dockerfile: program-catalog-service/Dockerfile
+    container_name: program-catalog-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - stratton-oakmont-network
+    restart: unless-stopped
+
+  # Study Plan Service
+  study-plan-service:
+    build:
+      context: ./server
+      dockerfile: study-plan-service/Dockerfile
+    container_name: study-plan-service
+    ports:
+      - "8081:8081"
+    env_file:
+      - .env
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - stratton-oakmont-network
+    restart: unless-stopped
+
+  # AI Advisor Service
+  ai-advisor-service:
+    build:
+      context: ./server
+      dockerfile: ai-advisor-service/Dockerfile
+    container_name: ai-advisor-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - stratton-oakmont-network
+    restart: unless-stopped
+
+  # User Auth Service
+  user-auth-service:
+    build:
+      context: ./server
+      dockerfile: user-auth-service/Dockerfile
+    container_name: user-auth-service
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    env_file:
+      - .env
+    networks:
+      - stratton-oakmont-network
+    restart: unless-stopped
+
+  # LLM Inference Service (Python)
+  llm-inference-service:
+    build:
+      context: ./server/llm-inference-service
+    container_name: llm-inference-service
+    ports:
+      - "8000:8000"
+    environment:
+      - ENV=development
+    networks:
+      - stratton-oakmont-network
+    restart: unless-stopped
+
+  # Client (React Frontend)
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+      args:
+        - NODE_ENV=development
+        - VITE_MODE=development
+        - VITE_API_BASE_URL=http://localhost:8083
+    container_name: stratton-oakmont-client
+    ports:
+      - "3000:3000"
+    depends_on:
+      - program-catalog-service
+      - study-plan-service
+      - user-auth-service
+      - ai-advisor-service
+    networks:
+      - stratton-oakmont-network
+    restart: unless-stopped
+
+networks:
+  stratton-oakmont-network:
+    driver: bridge

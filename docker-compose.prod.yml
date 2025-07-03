@@ -8,7 +8,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=prod
     networks:
       - stratton-oakmont-network
     restart: unless-stopped
@@ -21,8 +21,12 @@ services:
     container_name: study-plan-service
     ports:
       - "8081:8081"
+    env_file:
+      - .env
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=prod
+    env_file:
+      - .env
     networks:
       - stratton-oakmont-network
     restart: unless-stopped
@@ -36,7 +40,7 @@ services:
     ports:
       - "8082:8082"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=prod
     networks:
       - stratton-oakmont-network
     restart: unless-stopped
@@ -49,13 +53,8 @@ services:
     container_name: user-auth-service
     ports:
       - "8083:8083"
-    #environment:
-    #- SPRING_PROFILES_ACTIVE=docker
-    #- DB_USER_AUTH_URL=${DB_USER_AUTH_URL}
-    #- DB_USER_AUTH_USERNAME=${DB_USER_AUTH_USERNAME}
-    #- DB_USER_AUTH_PASSWORD=${DB_USER_AUTH_PASSWORD}
-    #- JWT_SECRET=${JWT_SECRET}
-    # TODO [ ]: duplicate .env files in root and user-auth-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
     env_file:
       - .env
     networks:
@@ -69,6 +68,8 @@ services:
     container_name: llm-inference-service
     ports:
       - "8000:8000"
+    environment:
+      - ENV=production
     networks:
       - stratton-oakmont-network
     restart: unless-stopped
@@ -77,9 +78,13 @@ services:
   client:
     build:
       context: ./client
+      args:
+        - NODE_ENV=production
+        - VITE_MODE=production
+        - VITE_API_BASE_URL=${PUBLIC_IP:-localhost}:8083
     container_name: stratton-oakmont-client
     ports:
-      - "3000:80"
+      - "80:80"
     depends_on:
       - program-catalog-service
       - study-plan-service

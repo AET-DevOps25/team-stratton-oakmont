@@ -1,0 +1,18 @@
+# This file defines the variables used in the Terraform configuration for deploying an AWS EC2 instance.
+
+variable "aws_region" {
+  description = "AWS region"
+  type        = string
+  default     = "us-east-1"
+}
+
+variable "instance_type" {
+  description = "EC2 instance type"
+  type        = string
+  default     = "t3.medium"
+}
+
+variable "aws_key_name" {
+  description = "Name of the AWS key pair for SSH access"
+  type        = string
+}
