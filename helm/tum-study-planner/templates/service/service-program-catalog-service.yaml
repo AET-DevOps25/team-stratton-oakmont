@@ -1,8 +1,9 @@
+# prettier-ignore
 apiVersion: v1
 kind: Service
 metadata:
   name: program-catalog-service
-  namespace: { { .Values.namespace } }
+  namespace: {{ .Values.namespace }}
 spec:
   selector:
     app: program-catalog-service

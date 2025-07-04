@@ -1,13 +1,14 @@
+# prettier-ignore
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: tum-study-planner-ingress
-  namespace: { { .Values.namespace } }
+  namespace: {{ .Values.namespace }}
   annotations:
     kubernetes.io/ingress.class: "nginx"
 spec:
   rules:
-    - host: { { .Values.ingress.host } }
+    - host: {{ .Values.ingress.host }}
       http:
         paths:
           - path: /

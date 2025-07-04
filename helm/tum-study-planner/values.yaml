@@ -1,0 +1,56 @@
+# Global configuration
+namespace: tum-study-planner
+
+# Ingress configuration
+ingress:
+  host: tum-study-planner.student.k8s.aet.cit.tum.de
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+
+# Client (Frontend) configuration
+client:
+  image:
+    repository: ghcr.io/aet-devops25/team-stratton-oakmont/client
+    tag: latest
+    pullPolicy: Always
+  replicas: 1
+
+# Study Plan Service configuration
+studyPlanService:
+  image:
+    repository: ghcr.io/aet-devops25/team-stratton-oakmont/study-plan-service
+    tag: latest
+    pullPolicy: Always
+  replicas: 1
+
+# Program Catalog Service configuration
+programCatalogService:
+  image:
+    repository: ghcr.io/aet-devops25/team-stratton-oakmont/program-catalog-service
+    tag: latest
+    pullPolicy: Always
+  replicas: 1
+
+# AI Advisor Service configuration
+aiAdvisorService:
+  image:
+    repository: ghcr.io/aet-devops25/team-stratton-oakmont/ai-advisor-service
+    tag: latest
+    pullPolicy: Always
+  replicas: 1
+
+# User Auth Service configuration
+userAuthService:
+  image:
+    repository: ghcr.io/aet-devops25/team-stratton-oakmont/user-auth-service
+    tag: latest
+    pullPolicy: Always
+  replicas: 1
+
+# Database configurations (using existing k8s manifests)
+postgresql:
+  enabled: false # We're using separate manifests in k8s/base/
+
+# Environment-specific overrides
+environment: production
