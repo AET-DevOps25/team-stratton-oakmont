@@ -14,6 +14,8 @@ spec:
       labels:
         app: program-catalog-service
     spec:
+      imagePullSecrets:
+        - name: ghcr
       containers:
         - name: program-catalog-service
           image: "{{ .Values.programCatalogService.image.repository }}:{{ .Values.programCatalogService.image.tag }}"

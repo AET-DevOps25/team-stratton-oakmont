@@ -14,6 +14,8 @@ spec:
       labels:
         app: ai-advisor-service
     spec:
+      imagePullSecrets:
+        - name: ghcr
       containers:
         - name: ai-advisor-service
           image: "{{ .Values.aiAdvisorService.image.repository }}:{{ .Values.aiAdvisorService.image.tag }}"

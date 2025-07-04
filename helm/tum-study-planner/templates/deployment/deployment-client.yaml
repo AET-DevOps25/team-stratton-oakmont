@@ -14,6 +14,8 @@ spec:
       labels:
         app: client
     spec:
+      imagePullSecrets:
+        - name: ghcr
       containers:
         - name: client
           image: "{{ .Values.client.image.repository }}:{{ .Values.client.image.tag }}"

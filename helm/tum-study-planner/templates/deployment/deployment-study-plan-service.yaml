@@ -14,6 +14,8 @@ spec:
       labels:
         app: study-plan-service
     spec:
+      imagePullSecrets:
+        - name: ghcr
       containers:
         - name: study-plan-service
           image: "{{ .Values.studyPlanService.image.repository }}:{{ .Values.studyPlanService.image.tag }}"

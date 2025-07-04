@@ -14,6 +14,8 @@ spec:
       labels:
         app: user-auth-service
     spec:
+      imagePullSecrets:
+        - name: ghcr
       containers:
         - name: user-auth-service
           image: "{{ .Values.userAuthService.image.repository }}:{{ .Values.userAuthService.image.tag }}"
