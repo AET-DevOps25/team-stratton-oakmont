@@ -13,6 +13,9 @@ RUN npm ci
 # Copy source code
 COPY . .
 
+# Set development API URL
+ENV VITE_API_BASE_URL=http://localhost:8083
+
 # Expose Vite dev server port
 EXPOSE 5173
 

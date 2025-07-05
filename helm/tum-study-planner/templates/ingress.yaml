@@ -38,17 +38,17 @@ spec:
                 name: program-catalog-service
                 port:
                   number: 8082
-          - path: /api/ai-advisor/
-            pathType: Prefix
-            backend:
-              service:
-                name: ai-advisor-service
-                port:
-                  number: 8083
           - path: /api/user-auth/
             pathType: Prefix
             backend:
               service:
                 name: user-auth-service
+                port:
+                  number: 8083
+          - path: /api/ai-advisor/
+            pathType: Prefix
+            backend:
+              service:
+                name: ai-advisor-service
                 port:
                   number: 8084
