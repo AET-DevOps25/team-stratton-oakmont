@@ -45,6 +45,7 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
+            "https://tum-study-planner.student.k8s.aet.cit.tum.de",
             "http://localhost:5173",  // Vite dev server
             "http://localhost:3000",  // Alternative React port
             "http://localhost:80"     // Docker/nginx port
