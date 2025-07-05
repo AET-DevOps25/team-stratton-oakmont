@@ -17,8 +17,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/v1")
-@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:3000"})
+@CrossOrigin(origins = {
+    "https://tum-study-planner.student.k8s.aet.cit.tum.de",
+    "http://localhost:5173", 
+    "http://localhost:3000"
+})
 public class StudyProgramController {
 
     private final StudyProgramService studyProgramService;
