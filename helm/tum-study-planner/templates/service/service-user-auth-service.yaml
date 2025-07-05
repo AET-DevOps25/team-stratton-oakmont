@@ -8,6 +8,6 @@ spec:
   selector:
     app: user-auth-service
   ports:
-    - port: 8084
-      targetPort: 8084
+    - port: 8083
+      targetPort: 8083
   type: ClusterIP
