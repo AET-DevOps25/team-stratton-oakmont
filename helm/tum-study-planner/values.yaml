@@ -14,7 +14,6 @@ client:
   image:
     repository: ghcr.io/florivn/client
     tag: latest
-    imagePullPolicy: Always
 
 # Study Plan Service configuration
 studyPlanService:
