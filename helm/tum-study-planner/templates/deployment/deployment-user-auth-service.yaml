@@ -42,3 +42,8 @@ spec:
                 secretKeyRef:
                   name: tum-study-planner-secrets
                   key: JWT_SECRET
+            - name: JWT_EXPIRATION 
+              valueFrom:
+                secretKeyRef:
+                  name: tum-study-planner-secrets
+                  key: JWT_EXPIRATION
