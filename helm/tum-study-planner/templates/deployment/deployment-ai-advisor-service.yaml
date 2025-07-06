@@ -1,0 +1,34 @@
+# prettier-ignore
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-advisor-service
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ai-advisor-service
+  template:
+    metadata:
+      labels:
+        app: ai-advisor-service
+    spec:
+      imagePullSecrets:
+        - name: ghcr
+      containers:
+        - name: ai-advisor-service
+          image: "{{ .Values.aiAdvisorService.image.repository }}:{{ .Values.aiAdvisorService.image.tag }}"
+          ports:
+            - containerPort: 8083
+          env:
+            # - name: OPENAI_API_KEY
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: tum-study-planner-secrets
+            #       key: OPENAI_API_KEY
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: tum-study-planner-secrets
+                  key: JWT_SECRET

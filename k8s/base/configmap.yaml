@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tum-study-planner-config
+  namespace: tum-study-planner
+  labels:
+    app: tum-study-planner
+data:
+  # Auth Database configuration
+  AUTH_POSTGRES_HOST: "postgres-auth-service"
+  AUTH_POSTGRES_PORT: "5432"
+  AUTH_POSTGRES_DB: "auth_db"
+
+  # Study Data Database configuration (degree programs, courses)
+  STUDY_DATA_POSTGRES_HOST: "postgres-study-data-service"
+  STUDY_DATA_POSTGRES_PORT: "5432"
+  STUDY_DATA_POSTGRES_DB: "study_data_db"
+
+  # Study Plan Database configuration (user study plans)
+  STUDY_PLAN_POSTGRES_HOST: "postgres-study-plan-service"
+  STUDY_PLAN_POSTGRES_PORT: "5432"
+  STUDY_PLAN_POSTGRES_DB: "study_plan_db"
+
+  # Service URLs
+  AUTH_SERVICE_URL: "http://auth-service:8081"
+  CATALOG_SERVICE_URL: "http://catalog-service:8082"
+  STUDY_PLAN_SERVICE_URL: "http://study-plan-service:8083"
+
+  # Application settings
+  NODE_ENV: "production"
+  LOG_LEVEL: "info"
+  CORS_ORIGIN: "*"

@@ -1,0 +1,13 @@
+# prettier-ignore
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-auth-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: user-auth-service
+  ports:
+    - port: 8083
+      targetPort: 8083
+  type: ClusterIP

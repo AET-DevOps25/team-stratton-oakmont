@@ -26,7 +26,11 @@ import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/v1")
-@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:3000"})
+@CrossOrigin(origins = {
+    "https://tum-study-planner.student.k8s.aet.cit.tum.de",
+    "http://localhost:5173", 
+    "http://localhost:3000"
+})
 public class StudyPlanController {
 
     private final StudyPlanService studyPlanService;

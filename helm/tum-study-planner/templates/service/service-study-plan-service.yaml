@@ -1,0 +1,13 @@
+# prettier-ignore
+apiVersion: v1
+kind: Service
+metadata:
+  name: study-plan-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: study-plan-service
+  ports:
+    - port: 8081
+      targetPort: 8081
+  type: ClusterIP

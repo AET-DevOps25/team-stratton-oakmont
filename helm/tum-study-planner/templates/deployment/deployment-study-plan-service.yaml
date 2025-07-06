@@ -1,0 +1,44 @@
+# prettier-ignore
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: study-plan-service
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: study-plan-service
+  template:
+    metadata:
+      labels:
+        app: study-plan-service
+    spec:
+      imagePullSecrets:
+        - name: ghcr
+      containers:
+        - name: study-plan-service
+          image: "{{ .Values.studyPlanService.image.repository }}:{{ .Values.studyPlanService.image.tag }}"
+          ports:
+            - containerPort: 8081
+          env:
+            - name: DB_STUDY_PLAN_URL
+              valueFrom:
+                secretKeyRef:
+                  name: tum-study-planner-secrets
+                  key: STUDY_PLAN_DB_URL
+            - name: DB_STUDY_PLAN_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: tum-study-planner-secrets
+                  key: STUDY_PLAN_DB_USER
+            - name: DB_STUDY_PLAN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: tum-study-planner-secrets
+                  key: STUDY_PLAN_DB_PASSWORD
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: tum-study-planner-secrets
+                  key: JWT_SECRET

@@ -1,0 +1,49 @@
+# prettier-ignore
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-auth-service
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-auth-service
+  template:
+    metadata:
+      labels:
+        app: user-auth-service
+    spec:
+      imagePullSecrets:
+        - name: ghcr
+      containers:
+        - name: user-auth-service
+          image: "{{ .Values.userAuthService.image.repository }}:{{ .Values.userAuthService.image.tag }}"
+          ports:
+            - containerPort: 8083
+          env:
+            - name: DB_USER_AUTH_URL
+              valueFrom:
+                secretKeyRef:
+                  name: tum-study-planner-secrets
+                  key: USER_AUTH_DB_URL
+            - name: DB_USER_AUTH_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: tum-study-planner-secrets
+                  key: USER_AUTH_DB_USER
+            - name: DB_USER_AUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: tum-study-planner-secrets
+                  key: USER_AUTH_DB_PASSWORD
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: tum-study-planner-secrets
+                  key: JWT_SECRET
+            - name: JWT_EXPIRATION 
+              valueFrom:
+                secretKeyRef:
+                  name: tum-study-planner-secrets
+                  key: JWT_EXPIRATION

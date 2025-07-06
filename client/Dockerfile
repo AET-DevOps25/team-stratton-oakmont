@@ -5,7 +5,7 @@ WORKDIR /app
 # Accept build arguments for environment configuration
 ARG NODE_ENV=production
 ARG VITE_MODE=production
-ARG VITE_API_BASE_URL
+ARG VITE_API_BASE_URL=/api/user-auth
 
 # Set environment variables
 ENV NODE_ENV=$NODE_ENV

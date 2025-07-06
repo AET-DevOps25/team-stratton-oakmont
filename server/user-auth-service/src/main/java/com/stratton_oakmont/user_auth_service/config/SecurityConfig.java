@@ -28,7 +28,7 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity, consider enabling for production
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/", "/index.html", "/auth/**").permitAll()
+                .requestMatchers("/", "/index.html", "/auth/**", "/**/auth/**").permitAll()
                 .anyRequest().authenticated() // All other requests need authentication
             );
         return http.build();
@@ -45,12 +45,13 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
+            "https://tum-study-planner.student.k8s.aet.cit.tum.de",
             "http://localhost:5173",  // Vite dev server
             "http://localhost:3000",  // Alternative React port
             "http://localhost:80"     // Docker/nginx port
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
