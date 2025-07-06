@@ -1,0 +1,90 @@
+{
+  "connectivity": {
+    "study": {
+      "url": "https://campus.tum.de/tumonline/co/co-sm-core/study/api",
+      "status_code": 404,
+      "response_time": 0.10196,
+      "headers": {
+        "Date": "Mon, 30 Jun 2025 15:36:23 GMT",
+        "Server": "Apache",
+        "Strict-Transport-Security": "max-age=31536000; includeSubDomains;",
+        "X-Frame-Options": "sameorigin",
+        "X-XSS-Protection": "1; mode=block",
+        "X-Content-Type-Options": "nosniff",
+        "Content-Type": "application/json;charset=UTF-8",
+        "Vary": "User-Agent",
+        "Keep-Alive": "timeout=10, max=500",
+        "Connection": "Keep-Alive",
+        "Transfer-Encoding": "chunked"
+      },
+      "accessible": true,
+      "content_type": "application/json;charset=UTF-8",
+      "content_length": 14585,
+      "error": null,
+      "json_response": {
+        "detail": "jakarta.ws.rs.NotFoundException: HTTP 404 Not Found\n\tat org.jboss.resteasy.reactive.server.handlers.RestInitialHandler.handle(RestInitialHandler.java:70)\n\tat io.quarkus.resteasy.reactive.server.runtime.QuarkusResteasyReactiveRequestContext.invokeHandler(QuarkusResteasyReactiveRequestContext.java:121)\n\tat org.jboss.resteasy.reactive.common.core.AbstractResteasyReactiveContext.run(AbstractResteasyReactiveContext.java:147)\n\tat org.jboss.resteasy.reactive.server.handlers.RestInitialHandler.beginProcessing(RestInitialHandler.java:48)\n\tat org.jboss.resteasy.reactive.server.vertx.ResteasyReactiveVertxHandler.handle(ResteasyReactiveVertxHandler.java:23)\n\tat org.jboss.resteasy.reactive.server.vertx.ResteasyReactiveVertxHandler.handle(ResteasyReactiveVertxHandler.java:10)\n\tat io.vertx.ext.web.impl.RouteState.handleContext(RouteState.java:1281)\n\tat io.vertx.ext.web.impl.RoutingContextImplBase.iterateNext(RoutingContextImplBase.java:177)\n\tat io.vertx.ext.web.impl.RoutingContextImpl.next(RoutingContextImpl.java:151)\n\tat io.quarkus.vertx.http.runtime.options.HttpServerCommonHandlers$1.handle(HttpServerCommonHandlers.java:62)\n\tat io.quarkus.vertx.http.runtime.options.HttpServerCommonHandlers$1.handle(HttpServerCommonHandlers.java:40)\n\tat io.vertx.ext.web.impl.RouteState.handleContext(RouteState.java:1281)\n\tat io.vertx.ext.web.impl.RoutingContextImplBase.iterateNext(RoutingContextImplBase.java:177)\n\tat io.vertx.ext.web.impl.RoutingContextImpl.next(RoutingContextImpl.java:151)\n\tat io.quarkus.vertx.http.runtime.security.AbstractHttpAuthorizer.doPermissionCheck(AbstractHttpAuthorizer.java:94)\n\tat io.quarkus.vertx.http.runtime.security.AbstractHttpAuthorizer.checkPermission(AbstractHttpAuthorizer.java:69)\n\tat io.quarkus.vertx.http.runtime.security.HttpAuthorizer.checkPermission(HttpAuthorizer.java:22)\n\tat io.quarkus.vertx.http.runtime.security.HttpSecurityRecorder$1.handle(HttpSecurityRecorder.java:79)\n\tat io.quarkus.vertx.http.runtime.security.HttpSecurityRecorder$1.handle(HttpSecurityRecorder.java:71)\n\tat io.vertx.ext.web.impl.RouteState.handleContext(RouteState.java:1281)\n\tat io.vertx.ext.web.impl.RoutingContextImplBase.iterateNext(RoutingContextImplBase.java:177)\n\tat io.vertx.ext.web.impl.RoutingContextImpl.next(RoutingContextImpl.java:151)\n\tat io.quarkus.resteasy.reactive.server.runtime.ResteasyReactiveRecorder$13.handle(ResteasyReactiveRecorder.java:358)\n\tat io.quarkus.resteasy.reactive.server.runtime.ResteasyReactiveRecorder$13.handle(ResteasyReactiveRecorder.java:347)\n\tat io.vertx.ext.web.impl.RouteState.handleContext(RouteState.java:1281)\n\tat io.vertx.ext.web.impl.RoutingContextImplBase.iterateNext(RoutingContextImplBase.java:177)\n\tat io.vertx.ext.web.impl.RoutingContextImpl.next(RoutingContextImpl.java:151)\n\tat io.quarkus.vertx.http.runtime.security.HttpSecurityRecorder$AuthenticationHandler$3$1.onItem(HttpSecurityRecorder.java:311)\n\tat io.quarkus.vertx.http.runtime.security.HttpSecurityRecorder$AuthenticationHandler$3$1.onItem(HttpSecurityRecorder.java:301)\n\tat io.smallrye.mutiny.operators.uni.UniOnItemTransformToUni$UniOnItemTransformToUniProcessor.onItem(UniOnItemTransformToUni.java:60)\n\tat io.smallrye.mutiny.operators.uni.builders.DefaultUniEmitter.complete(DefaultUniEmitter.java:37)\n\tat io.smallrye.mutiny.groups.UniOnNull.lambda$failWith$1(UniOnNull.java:46)\n\tat io.smallrye.context.impl.wrappers.SlowContextualBiConsumer.accept(SlowContextualBiConsumer.java:21)\n\tat io.smallrye.mutiny.groups.UniOnItem.lambda$transformToUni$4(UniOnItem.java:177)\n\tat io.smallrye.context.impl.wrappers.SlowContextualConsumer.accept(SlowContextualConsumer.java:21)\n\tat io.smallrye.mutiny.operators.uni.builders.UniCreateWithEmitter.subscribe(UniCreateWithEmitter.java:22)\n\tat io.smallrye.mutiny.operators.AbstractUni.subscribe(AbstractUni.java:36)\n\tat io.smallrye.mutiny.operators.uni.UniOnItemTransformToUni$UniOnItemTransformToUniProcessor.performInnerSubscription(UniOnItemTransformToUni.java:81)\n\tat io.smallrye.mutiny.operators.uni.UniOnItemTransformToUni$UniOnItemTransformToUniProcessor.onItem(UniOnItemTransformToUni.java:57)\n\tat io.smallrye.mutiny.operators.uni.builders.UniCreateFromKnownItem$KnownItemSubscription.forward(UniCreateFromKnownItem.java:38)\n\tat io.smallrye.mutiny.operators.uni.builders.UniCreateFromKnownItem.subscribe(UniCreateFromKnownItem.java:23)\n\tat io.smallrye.mutiny.operators.AbstractUni.subscribe(AbstractUni.java:36)\n\tat io.smallrye.mutiny.operators.uni.UniOnItemTransformToUni.subscribe(UniOnItemTransformToUni.java:25)\n\tat io.smallrye.mutiny.operators.AbstractUni.subscribe(AbstractUni.java:36)\n\tat io.smallrye.mutiny.groups.UniSubscribe.withSubscriber(UniSubscribe.java:51)\n\tat io.quarkus.vertx.http.runtime.security.HttpSecurityRecorder$AuthenticationHandler$3.onItem(HttpSecurityRecorder.java:301)\n\tat io.quarkus.vertx.http.runtime.security.HttpSecurityRecorder$AuthenticationHandler$3.onItem(HttpSecurityRecorder.java:286)\n\tat io.smallrye.mutiny.operators.uni.UniMemoizeOp.forwardTo(UniMemoizeOp.java:123)\n\tat io.smallrye.mutiny.operators.uni.UniMemoizeOp.notifyAwaiters(UniMemoizeOp.java:135)\n\tat io.smallrye.mutiny.operators.uni.UniMemoizeOp.onItem(UniMemoizeOp.java:97)\n\tat io.smallrye.mutiny.operators.uni.UniOnItemTransformToUni$UniOnItemTransformToUniProcessor.onItem(UniOnItemTransformToUni.java:60)\n\tat io.smallrye.mutiny.operators.uni.builders.UniCreateFromKnownItem$KnownItemSubscription.forward(UniCreateFromKnownItem.java:38)\n\tat io.smallrye.mutiny.operators.uni.builders.UniCreateFromKnownItem.subscribe(UniCreateFromKnownItem.java:23)\n\tat io.smallrye.mutiny.operators.AbstractUni.subscribe(AbstractUni.java:36)\n\tat io.smallrye.mutiny.operators.uni.UniOnItemTransformToUni$UniOnItemTransformToUniProcessor.performInnerSubscription(UniOnItemTransformToUni.java:81)\n\tat io.smallrye.mutiny.operators.uni.UniOnItemTransformToUni$UniOnItemTransformToUniProcessor.onItem(UniOnItemTransformToUni.java:57)\n\tat io.smallrye.mutiny.operators.uni.UniOnItemTransformToUni$UniOnItemTransformToUniProcessor.onItem(UniOnItemTransformToUni.java:60)\n\tat io.smallrye.mutiny.operators.uni.builders.UniCreateFromKnownItem$KnownItemSubscription.forward(UniCreateFromKnownItem.java:38)\n\tat io.smallrye.mutiny.operators.uni.builders.UniCreateFromKnownItem.subscribe(UniCreateFromKnownItem.java:23)\n\tat io.smallrye.mutiny.operators.AbstractUni.subscribe(AbstractUni.java:36)\n\tat io.smallrye.mutiny.operators.uni.UniOnItemTransformToUni$UniOnItemTransformToUniProcessor.performInnerSubscription(UniOnItemTransformToUni.java:81)\n\tat io.smallrye.mutiny.operators.uni.UniOnItemTransformToUni$UniOnItemTransformToUniProcessor.onItem(UniOnItemTransformToUni.java:57)\n\tat io.smallrye.mutiny.operators.uni.UniOnItemTransform$UniOnItemTransformProcessor.onItem(UniOnItemTransform.java:43)\n\tat io.smallrye.mutiny.operators.uni.UniOnItemTransform$UniOnItemTransformProcessor.onItem(UniOnItemTransform.java:43)\n\tat io.smallrye.mutiny.operators.uni.builders.UniCreateFromKnownItem$KnownItemSubscription.forward(UniCreateFromKnownItem.java:38)\n\tat io.smallrye.mutiny.operators.uni.builders.UniCreateFromKnownItem.subscribe(UniCreateFromKnownItem.java:23)\n\tat io.smallrye.mutiny.operators.AbstractUni.subscribe(AbstractUni.java:36)\n\tat io.smallrye.mutiny.operators.uni.UniOnItemTransform.subscribe(UniOnItemTransform.java:22)\n\tat io.smallrye.mutiny.operators.AbstractUni.subscribe(AbstractUni.java:36)\n\tat io.smallrye.mutiny.operators.uni.UniOnItemTransform.subscribe(UniOnItemTransform.java:22)\n\tat io.smallrye.mutiny.operators.AbstractUni.subscribe(AbstractUni.java:36)\n\tat io.smallrye.mutiny.operators.uni.UniOnItemTransformToUni.subscribe(UniOnItemTransformToUni.java:25)\n\tat io.smallrye.mutiny.operators.AbstractUni.subscribe(AbstractUni.java:36)\n\tat io.smallrye.mutiny.operators.uni.UniOnItemTransformToUni.subscribe(UniOnItemTransformToUni.java:25)\n\tat io.smallrye.mutiny.operators.AbstractUni.subscribe(AbstractUni.java:36)\n\tat io.smallrye.mutiny.groups.UniSubscribe.withSubscriber(UniSubscribe.java:51)\n\tat io.smallrye.mutiny.operators.uni.UniMemoizeOp.subscribe(UniMemoizeOp.java:59)\n\tat io.smallrye.mutiny.operators.AbstractUni.subscribe(AbstractUni.java:36)\n\tat io.smallrye.mutiny.groups.UniSubscribe.withSubscriber(UniSubscribe.java:51)\n\tat io.quarkus.vertx.http.runtime.security.HttpSecurityRecorder$AuthenticationHandler.handle(HttpSecurityRecorder.java:286)\n\tat io.quarkus.vertx.http.runtime.security.HttpSecurityRecorder$AuthenticationHandler.handle(HttpSecurityRecorder.java:233)\n\tat io.vertx.ext.web.impl.RouteState.handleContext(RouteState.java:1281)\n\tat io.vertx.ext.web.impl.RoutingContextImplBase.iterateNext(RoutingContextImplBase.java:177)\n\tat io.vertx.ext.web.impl.RoutingContextImpl.next(RoutingContextImpl.java:151)\n\tat io.quarkus.vertx.http.runtime.filters.accesslog.AccessLogHandler.handle(AccessLogHandler.java:164)\n\tat io.quarkus.vertx.http.runtime.filters.accesslog.AccessLogHandler.handle(AccessLogHandler.java:94)\n\tat io.vertx.ext.web.impl.RouteState.handleContext(RouteState.java:1281)\n\tat io.vertx.ext.web.impl.RoutingContextImplBase.iterateNext(RoutingContextImplBase.java:177)\n\tat io.vertx.ext.web.impl.RoutingContextImpl.next(RoutingContextImpl.java:151)\n\tat io.vertx.ext.web.impl.RoutingContextImpl.route(RoutingContextImpl.java:100)\n\tat io.vertx.ext.web.impl.RouterImpl.handle(RouterImpl.java:69)\n\tat io.vertx.ext.web.impl.RouterImpl.handle(RouterImpl.java:37)\n\tat io.quarkus.vertx.http.runtime.options.HttpServerCommonHandlers$3.handle(HttpServerCommonHandlers.java:104)\n\tat io.quarkus.vertx.http.runtime.options.HttpServerCommonHandlers$3.handle(HttpServerCommonHandlers.java:101)\n\tat io.quarkus.vertx.http.runtime.VertxHttpRecorder$5.handle(VertxHttpRecorder.java:517)\n\tat io.quarkus.vertx.http.runtime.VertxHttpRecorder$5.handle(VertxHttpRecorder.java:514)\n\tat io.quarkus.vertx.http.runtime.options.HttpServerCommonHandlers$2.handle(HttpServerCommonHandlers.java:87)\n\tat io.quarkus.vertx.http.runtime.options.HttpServerCommonHandlers$2.handle(HttpServerCommonHandlers.java:70)\n\tat io.quarkus.vertx.http.runtime.VertxHttpRecorder$1.handle(VertxHttpRecorder.java:182)\n\tat io.quarkus.vertx.http.runtime.VertxHttpRecorder$1.handle(VertxHttpRecorder.java:158)\n\tat io.vertx.core.impl.ContextImpl.emit(ContextImpl.java:342)\n\tat io.vertx.core.impl.DuplicatedContext.emit(DuplicatedContext.java:163)\n\tat io.vertx.core.http.impl.Http1xServerConnection.handleMessage(Http1xServerConnection.java:174)\n\tat io.vertx.core.net.impl.ConnectionBase.read(ConnectionBase.java:159)\n\tat io.vertx.core.net.impl.VertxHandler.channelRead(VertxHandler.java:153)\n\tat io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:442)\n\tat io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)\n\tat io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412)\n\tat io.vertx.core.http.impl.Http1xUpgradeToH2CHandler.channelRead(Http1xUpgradeToH2CHandler.java:124)\n\tat io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:444)\n\tat io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)\n\tat io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412)\n\tat io.netty.handler.timeout.IdleStateHandler.channelRead(IdleStateHandler.java:289)\n\tat io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:442)\n\tat io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)\n\tat io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412)\n\tat io.netty.handler.codec.ByteToMessageDecoder.fireChannelRead(ByteToMessageDecoder.java:346)\n\tat io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:318)\n\tat io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:444)\n\tat io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)\n\tat io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412)\n\tat io.vertx.core.http.impl.Http1xOrH2CHandler.end(Http1xOrH2CHandler.java:61)\n\tat io.vertx.core.http.impl.Http1xOrH2CHandler.channelRead(Http1xOrH2CHandler.java:38)\n\tat io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:444)\n\tat io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)\n\tat io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412)\n\tat io.netty.handler.timeout.IdleStateHandler.channelRead(IdleStateHandler.java:289)\n\tat io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:442)\n\tat io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)\n\tat io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412)\n\tat io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1357)\n\tat io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:440)\n\tat io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)\n\tat io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:868)\n\tat io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:166)\n\tat io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:796)\n\tat io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:732)\n\tat io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:658)\n\tat io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:562)\n\tat io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:998)\n\tat io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)\n\tat io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)\n\tat java.base/java.lang.Thread.run(Unknown Source)\n",
+        "status": 404,
+        "title": "Not Found"
+      }
+    },
+    "course": {
+      "url": "https://campus.tum.de/tumonline/co/co-tm-core/course/api",
+      "status_code": 404,
+      "response_time": 0.013963,
+      "headers": {
+        "Date": "Mon, 30 Jun 2025 15:36:24 GMT",
+        "Server": "Apache",
+        "Strict-Transport-Security": "max-age=31536000; includeSubDomains;",
+        "X-Frame-Options": "sameorigin",
+        "X-XSS-Protection": "1; mode=block",
+        "X-Content-Type-Options": "nosniff",
+        "Content-Length": "122",
+        "Content-Type": "application/json",
+        "Vary": "User-Agent",
+        "Keep-Alive": "timeout=10, max=499",
+        "Connection": "Keep-Alive"
+      },
+      "accessible": true,
+      "content_type": "application/json",
+      "content_length": 122,
+      "error": null,
+      "json_response": {
+        "status": 404,
+        "title": "Unable to find matching target resource method",
+        "type": "exception:jakarta.ws.rs.NotFoundException"
+      }
+    },
+    "cm_core": {
+      "url": "https://campus.tum.de/tumonline/co/co-cm-core",
+      "status_code": 404,
+      "response_time": 0.0221,
+      "headers": {
+        "Date": "Mon, 30 Jun 2025 15:36:24 GMT",
+        "Server": "Apache",
+        "Strict-Transport-Security": "max-age=31536000; includeSubDomains;",
+        "X-Frame-Options": "sameorigin",
+        "X-XSS-Protection": "1; mode=block",
+        "X-Content-Type-Options": "nosniff",
+        "Content-Length": "163",
+        "Content-Type": "application/json",
+        "Vary": "User-Agent",
+        "Keep-Alive": "timeout=10, max=498",
+        "Connection": "Keep-Alive"
+      },
+      "accessible": true,
+      "content_type": "application/json",
+      "content_length": 163,
+      "error": null,
+      "json_response": {
+        "status": 404,
+        "title": "RESTEASY003210: Could not find resource for full path: https://campus.tum.de/co-cm-core",
+        "type": "exception:jakarta.ws.rs.NotFoundException"
+      }
+    }
+  },
+  "documentation": {
+    "study": {},
+    "course": {},
+    "cm_core": {}
+  }
+}
