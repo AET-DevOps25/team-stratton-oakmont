@@ -8,6 +8,7 @@ metadata:
     kubernetes.io/ingress.class: "nginx"
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   tls: 
     - hosts:
@@ -24,29 +25,29 @@ spec:
                 name: client
                 port:
                   number: 80
-          - path: /api/study-plan/
-            pathType: Prefix
+          - path: /api/study-plan(/|$)(.*)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: study-plan-service
                 port:
                   number: 8081
-          - path: /api/program-catalog/
-            pathType: Prefix
+          - path: /api/program-catalog(/|$)(.*)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: program-catalog-service
                 port:
                   number: 8082
-          - path: /api/user-auth/
-            pathType: Prefix
+          - path: /api/user-auth(/|$)(.*)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: user-auth-service
                 port:
                   number: 8083
-          - path: /api/ai-advisor/
-            pathType: Prefix
+          - path: /api/ai-advisor(/|$)(.*)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: ai-advisor-service
