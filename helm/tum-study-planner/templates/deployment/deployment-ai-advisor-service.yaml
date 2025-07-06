@@ -22,11 +22,11 @@ spec:
           ports:
             - containerPort: 8083
           env:
-            - name: OPENAI_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: tum-study-planner-secrets
-                  key: OPENAI_API_KEY
+            # - name: OPENAI_API_KEY
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: tum-study-planner-secrets
+            #       key: OPENAI_API_KEY
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
