@@ -1,4 +1,3 @@
-# .github/workflows/build-images.yml
 name: Build Docker Images
 
 on:

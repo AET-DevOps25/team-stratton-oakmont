@@ -1,5 +1,3 @@
-# This workflow builds and publishes the images, then deploys them to the Kubernetes cluster.
-# It runs only when code is pushed to the main branch, and is thus considered ready for production.
 name: CI/CD
 
 on:
