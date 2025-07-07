@@ -9,15 +9,27 @@ on:
       - main
 
 jobs:
-  # Call the CI workflow
+  # Run CI (build and test)
   ci:
     name: Continuous Integration
     uses: ./.github/workflows/ci.yml
 
-  # Call the CD workflow to deploy to Rancher
+  # Build and push images for deployment
+  build-for-deployment:
+    name: Build and Push Images
+    needs: ci
+    uses: ./.github/workflows/build-images.yml
+    with:
+      push-images: true
+    secrets: inherit
+
+  # Deploy to Kubernetes
   cd_kubernetes:
     name: Continuous Deployment (Kubernetes)
-    needs: ci # wait for build to complete before running
+    needs: build-for-deployment
     uses: ./.github/workflows/cd.yml
-    secrets: # Pass KUBECONFIG to called workflow
+    with:
+      image_tag: ${{ github.sha }}
+      namespace: tum-study-planner
+    secrets:
       KUBECONFIG: ${{ secrets.KUBECONFIG }}
