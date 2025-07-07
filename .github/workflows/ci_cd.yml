@@ -1,7 +1,7 @@
 name: CI/CD
 
 on:
-  workflow_dispatch: # Add this for manual testing
+  workflow_dispatch: # For manual testing
     inputs:
       test_mode:
         description: "Run in test mode"
