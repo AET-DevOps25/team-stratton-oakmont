@@ -9,9 +9,9 @@ on:
   pull_request:
     branches: [main]
 
-  # Triggered on pushes to any branch except main
+  # Triggered on pushes main
   push:
-    branches-ignore: [main] # All branches except main
+    branches: [main] # All branches except main
 
 jobs:
   build-and-test:
