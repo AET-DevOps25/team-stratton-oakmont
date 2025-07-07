@@ -28,14 +28,19 @@ docker-compose -f docker-compose.test.yml down
 - Prometheus (Metrics): http://localhost:9090
 - Grafana (Dashboards): http://localhost:3001 (admin/admin)
 - Loki (Logs): http://localhost:3100
+
+  \*This is just the API endpoint. If you visit http://localhost:3100/ready or http://localhost:3100/metrics, you should see responses instead of 404.
+
 - Promtail (Log Collector): http://localhost:9084
 
-**Prometheus-formatted metrics that will be scraped by your Prometheus are available under the following endpoints**
+Prometheus automatically scrapes metrics from all Spring Boot services via internal management ports. The actuator endpoints are secured and only accessible within the Docker network:
 
-- Program Catalog Service: http://localhost:9080/actuator/prometheus
-- Study Plan Service: http://localhost:9081/actuator/prometheus
-- AI Advisor Service: http://localhost:9082/actuator/prometheus
-- User Auth Service: http://localhost:9083/actuator/prometheus
+- Program Catalog Service: Internal port 9080 (`/actuator/prometheus`)
+- Study Plan Service: Internal port 9081 (`/actuator/prometheus`)
+- AI Advisor Service: Internal port 9082 (`/actuator/prometheus`)
+- User Auth Service: Internal port 9083 (`/actuator/prometheus`)
+
+_Note: These management endpoints are not exposed to the host machine for security reasons. Metrics are collected automatically by Prometheus and can be viewed in Grafana dashboards._
 
 ### 📊 Monitoring & Observability
 
@@ -46,6 +51,12 @@ The development environment includes a comprehensive monitoring stack:
 - **Loki** aggregates logs from all containers for centralized log management
 - **Promtail** collects and ships container logs to Loki
 - **Alerts** are configured for service downtime, high response times, and error rates
+
+**Security Features:**
+
+- Management endpoints (actuator) are only accessible within the Docker network
+- External users cannot access monitoring/health endpoints directly
+- Main application APIs remain publicly accessible for legitimate use
 
 All monitoring services are automatically started with the test environment and provide real-time insights into application performance and health.
 
