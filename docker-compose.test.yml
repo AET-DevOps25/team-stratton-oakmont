@@ -7,7 +7,7 @@ services:
     container_name: program-catalog-service
     ports:
       - "8080:8080"
-      - "9080:9080" # Management port
+      - "9080:9080" # Management port for Prometheus metrics
     environment:
       - SPRING_PROFILES_ACTIVE=dev
     networks:
@@ -22,7 +22,7 @@ services:
     container_name: study-plan-service
     ports:
       - "8081:8081"
-      - "9081:9081" # Management port
+      - "9081:9081" # Management port for Prometheus metrics
     env_file:
       - .env
     environment:
@@ -39,7 +39,7 @@ services:
     container_name: ai-advisor-service
     ports:
       - "8082:8082"
-      - "9082:9082" # Management port
+      - "9082:9082" # Management port for Prometheus metrics
     environment:
       - SPRING_PROFILES_ACTIVE=dev
     networks:
@@ -54,7 +54,7 @@ services:
     container_name: user-auth-service
     ports:
       - "8083:8083"
-      - "9083:9083" # Management port
+      - "9083:9083" # Management port for Prometheus metrics
     environment:
       - SPRING_PROFILES_ACTIVE=dev
     env_file:
@@ -141,8 +141,8 @@ services:
     ports:
       - "3100:3100"
     volumes:
-      - ./monitoring/loki/loki-config.yaml:/etc/loki/loki-config.yaml:ro
-    command: -config.file=/etc/loki/loki-config.yaml
+      - ./monitoring/loki/loki-config.yml:/etc/loki/loki-config.yml:ro
+    command: -config.file=/etc/loki/loki-config.yml
     networks:
       - stratton-oakmont-network
     restart: unless-stopped
