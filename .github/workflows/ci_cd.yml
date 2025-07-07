@@ -1,0 +1,39 @@
+name: CI/CD
+
+on:
+  workflow_dispatch: # For manual testing
+    inputs:
+      test_mode:
+        description: "Run in test mode"
+        required: false
+        default: false
+        type: boolean
+  push:
+    branches:
+      - main
+
+jobs:
+  # Run CI (build and test)
+  ci:
+    name: Continuous Integration
+    uses: ./.github/workflows/ci.yml
+
+  # Build and push images for deployment
+  build-for-deployment:
+    name: Build and Push Images
+    needs: ci
+    uses: ./.github/workflows/build-images.yml
+    with:
+      push-images: true
+    secrets: inherit
+
+  # Deploy to Kubernetes
+  cd_kubernetes:
+    name: Continuous Deployment (Kubernetes)
+    needs: build-for-deployment
+    uses: ./.github/workflows/cd.yml
+    with:
+      image_tag: ${{ github.sha }}
+      namespace: tum-study-planner
+    secrets:
+      KUBECONFIG: ${{ secrets.KUBECONFIG }}

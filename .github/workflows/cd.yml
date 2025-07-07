@@ -1,0 +1,62 @@
+name: Continuous Deployment
+
+on:
+  # Callable from other workflows
+  workflow_call:
+    inputs:
+      image_tag:
+        description: "Docker image tag to deploy"
+        required: true
+        type: string
+      namespace:
+        description: "Kubernetes namespace"
+        required: false
+        type: string
+        default: "tum-study-planner"
+    secrets:
+      KUBECONFIG:
+        required: true
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: "latest"
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: "latest"
+
+      - name: Configure kubectl
+        shell: bash
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG }}" | base64 -d > $HOME/.kube/config
+          kubectl cluster-info
+
+      - name: Deploy application with Helm
+        run: |
+          helm upgrade --install tum-study-planner ./helm/tum-study-planner \
+            --namespace ${{ inputs.namespace }} \
+            --set client.image.tag=${{ inputs.image_tag }} \
+            --set studyPlanService.image.tag=${{ inputs.image_tag }} \
+            --set userAuthService.image.tag=${{ inputs.image_tag }} \
+            --set programCatalogService.image.tag=${{ inputs.image_tag }} \
+            --set aiAdvisorService.image.tag=${{ inputs.image_tag }} \
+            --wait --timeout=10m
+
+      - name: Verify deployment
+        run: |
+          kubectl get pods -n ${{ inputs.namespace }}
+          echo "✅ Deployment completed successfully!"

@@ -12,31 +12,31 @@ ingress:
 # Client (Frontend) configuration
 client:
   image:
-    repository: ghcr.io/florivn/client
+    repository: ghcr.io/AET-DevOps25/team-stratton-oakmont/client
     tag: latest
 
 # Study Plan Service configuration
 studyPlanService:
   image:
-    repository: ghcr.io/florivn/study-plan-service
+    repository: ghcr.io/AET-DevOps25/team-stratton-oakmont/study-plan-service
     tag: latest
 
 # Program Catalog Service configuration
 programCatalogService:
   image:
-    repository: ghcr.io/florivn/program-catalog-service
+    repository: ghcr.io/AET-DevOps25/team-stratton-oakmont/program-catalog-service
     tag: latest
 
 # AI Advisor Service configuration
 aiAdvisorService:
   image:
-    repository: ghcr.io/florivn/ai-advisor-service
+    repository: ghcr.io/AET-DevOps25/team-stratton-oakmont/ai-advisor-service
     tag: latest
 
 # User Auth Service configuration
 userAuthService:
   image:
-    repository: ghcr.io/florivn/user-auth-service
+    repository: ghcr.io/AET-DevOps25/team-stratton-oakmont/user-auth-service
     tag: latest
 
 # Database configurations (using existing k8s manifests)

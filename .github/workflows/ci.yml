@@ -1,0 +1,24 @@
+name: Continuous Integration
+
+on:
+  # Callable from other workflows
+  workflow_call:
+
+  # Triggered on pull requests to main branch
+  pull_request:
+    branches: [main]
+
+  # Triggered on pushes main
+  push:
+    branches: [main] # All branches except main
+
+jobs:
+  build-and-test:
+    uses: ./.github/workflows/build-images.yml
+    with:
+      push-images: false # Don't push on PRs
+    secrets: inherit
+
+  test:
+    uses: ./.github/workflows/test-services.yml
+    needs: build-and-test
