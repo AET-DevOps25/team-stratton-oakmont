@@ -122,9 +122,17 @@
         delay: 10
         timeout: 300
       loop:
-        - 80
-        - 8080
-        - 8081
-        - 8082
-        - 8083
-        - 8000
+        - 80 # Nginx
+        - 8080 # Program Catalog Service
+        - 8081 # Study Plan Service
+        - 8082 # AI Advisor Service
+        - 8083 # User Auth Service
+        - 8000 # LLM Service
+        - 9080 # Program Catalog Management
+        - 9081 # Study Plan Management
+        - 9082 # AI Advisor Management
+        - 9083 # User Auth Management
+        - 9090 # Prometheus
+        - 3001 # Grafana
+        - 3100 # Loki
+        - 9084 # Promtail

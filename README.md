@@ -7,7 +7,7 @@
 ```bash
 cd team-stratton-oakmont
 
-# Start all services locally
+# Start all services locally (including test monitoring stack)
 docker-compose -f docker-compose.test.yml up -d --build
 
 # Stop services
@@ -22,6 +22,32 @@ docker-compose -f docker-compose.test.yml down
 - AI Advisor Service: http://localhost:8082
 - User Auth Service: http://localhost:8083
 - LLM Service: http://localhost:8000
+
+**Monitoring & Observability:**
+
+- Prometheus (Metrics): http://localhost:9090
+- Grafana (Dashboards): http://localhost:3001 (admin/admin)
+- Loki (Logs): http://localhost:3100
+- Promtail (Log Collector): http://localhost:9084
+
+**Prometheus-formatted metrics that will be scraped by your Prometheus are available under the following endpoints**
+
+- Program Catalog Service: http://localhost:9080/actuator/prometheus
+- Study Plan Service: http://localhost:9081/actuator/prometheus
+- AI Advisor Service: http://localhost:9082/actuator/prometheus
+- User Auth Service: http://localhost:9083/actuator/prometheus
+
+### 📊 Monitoring & Observability
+
+The development environment includes a comprehensive monitoring stack:
+
+- **Prometheus** scrapes metrics from all Spring Boot services via Actuator endpoints
+- **Grafana** provides pre-configured dashboards for visualizing system metrics and logs
+- **Loki** aggregates logs from all containers for centralized log management
+- **Promtail** collects and ships container logs to Loki
+- **Alerts** are configured for service downtime, high response times, and error rates
+
+All monitoring services are automatically started with the test environment and provide real-time insights into application performance and health.
 
 ### ☁️ AWS Deployment
 
@@ -132,6 +158,8 @@ _List key technologies and frameworks used._
 - **Containerization**: Docker + Docker Compose
 - **Web Server**: Nginx (reverse proxy)
 - **GenAI API**: OpenAI GPT (via Python service)
+- **Monitoring**: Prometheus + Grafana + Loki + Promtail
+- **Observability**: Spring Boot Actuator (includes Micrometer for metrics)
 
 ## 📄 License
 
