@@ -21,16 +21,16 @@ jobs:
             context: ./client
             dockerfile: ./client/Dockerfile
           - name: study-plan-service
-            context: ./server/study-plan-service
+            context: ./server
             dockerfile: ./server/study-plan-service/Dockerfile
           - name: user-auth-service
-            context: ./server/user-auth-service
+            context: ./server
             dockerfile: ./server/user-auth-service/Dockerfile
           - name: program-catalog-service
-            context: ./server/program-catalog-service
+            context: ./server
             dockerfile: ./server/program-catalog-service/Dockerfile
           - name: ai-advisor-service
-            context: ./server/ai-advisor-service
+            context: ./server
             dockerfile: ./server/ai-advisor-service/Dockerfile
 
     steps:
