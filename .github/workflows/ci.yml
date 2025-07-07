@@ -1,0 +1,19 @@
+# .github/workflows/ci.yml
+name: Continuous Integration
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches-ignore: [main] # All branches except main
+
+jobs:
+  build-and-test:
+    uses: ./.github/workflows/build-images.yml
+    with:
+      push-images: false # Don't push on PRs
+    secrets: inherit
+
+  test:
+    uses: ./.github/workflows/test-services.yml
+    needs: build-and-test

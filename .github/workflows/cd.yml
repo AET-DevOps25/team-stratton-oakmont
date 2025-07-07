@@ -1,0 +1,41 @@
+# .github/workflows/cd.yml
+name: Continuous Deployment
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-push:
+    uses: ./.github/workflows/build-images.yml
+    with:
+      push-images: true
+    secrets: inherit
+
+  test:
+    uses: ./.github/workflows/test-services.yml
+    needs: build-and-push
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build-and-push, test]
+    environment: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup deployment tools
+        uses: ./.github/actions/setup-tools@main
+
+      - name: Deploy base infrastructure
+        uses: ./.github/actions/deploy-k8s-base@main
+        with:
+          namespace: ${{ vars.NAMESPACE }}
+          kubeconfig: ${{ secrets.KUBECONFIG }}
+
+      - name: Deploy application
+        run: ./.github/scripts/deploy.sh
+        env:
+          NAMESPACE: ${{ vars.NAMESPACE }}
+          IMAGE_TAG: ${{ github.sha }}
