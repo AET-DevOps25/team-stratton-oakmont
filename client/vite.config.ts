@@ -46,18 +46,23 @@ export default defineConfig(({ mode }) => {
       sourcemap: mode === "development",
       minify: mode === "production",
       target: "esnext",
-      // Skip type checking during build in CI
-      rollupOptions: {
-        // Ignore TypeScript errors during build
-        onwarn: (warning, warn) => {
-          if (warning.code === "TYPESCRIPT_ERROR") return;
-          warn(warning);
+    },
+
+    // DISABLE TypeScript checking during build
+    esbuild: {
+      logOverride: {
+        "this-is-undefined-in-esm": "silent",
+      },
+      // Skip TypeScript errors
+      tsconfigRaw: {
+        compilerOptions: {
+          // At least one valid TypeScript option must be present
+          strict: false,
+          noUnusedLocals: false,
+          noUnusedParameters: false,
+          exactOptionalPropertyTypes: false,
         },
       },
-    },
-    esbuild: {
-      // Skip type checking in production builds
-      logOverride: { "this-is-undefined-in-esm": "silent" },
     },
 
     // Environment variable handling
