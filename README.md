@@ -26,7 +26,7 @@ docker-compose -f docker-compose.test.yml down
 **Monitoring & Observability:**
 
 - Prometheus (Metrics): http://localhost:9090
-- Grafana (Dashboards): http://localhost:3001 (admin/admin)
+- Grafana (Dashboards): http://localhost:3001 (credentials in .env file)
 - Loki (Logs): http://localhost:3100
 
   \*This is just the API endpoint. If you visit http://localhost:3100/ready or http://localhost:3100/metrics, you should see responses instead of 404.
