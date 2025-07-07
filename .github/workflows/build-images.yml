@@ -7,9 +7,6 @@ on:
       push-images:
         required: true
         type: boolean
-    secrets:
-      GITHUB_TOKEN:
-        required: true
 
 env:
   REGISTRY: ghcr.io
