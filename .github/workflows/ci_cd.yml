@@ -3,7 +3,13 @@
 name: CI/CD
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # Add this for manual testing
+    inputs:
+      test_mode:
+        description: "Run in test mode"
+        required: false
+        default: false
+        type: boolean
   push:
     branches:
       - main
