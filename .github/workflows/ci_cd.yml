@@ -1,0 +1,23 @@
+# This workflow builds and publishes the images, then deploys them to the Kubernetes cluster.
+# It runs only when code is pushed to the main branch, and is thus considered ready for production.
+name: CI/CD
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  # Call the CI workflow
+  ci:
+    name: Continuous Integration
+    uses: ./.github/workflows/ci.yml
+
+  # Call the CD workflow to deploy to Rancher
+  cd_kubernetes:
+    name: Continuous Deployment (Kubernetes)
+    needs: ci # wait for build to complete before running
+    uses: ./.github/workflows/cd.yml
+    secrets: # Pass KUBECONFIG to called workflow
+      KUBECONFIG: ${{ secrets.KUBECONFIG }}

@@ -2,8 +2,14 @@
 name: Continuous Integration
 
 on:
+  # Callable from other workflows
+  workflow_call:
+
+  # Triggered on pull requests to main branch
   pull_request:
     branches: [main]
+
+  # Triggered on pushes to any branch except main
   push:
     branches-ignore: [main] # All branches except main
 
