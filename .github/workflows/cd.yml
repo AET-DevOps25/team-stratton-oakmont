@@ -4,18 +4,8 @@ on:
   push: # Triggered by merge to main branch
     branches: [main]
 
-  # Callable from other workflows
-  workflow_call:
-    inputs:
-      image_tag:
-        description: "Docker image tag to deploy"
-        required: true
-        type: string
-      namespace:
-        description: "Kubernetes namespace"
-        required: false
-        type: string
-        default: "tum-study-planner"
+env:
+  REGISTRY: ghcr.io
 
 jobs:
   deploy:
@@ -28,15 +18,12 @@ jobs:
       - name: Set image tag
         id: image_tag
         run: |
-          if [ -n "${{ inputs.image_tag }}" ]; then
-            # Called from workflow_call
-            echo "tag=${{ inputs.image_tag }}" >> $GITHUB_OUTPUT
-          elif [ "${{ github.event_name }}" == "pull_request" ]; then
-            # From PR (shouldn't happen in CD, but just in case)
-            echo "tag=pr-${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+          # Get the PR number from the merge commit
+          PR_NUMBER=$(git log -1 --pretty=format:"%s" | grep -o '#[0-9]*' | head -1 | tr -d '#')
+          if [ -n "$PR_NUMBER" ]; then
+          echo "tag=pr-$PR_NUMBER" >> $GITHUB_OUTPUT
           else
-            # Direct push to main - use commit SHA
-            echo "tag=main-${{ github.sha }}" >> $GITHUB_OUTPUT
+          echo "tag=main-$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
           fi
 
       - name: Set up kubectl
@@ -58,15 +45,15 @@ jobs:
       - name: Deploy application with Helm
         run: |
           helm upgrade --install tum-study-planner ./helm/tum-study-planner \
-            --namespace ${{ inputs.namespace }} \
-            --set client.image.tag=${{ inputs.image_tag }} \
-            --set studyPlanService.image.tag=${{ inputs.image_tag }} \
-            --set userAuthService.image.tag=${{ inputs.image_tag }} \
-            --set programCatalogService.image.tag=${{ inputs.image_tag }} \
-            --set aiAdvisorService.image.tag=${{ inputs.image_tag }} \
+            --namespace tum-study-planner \
+            --set client.image.tag=${{ steps.image_tag.outputs.tag }} \
+            --set studyPlanService.image.tag=${{ steps.image_tag.outputs.tag }} \
+            --set userAuthService.image.tag=${{ steps.image_tag.outputs.tag }} \
+            --set programCatalogService.image.tag=${{ steps.image_tag.outputs.tag }} \
+            --set aiAdvisorService.image.tag=${{ steps.image_tag.outputs.tag }} \
             --wait --timeout=10m
 
       - name: Verify deployment
         run: |
-          kubectl get pods -n ${{ inputs.namespace }}
+          kubectl get pods -n tum-study-planner
           echo "✅ Deployment completed successfully!"
