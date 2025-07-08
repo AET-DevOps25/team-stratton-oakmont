@@ -1,6 +1,9 @@
 name: Continuous Deployment
 
 on:
+  push: # Triggered by merge to main branch
+    branches: [main]
+
   # Callable from other workflows
   workflow_call:
     inputs:
@@ -13,12 +16,6 @@ on:
         required: false
         type: string
         default: "tum-study-planner"
-    secrets:
-      KUBECONFIG:
-        required: true
-
-env:
-  REGISTRY: ghcr.io
 
 jobs:
   deploy:
@@ -27,6 +24,20 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Set image tag
+        id: image_tag
+        run: |
+          if [ -n "${{ inputs.image_tag }}" ]; then
+            # Called from workflow_call
+            echo "tag=${{ inputs.image_tag }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" == "pull_request" ]; then
+            # From PR (shouldn't happen in CD, but just in case)
+            echo "tag=pr-${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+          else
+            # Direct push to main - use commit SHA
+            echo "tag=main-${{ github.sha }}" >> $GITHUB_OUTPUT
+          fi
 
       - name: Set up kubectl
         uses: azure/setup-kubectl@v4
@@ -43,7 +54,6 @@ jobs:
         run: |
           mkdir -p $HOME/.kube
           echo "${{ secrets.KUBECONFIG }}" | base64 -d > $HOME/.kube/config
-          kubectl cluster-info
 
       - name: Deploy application with Helm
         run: |
