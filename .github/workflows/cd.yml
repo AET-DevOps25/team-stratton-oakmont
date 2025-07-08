@@ -46,10 +46,15 @@ jobs:
         run: |
           helm upgrade --install tum-study-planner ./helm/tum-study-planner \
             --namespace tum-study-planner \
+            --set client.image.repository=${{ env.REGISTRY }}/${{ github.repository_owner }}/client \
             --set client.image.tag=${{ steps.image_tag.outputs.tag }} \
+            --set studyPlanService.image.repository=${{ env.REGISTRY }}/${{ github.repository }}/study-plan-service \
             --set studyPlanService.image.tag=${{ steps.image_tag.outputs.tag }} \
+            --set userAuthService.image.repository=${{ env.REGISTRY }}/${{ github.repository }}/user-auth-service \
             --set userAuthService.image.tag=${{ steps.image_tag.outputs.tag }} \
+            --set programCatalogService.image.repository=${{ env.REGISTRY }}/${{ github.repository }}/program-catalog-service \
             --set programCatalogService.image.tag=${{ steps.image_tag.outputs.tag }} \
+            --set aiAdvisorService.image.repository=${{ env.REGISTRY }}/${{ github.repository }}/ai-advisor-service \
             --set aiAdvisorService.image.tag=${{ steps.image_tag.outputs.tag }} \
             --wait --timeout=10m
 
