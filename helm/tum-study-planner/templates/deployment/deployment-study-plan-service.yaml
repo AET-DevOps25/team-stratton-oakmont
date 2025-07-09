@@ -48,7 +48,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: tum-study-planner-secrets
-                  key: STUDY_DATA_DB_USER
+                  key: STUDY_DATA_DB_USERNAME
             - name: DB_STUDY_DATA_PASSWORD
               valueFrom:
                 secretKeyRef:
