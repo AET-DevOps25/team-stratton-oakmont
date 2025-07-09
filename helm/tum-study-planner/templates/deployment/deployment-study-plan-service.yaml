@@ -22,6 +22,7 @@ spec:
           ports:
             - containerPort: 8081
           env:
+            # Study Plan Database
             - name: DB_STUDY_PLAN_URL
               valueFrom:
                 secretKeyRef:
@@ -37,6 +38,22 @@ spec:
                 secretKeyRef:
                   name: tum-study-planner-secrets
                   key: STUDY_PLAN_DB_PASSWORD
+            # Study Data Database
+            - name: DB_STUDY_DATA_URL
+              valueFrom:
+                secretKeyRef:
+                  name: tum-study-planner-secrets
+                  key: STUDY_DATA_DB_URL
+            - name: DB_STUDY_DATA_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: tum-study-planner-secrets
+                  key: STUDY_DATA_DB_USER
+            - name: DB_STUDY_DATA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: tum-study-planner-secrets
+                  key: STUDY_DATA_DB_PASSWORD
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
