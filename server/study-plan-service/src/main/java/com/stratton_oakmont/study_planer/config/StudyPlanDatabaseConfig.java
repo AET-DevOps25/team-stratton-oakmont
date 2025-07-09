@@ -20,7 +20,7 @@ import jakarta.persistence.EntityManagerFactory;
     entityManagerFactoryRef = "studyPlanEntityManagerFactory",
     transactionManagerRef = "studyPlanTransactionManager"
 )
-public class StudyPlanDataSourceConfig {
+public class StudyPlanDatabaseConfig {
 
     @Primary
     @Bean(name = "studyPlanDataSource")

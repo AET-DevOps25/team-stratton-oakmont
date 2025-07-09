@@ -19,8 +19,8 @@ import jakarta.persistence.EntityManagerFactory;
     entityManagerFactoryRef = "studyDataEntityManagerFactory",
     transactionManagerRef = "studyDataTransactionManager"
 )
-public class StudyDataDataSourceConfig {
-
+public class StudyDataDatabaseConfig { 
+    
     @Bean(name = "studyDataDataSource")
     @ConfigurationProperties(prefix = "spring.datasource.studydata")
     public DataSource studyDataDataSource() {
