@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/study-plans") // Base path for all study plan endpoints
 @CrossOrigin(origins = {
     "https://tum-study-planner.student.k8s.aet.cit.tum.de",
     "http://localhost:5173", 
