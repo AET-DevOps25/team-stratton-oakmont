@@ -1,7 +1,7 @@
 package com.stratton_oakmont.study_planer.repository;
 
-import com.stratton_oakmont.study_planer.entity.StudyPlan;
-import com.stratton_oakmont.study_planer.entity.StudyProgram;
+import com.stratton_oakmont.study_planer.entity.StudyPlan;  
+import com.stratton_oakmont.study_planer.entity.studydata.StudyProgram;  
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

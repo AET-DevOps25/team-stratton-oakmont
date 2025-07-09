@@ -1,5 +1,6 @@
 package com.stratton_oakmont.study_planer.entity;
 
+import com.stratton_oakmont.study_planer.entity.studydata.StudyProgram; 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

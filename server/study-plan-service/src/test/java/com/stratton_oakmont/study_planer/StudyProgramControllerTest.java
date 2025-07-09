@@ -1,7 +1,7 @@
 package com.stratton_oakmont.study_planer.controller;
 
 import com.stratton_oakmont.study_planer.dto.StudyProgramDto;
-import com.stratton_oakmont.study_planer.entity.StudyProgram;
+import com.stratton_oakmont.study_planer.entity.studydata.StudyProgram;
 import com.stratton_oakmont.study_planer.service.StudyProgramService;
 import com.stratton_oakmont.study_planer.util.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;

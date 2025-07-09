@@ -1,8 +1,8 @@
 package com.stratton_oakmont.study_planer.service;
 
-import com.stratton_oakmont.study_planer.entity.StudyProgram;
+import com.stratton_oakmont.study_planer.entity.studydata.StudyProgram;
 import com.stratton_oakmont.study_planer.exception.StudyProgramNotFoundException;
-import com.stratton_oakmont.study_planer.repository.StudyProgramRepository;
+import com.stratton_oakmont.study_planer.repository.studydata.StudyProgramRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

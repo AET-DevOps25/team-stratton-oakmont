@@ -4,7 +4,7 @@ import com.stratton_oakmont.study_planer.dto.CreateStudyPlanRequest;
 import com.stratton_oakmont.study_planer.dto.StudyPlanDto;
 import com.stratton_oakmont.study_planer.dto.StudyProgramDto;
 import com.stratton_oakmont.study_planer.entity.StudyPlan;
-import com.stratton_oakmont.study_planer.entity.StudyProgram;
+import com.stratton_oakmont.study_planer.entity.studydata.StudyProgram;
 import com.stratton_oakmont.study_planer.service.StudyPlanService;
 import com.stratton_oakmont.study_planer.service.StudyProgramService;
 import com.stratton_oakmont.study_planer.util.JwtUtil;
@@ -204,8 +204,7 @@ public class StudyPlanController {
         // Set study program info
         if (studyPlan.getStudyProgram() != null) {
             dto.setStudyProgramId(studyPlan.getStudyProgram().getId());
-            dto.setStudyProgramName(studyPlan.getStudyProgram().getName());
-        }
+            dto.setStudyProgramName(studyPlan.getStudyProgram().getDegree());        }
         
         return dto;
     }
