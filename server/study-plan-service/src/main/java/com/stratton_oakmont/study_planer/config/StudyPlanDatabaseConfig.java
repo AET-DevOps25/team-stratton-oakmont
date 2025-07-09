@@ -10,6 +10,8 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 
 import javax.sql.DataSource;
 import jakarta.persistence.EntityManagerFactory;
@@ -17,6 +19,10 @@ import jakarta.persistence.EntityManagerFactory;
 @Configuration
 @EnableJpaRepositories(
     basePackages = "com.stratton_oakmont.study_planer.repository",
+    excludeFilters = @ComponentScan.Filter(
+        type = FilterType.REGEX,
+        pattern = "com\\.stratton_oakmont\\.study_planer\\.repository\\.studydata\\..*"
+    ),
     entityManagerFactoryRef = "studyPlanEntityManagerFactory",
     transactionManagerRef = "studyPlanTransactionManager"
 )
