@@ -19,21 +19,29 @@ env:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on:
+      ubuntu-latest
+      # TODO: remove
+      # Add this condition to only run if CI succeeded
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          # TODO: remove
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Set image tag
         id: image_tag
+        # TODO: change back to github.sha
         run: |
           # Get the PR number from the merge commit
           PR_NUMBER=$(git log -1 --pretty=format:"%s" | grep -o '#[0-9]*' | head -1 | tr -d '#')
           if [ -n "$PR_NUMBER" ]; then
           echo "tag=pr-$PR_NUMBER" >> $GITHUB_OUTPUT
           else
-          echo "tag=main-$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
+          echo "tag=main-$(echo ${{ github.event.workflow_run.head_sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
           fi
 
       - name: Set up kubectl
