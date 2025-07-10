@@ -2,7 +2,12 @@ name: Continuous Deployment
 
 on:
   push: # Triggered by merge to main branch
-    branches: [main]
+    # TODO: remove my branch after testing
+    branches:
+      [
+        main,
+        118-fix-issue-that-study-plan-service-cant-connect-to-study-data-db-in-kubernetes,
+      ]
 
 env:
   REGISTRY: ghcr.io
