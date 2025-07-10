@@ -1,15 +1,31 @@
-name: Continuous Deployment
+name: CI/CD Testing
 
 on:
-  push: # Triggered by merge to main branch
-    branches: [main]
+  push:
+    branches:
+      - 118-fix-issue-that-study-plan-service-cant-connect-to-study-data-db-in-kubernetes
 
 env:
   REGISTRY: ghcr.io
 
 jobs:
+  # CI Jobs
+  build-and-test:
+    uses: ./.github/workflows/build-images.yml
+    with:
+      push-images: true
+    secrets: inherit
+
+  test:
+    uses: ./.github/workflows/test-services.yml
+    needs: build-and-test
+    secrets: inherit
+
+  # CD Job - runs after CI completes successfully
   deploy:
+    needs: [build-and-test, test]
     runs-on: ubuntu-latest
+    if: ${{ always() && needs.build-and-test.result == 'success' && needs.test.result == 'success' }}
 
     steps:
       - name: Checkout code

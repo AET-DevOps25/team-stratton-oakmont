@@ -3,12 +3,6 @@ name: Continuous Integration
 on:
   pull_request: # Triggered on pull requests to main branch
     branches: [main]
-  # TODO: remove this after testing
-  push: # Triggered on pushes to my branch
-    branches:
-      [
-        118-fix-issue-that-study-plan-service-cant-connect-to-study-data-db-in-kubernetes,
-      ]
 
 jobs:
   build-and-test:
