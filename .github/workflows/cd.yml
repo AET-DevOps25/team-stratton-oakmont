@@ -1,13 +1,18 @@
 name: Continuous Deployment
 
+# on:
+#   push: # Triggered by merge to main branch
+#     # TODO: remove my branch after testing
+#     branches: [main]
+
 on:
-  push: # Triggered by merge to main branch
-    # TODO: remove my branch after testing
+  workflow_run:
+    workflows: ["Continuous Integration"]
+    types:
+      - completed
     branches:
-      [
-        main,
-        118-fix-issue-that-study-plan-service-cant-connect-to-study-data-db-in-kubernetes,
-      ]
+      - main
+      - 118-fix-issue-that-study-plan-service-cant-connect-to-study-data-db-in-kubernetes
 
 env:
   REGISTRY: ghcr.io
