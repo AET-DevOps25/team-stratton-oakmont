@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RestController
-@RequestMapping("/study-plans") // Base path for all study plan endpoints
+@RequestMapping("/") // Change to root path to match ingress rewrite pattern
 @CrossOrigin(origins = {
     "https://tum-study-planner.student.k8s.aet.cit.tum.de",
     "http://localhost:5173", 
@@ -46,7 +46,7 @@ public class StudyPlanController {
         logger.info("LOG: StudyPlanController initialized successfully");
     }
 
-    // POST /api/v1/study-plans - Create new study plan
+    // POST /api/v1/ - Create new study plan (from /api/study-plan/ via ingress)
     @PostMapping({"", "/"})  // Accept both with and without trailing slash
     public ResponseEntity<StudyPlanDto> createStudyPlan(
         @Valid @RequestBody CreateStudyPlanRequest request,
@@ -95,7 +95,7 @@ public class StudyPlanController {
         }
     }
 
-    // GET /api/v1/study-plans/my - Get study plans for authenticated user
+    // GET /my - Get study plans for authenticated user (from /api/study-plan/my via ingress)
     @GetMapping("/my")
     public ResponseEntity<?> getMyStudyPlans(@RequestHeader("Authorization") String authorizationHeader) {
         try {
