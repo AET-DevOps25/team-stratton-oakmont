@@ -8,6 +8,10 @@ spec:
   selector:
     app: program-catalog-service
   ports:
-    - port: 8082
+    - name: http
+      port: 8082
       targetPort: 8082
+    - name: management
+      port: 9080
+      targetPort: 9080
   type: ClusterIP
