@@ -18,12 +18,10 @@ This guide helps you configure Slack notifications for your TUM Study Planner mo
 5. **Choose Channel**: Select existing or create new channel
 6. **Copy Webhook URL**: Looks like `https://hooks.slack.com/services/T.../B.../...`
 
-### Step 2: Create Slack Channels (Recommended)
+### Step 2: Create Slack Channel
 
-Create these channels in your Slack workspace:
-- `#alerts-critical` - For critical alerts (service down, node issues)
-- `#alerts-warning` - For warnings (high response time, error rate)
-- Use `#general` if you prefer a single channel
+Create this channel in your Slack workspace:
+- `#alerts-warning` - For all alerts (critical and warning)
 
 ### Step 3: Configure AlertManager
 
@@ -71,11 +69,11 @@ kubectl rollout restart deployment/alertmanager -n tum-study-planner-monitoring
 
 | Alert Name | Trigger | Severity | Channel |
 |------------|---------|----------|---------|
-| ServiceDown | Service unavailable >1min | Critical | #alerts-critical |
+| ServiceDown | Service unavailable >1min | Critical | #alerts-warning |
 | HighResponseTime | >500ms response time >2min | Warning | #alerts-warning |
 | HighErrorRate | >10% error rate >2min | Warning | #alerts-warning |
 | PodRestartingTooMuch | Frequent pod restarts | Warning | #alerts-warning |
-| KubernetesNodeNotReady | Node issues >5min | Critical | #alerts-critical |
+| KubernetesNodeNotReady | Node issues >5min | Critical | #alerts-warning |
 | KubernetesPodCrashLooping | Pod crash loops | Warning | #alerts-warning |
 
 ## 🔧 Advanced Configuration
