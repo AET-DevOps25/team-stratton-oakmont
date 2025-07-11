@@ -51,7 +51,7 @@ public interface StudyPlanRepository extends JpaRepository<StudyPlan, Long> {
     // Check if user has any active study plans
     boolean existsByUserIdAndIsActiveTrue(Long userId);
     
-    // Find study plans by user with specific study program name
-    @Query("SELECT sp FROM StudyPlan sp WHERE sp.userId = :userId AND sp.studyProgram.name = :programName")
+    // Find study plans by user with specific study program curriculum
+    @Query("SELECT sp FROM StudyPlan sp WHERE sp.userId = :userId AND sp.studyProgram.curriculum = :programName")
     List<StudyPlan> findByUserIdAndStudyProgramName(@Param("userId") Long userId, @Param("programName") String programName);
 }
