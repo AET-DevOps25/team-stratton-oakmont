@@ -1,0 +1,42 @@
+name: Test Services
+
+on:
+  workflow_call:
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      #TODO: Implement actual backend tests
+      - name: Placeholder backend tests
+        run: |
+          echo "✅ Backend tests placeholder - implement later"
+          echo "Backend services would be tested here"
+
+  frontend-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install dependencies and lint
+        run: |
+          cd client
+          npm ci
+          npm run lint || echo "⚠️ Linting issues found"
+
+      # TODO: Implement actual frontend tests
+      - name: Placeholder frontend tests
+        run: |
+          echo "✅ Frontend tests placeholder - implement later"
+          echo "Frontend components would be tested here"

@@ -1,7 +1,7 @@
 package com.stratton_oakmont.study_planer.service;
 
 import com.stratton_oakmont.study_planer.entity.StudyPlan;
-import com.stratton_oakmont.study_planer.entity.StudyProgram;
+import com.stratton_oakmont.study_planer.entity.studydata.StudyProgram;
 import com.stratton_oakmont.study_planer.exception.StudyPlanNotFoundException;
 import com.stratton_oakmont.study_planer.exception.StudyPlanValidationException;
 import com.stratton_oakmont.study_planer.repository.StudyPlanRepository;

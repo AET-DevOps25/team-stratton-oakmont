@@ -31,21 +31,21 @@ spec:
             - containerPort: 9080
               name: management
           env:
-            - name: DB_PROGRAM_CATALOG_URL
+            - name: DB_STUDY_DATA_URL
               valueFrom:
                 secretKeyRef:
                   name: tum-study-planner-secrets
-                  key: PROGRAM_CATALOG_DB_URL
-            - name: DB_PROGRAM_CATALOG_USERNAME
+                  key: STUDY_DATA_DB_URL
+            - name: DB_STUDY_DATA_USERNAME
               valueFrom:
                 secretKeyRef:
                   name: tum-study-planner-secrets
-                  key: PROGRAM_CATALOG_DB_USER
-            - name: DB_PROGRAM_CATALOG_PASSWORD
+                  key: STUDY_DATA_DB_USER
+            - name: DB_STUDY_DATA_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: tum-study-planner-secrets
-                  key: PROGRAM_CATALOG_DB_PASSWORD
+                  key: STUDY_DATA_DB_PASSWORD
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:

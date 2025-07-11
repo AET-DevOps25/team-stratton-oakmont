@@ -1,0 +1,16 @@
+name: Continuous Integration
+
+on:
+  pull_request: # Triggered on pull requests to main branch
+    branches: [main]
+
+jobs:
+  build-and-test:
+    uses: ./.github/workflows/build-images.yml
+    with:
+      push-images: true # Push images on PR
+    secrets: inherit
+
+  test:
+    uses: ./.github/workflows/test-services.yml
+    needs: build-and-test # Run tests after build

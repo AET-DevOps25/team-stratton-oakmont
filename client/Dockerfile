@@ -5,12 +5,10 @@ WORKDIR /app
 # Accept build arguments for environment configuration
 ARG NODE_ENV=production
 ARG VITE_MODE=production
-ARG VITE_API_BASE_URL=/api/user-auth
 
 # Set environment variables
 ENV NODE_ENV=$NODE_ENV
 ENV VITE_MODE=$VITE_MODE
-ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 
 # Copy package files
 COPY package*.json ./
@@ -22,7 +20,7 @@ RUN npm ci --include=dev
 COPY . .
 
 # Build the React application with Vite
-RUN npm run build
+RUN npm run build:vite
 
 # Stage 2: Serve with nginx (better for React SPAs)
 FROM nginx:alpine

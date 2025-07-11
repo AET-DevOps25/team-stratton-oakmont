@@ -4,7 +4,7 @@ import com.stratton_oakmont.study_planer.dto.CreateStudyPlanRequest;
 import com.stratton_oakmont.study_planer.dto.StudyPlanDto;
 import com.stratton_oakmont.study_planer.dto.StudyProgramDto;
 import com.stratton_oakmont.study_planer.entity.StudyPlan;
-import com.stratton_oakmont.study_planer.entity.StudyProgram;
+import com.stratton_oakmont.study_planer.entity.studydata.StudyProgram;
 import com.stratton_oakmont.study_planer.service.StudyPlanService;
 import com.stratton_oakmont.study_planer.service.StudyProgramService;
 import com.stratton_oakmont.study_planer.util.JwtUtil;
@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/study-plans") // Base path for all study plan endpoints
 @CrossOrigin(origins = {
     "https://tum-study-planner.student.k8s.aet.cit.tum.de",
     "http://localhost:5173", 
@@ -47,7 +47,7 @@ public class StudyPlanController {
     }
 
     // POST /api/v1/study-plans - Create new study plan
-    @PostMapping("/study-plans")
+    @PostMapping("/")
     public ResponseEntity<StudyPlanDto> createStudyPlan(
         @Valid @RequestBody CreateStudyPlanRequest request,
         @RequestHeader("Authorization") String authorizationHeader) {
@@ -96,7 +96,7 @@ public class StudyPlanController {
     }
 
     // GET /api/v1/study-plans/my - Get study plans for authenticated user
-    @GetMapping("/study-plans/my")
+    @GetMapping("/my")
     public ResponseEntity<?> getMyStudyPlans(@RequestHeader("Authorization") String authorizationHeader) {
         try {
             // Extract and validate JWT token
@@ -136,7 +136,7 @@ public class StudyPlanController {
 
     // GET /api/v1/study-plans - List all study plans (admin only - for now keep as is)
     // TODO [ ]: remove this API path before deploying, unsecure endpoint !! 
-    @GetMapping("/study-plans")
+    @GetMapping("/")
     public ResponseEntity<List<StudyPlanDto>> getAllStudyPlans() {
         List<StudyPlan> studyPlans = studyPlanService.getAllStudyPlans();
         List<StudyPlanDto> studyPlanDtos = studyPlans.stream()
@@ -146,7 +146,7 @@ public class StudyPlanController {
     }
 
     // GET /api/v1/study-plans/{id} - Get specific study plan (with ownership check)
-    @GetMapping("/study-plans/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getStudyPlanById(
             @PathVariable Long id,
             @RequestHeader("Authorization") String authorizationHeader) {
@@ -204,14 +204,13 @@ public class StudyPlanController {
         // Set study program info
         if (studyPlan.getStudyProgram() != null) {
             dto.setStudyProgramId(studyPlan.getStudyProgram().getId());
-            dto.setStudyProgramName(studyPlan.getStudyProgram().getName());
-        }
+            dto.setStudyProgramName(studyPlan.getStudyProgram().getDegree());        }
         
         return dto;
     }
 
     // PUT /api/v1/study-plans/{id} - Update study plan (with ownership check)
-    @PutMapping("/study-plans/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<?> updateStudyPlan(
             @PathVariable Long id,
             @Valid @RequestBody CreateStudyPlanRequest request,
@@ -269,7 +268,7 @@ public class StudyPlanController {
     }
 
      // PATCH /api/v1/study-plans/{id} - Partial update study plan (with ownership check)
-    @PatchMapping("/study-plans/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<?> partialUpdateStudyPlan(
             @PathVariable Long id,
             @RequestBody Map<String, Object> updates,
@@ -331,7 +330,7 @@ public class StudyPlanController {
     }
 
     // PUT /api/v1/study-plans/{id}/rename - Rename study plan (with ownership check)
-    @PutMapping("/study-plans/{id}/rename")
+    @PutMapping("/{id}/rename")
     public ResponseEntity<?> renameStudyPlan(
             @PathVariable Long id,
             @RequestBody Map<String, String> request,
@@ -402,7 +401,7 @@ public class StudyPlanController {
     }
 
     // DELETE /api/v1/study-plans/{id} - Delete study plan (with ownership check)
-    @DeleteMapping("/study-plans/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteStudyPlan(
             @PathVariable Long id,
             @RequestHeader("Authorization") String authorizationHeader) {
