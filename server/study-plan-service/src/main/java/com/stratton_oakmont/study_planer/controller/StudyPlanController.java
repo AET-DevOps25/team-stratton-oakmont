@@ -2,11 +2,8 @@ package com.stratton_oakmont.study_planer.controller;
 
 import com.stratton_oakmont.study_planer.dto.CreateStudyPlanRequest;
 import com.stratton_oakmont.study_planer.dto.StudyPlanDto;
-import com.stratton_oakmont.study_planer.dto.StudyProgramDto;
 import com.stratton_oakmont.study_planer.entity.StudyPlan;
-import com.stratton_oakmont.study_planer.entity.studydata.StudyProgram;
 import com.stratton_oakmont.study_planer.service.StudyPlanService;
-import com.stratton_oakmont.study_planer.service.StudyProgramService;
 import com.stratton_oakmont.study_planer.util.JwtUtil;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,14 +31,12 @@ import org.slf4j.LoggerFactory;
 public class StudyPlanController {
 
     private final StudyPlanService studyPlanService;
-    private final StudyProgramService studyProgramService;
     private final JwtUtil jwtUtil;
     private static final Logger logger = LoggerFactory.getLogger(StudyPlanController.class);
 
     @Autowired
-    public StudyPlanController(StudyPlanService studyPlanService, StudyProgramService studyProgramService, JwtUtil jwtUtil) {
+    public StudyPlanController(StudyPlanService studyPlanService, JwtUtil jwtUtil) {
         this.studyPlanService = studyPlanService;
-        this.studyProgramService = studyProgramService;
         this.jwtUtil = jwtUtil;
         logger.info("LOG: StudyPlanController initialized successfully");
     }
@@ -448,37 +443,6 @@ public class StudyPlanController {
             error.put("message", "Error deleting study plan: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
-    }
-
-    // GET /api/v1/study-plans/study-programs - Get all study programs
-    @GetMapping("/study-programs")
-    public ResponseEntity<List<StudyProgramDto>> getAllStudyPrograms() {
-        List<StudyProgram> programs = studyProgramService.getAllStudyPrograms();
-        List<StudyProgramDto> dtos = programs.stream()
-            .map(this::convertToStudyProgramDto)
-            .collect(Collectors.toList());
-        return ResponseEntity.ok(dtos);
-    }
-
-    // GET /api/v1/study-plans/study-programs/{id} - Get specific study program
-    @GetMapping("/study-programs/{id}")
-    public ResponseEntity<StudyProgramDto> getStudyProgramById(@PathVariable Long id) {
-        StudyProgram program = studyProgramService.getStudyProgramById(id);
-        return ResponseEntity.ok(convertToStudyProgramDto(program));
-    }
-
-    // Helper method to convert StudyProgram entity to DTO
-    private StudyProgramDto convertToStudyProgramDto(StudyProgram program) {
-        StudyProgramDto dto = new StudyProgramDto();
-        dto.setId(program.getId());
-        dto.setName(program.getDegree()); // Using degree as name
-        dto.setDegreeType(program.getDegree());
-        dto.setCurriculum(program.getCurriculum());
-        dto.setFieldOfStudies(program.getFieldOfStudies());
-        dto.setEctsCredits(program.getEctsCredits());
-        dto.setSemester(program.getSemester());
-        dto.setCurriculumLink(program.getCurriculumLink());
-        return dto;
     }
 
     // Exception handlers
