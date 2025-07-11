@@ -10,7 +10,6 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /api/v1/study-plans/$2
-    nginx.ingress.kubernetes.io/priority: "200"
 spec:
   tls:
     - hosts:
