@@ -16,6 +16,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,17 @@ public class StudyPlanController {
         this.studyProgramService = studyProgramService;
         this.jwtUtil = jwtUtil;
         logger.info("LOG: StudyPlanController initialized successfully");
+    }
+
+    // Test endpoint to verify routing - no authentication required
+    @GetMapping("/test")
+    public ResponseEntity<Map<String, String>> testEndpoint(HttpServletRequest request) {
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Study Plan Service is working");
+        response.put("path", request.getRequestURI());
+        response.put("method", request.getMethod());
+        logger.info("Test endpoint called - URI: {}, Method: {}", request.getRequestURI(), request.getMethod());
+        return ResponseEntity.ok(response);
     }
 
     // POST /api/v1/study-plans - Create new study plan
