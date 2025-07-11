@@ -47,7 +47,7 @@ public class StudyPlanController {
     }
 
     // POST /api/v1/study-plans - Create new study plan
-    @PostMapping("/")
+    @PostMapping({"", "/"})  // Accept both with and without trailing slash
     public ResponseEntity<StudyPlanDto> createStudyPlan(
         @Valid @RequestBody CreateStudyPlanRequest request,
         @RequestHeader("Authorization") String authorizationHeader) {
