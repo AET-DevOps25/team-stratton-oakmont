@@ -58,7 +58,7 @@ export const getMyStudyPlans = async (): Promise<StudyPlanDto[]> => {
     );
   }
 
-  const response = await fetch(`${STUDY_PLAN_API_URL}/study-plans/my`, {
+  const response = await fetch(`${STUDY_PLAN_API_URL}/my`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -116,7 +116,7 @@ export const createStudyPlan = async (
     );
   }
 
-  const response = await fetch(`${STUDY_PLAN_API_URL}/study-plans`, {
+  const response = await fetch(`${STUDY_PLAN_API_URL}/`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -150,7 +150,7 @@ export const getStudyPlanById = async (id: string): Promise<StudyPlanDto> => {
     );
   }
 
-  const response = await fetch(`${STUDY_PLAN_API_URL}/study-plans/${id}`, {
+  const response = await fetch(`${STUDY_PLAN_API_URL}/${id}`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -217,7 +217,7 @@ export const deleteStudyPlan = async (id: number): Promise<void> => {
     );
   }
 
-  const response = await fetch(`${STUDY_PLAN_API_URL}/study-plans/${id}`, {
+  const response = await fetch(`${STUDY_PLAN_API_URL}/${id}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -250,17 +250,14 @@ export const renameStudyPlan = async (
     );
   }
 
-  const response = await fetch(
-    `${STUDY_PLAN_API_URL}/study-plans/${id}/rename`,
-    {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name }),
-    }
-  );
+  const response = await fetch(`${STUDY_PLAN_API_URL}/${id}/rename`, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ name }),
+  });
 
   const data = await response.json();
 
