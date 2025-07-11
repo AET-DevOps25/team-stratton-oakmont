@@ -19,15 +19,8 @@ spec:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
-          - path: /()$
+          - path: /()(.*)
             pathType: ImplementationSpecific
-            backend:
-              service:
-                name: client
-                port:
-                  number: 80
-          - path: /((?!api).*)
-            pathType: ImplementationSpecific  
             backend:
               service:
                 name: client
