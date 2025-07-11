@@ -58,6 +58,50 @@ public class StudyPlanController {
         return ResponseEntity.ok(response);
     }
 
+    // Debug endpoint to test POST-like behavior with GET
+    @GetMapping("/debug-create")
+    public ResponseEntity<?> debugCreateStudyPlan(@RequestHeader("Authorization") String authorizationHeader) {
+        logger.info("DEBUG: Authorization header received: {}", authorizationHeader != null ? "present" : "missing");
+        
+        try {
+            // Extract and validate JWT token
+            String token = jwtUtil.extractTokenFromHeader(authorizationHeader);
+            logger.info("DEBUG: Extracted token: {}", token != null ? "present" : "null");
+            
+            if (token == null || !jwtUtil.isTokenValid(token)) {
+                logger.warn("DEBUG: Token validation failed");
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "INVALID_TOKEN");
+                error.put("message", "Invalid or missing JWT token");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+            }
+
+            // Extract user ID from JWT token
+            Long userId = jwtUtil.extractUserIdFromToken(token);
+            logger.info("DEBUG: Extracted userId: {}", userId);
+            
+            if (userId == null) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "INVALID_TOKEN");
+                error.put("message", "User ID not found in token");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+            }
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Debug endpoint works");
+            response.put("userId", userId);
+            response.put("tokenValid", true);
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            logger.error("DEBUG: Exception occurred", e);
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "TOKEN_PROCESSING_ERROR");
+            error.put("message", "Error processing JWT token: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+        }
+    }
+
     // POST /api/v1/study-plans - Create new study plan
     @PostMapping({"", "/"})  // Accept both with and without trailing slash
     public ResponseEntity<StudyPlanDto> createStudyPlan(
