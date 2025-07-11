@@ -34,18 +34,8 @@ jobs:
       - name: Set image tag
         id: image_tag
         run: |
-          # Use branch name for tagging to match CI behavior
-          BRANCH_NAME="${{ github.ref_name }}"
-          if [[ "$BRANCH_NAME" =~ ^[0-9]+ ]]; then
-            # If branch starts with number (like 118-fix-issue...), use pr-NUMBER format
-            PR_NUMBER=$(echo "$BRANCH_NAME" | grep -o '^[0-9]*')
-            echo "tag=pr-$PR_NUMBER" >> $GITHUB_OUTPUT
-          elif [ "$BRANCH_NAME" == "main" ]; then
-            echo "tag=main-$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
-          else
-            # For other branches, use branch name with SHA
-            echo "tag=${BRANCH_NAME}-$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
-          fi
+          # Simple approach: use branch name with SHA (like your CD workflow for non-main branches)
+          echo "tag=${{ github.ref_name }}-$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
 
       - name: Set up kubectl
         uses: azure/setup-kubectl@v4
