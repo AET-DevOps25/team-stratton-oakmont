@@ -2,7 +2,9 @@ package com.stratton_oakmont.study_planer.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -17,9 +19,10 @@ import java.util.Properties;
 
 @Configuration
 @EnableJpaRepositories(
-    basePackages = "com.stratton_oakmont.study_planer.repository.studyplan",
-    entityManagerFactoryRef = "studyPlanEntityManagerFactory",
-    transactionManagerRef = "studyPlanTransactionManager"
+    basePackages = "com.stratton_oakmont.study_planer.repository",
+    excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*\\.studydata\\..*"),
+    entityManagerFactoryRef = "entityManagerFactory",
+    transactionManagerRef = "transactionManager"
 )
 public class StudyPlanDatabaseConfig {
     
@@ -33,8 +36,8 @@ public class StudyPlanDatabaseConfig {
     private String password;
     
     @Primary
-    @Bean(name = "studyPlanDataSource")
-    public DataSource studyPlanDataSource() {
+    @Bean(name = "dataSource")
+    public DataSource dataSource() {
         return DataSourceBuilder.create()
                 .url(url)
                 .username(username)
@@ -44,18 +47,18 @@ public class StudyPlanDatabaseConfig {
     }
 
     @Primary
-    @Bean(name = "studyPlanEntityManagerFactory")
-    public LocalContainerEntityManagerFactoryBean studyPlanEntityManagerFactory() {
+    @Bean(name = "entityManagerFactory")
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-        em.setDataSource(studyPlanDataSource());
-        em.setPackagesToScan("com.stratton_oakmont.study_planer.entity.studyplan");
+        em.setDataSource(dataSource());
+        em.setPackagesToScan("com.stratton_oakmont.study_planer.entity");
         
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
         
         Properties properties = new Properties();
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-        properties.setProperty("hibernate.hbm2ddl.auto", "update");
+        properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
         properties.setProperty("hibernate.show_sql", "true");
         em.setJpaProperties(properties);
         
@@ -63,10 +66,10 @@ public class StudyPlanDatabaseConfig {
     }
 
     @Primary
-    @Bean(name = "studyPlanTransactionManager")
-    public PlatformTransactionManager studyPlanTransactionManager() {
+    @Bean(name = "transactionManager")
+    public PlatformTransactionManager transactionManager() {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
-        transactionManager.setEntityManagerFactory(studyPlanEntityManagerFactory().getObject());
+        transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
         return transactionManager;
     }
 }

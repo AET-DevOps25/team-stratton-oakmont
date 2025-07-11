@@ -1,6 +1,6 @@
 package com.stratton_oakmont.study_planer.entity;
 
-import com.stratton_oakmont.study_planer.entity.studydata.StudyProgram; 
+import com.stratton_oakmont.study_planer.entity.studydata.StudyProgram;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -30,8 +30,7 @@ public class StudyPlan {
     
     // Many-to-one relationship with StudyProgram
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "study_program_id", nullable = false)
-    @NotNull(message = "Study program cannot be null")
+    @JoinColumn(name = "study_program_id", nullable = true) // Made nullable to avoid startup issues
     private StudyProgram studyProgram;
     
     // Additional fields for study plan data (JSON for now)
@@ -45,6 +44,12 @@ public class StudyPlan {
     public StudyPlan() {
         this.createdDate = LocalDateTime.now();
         this.lastModified = LocalDateTime.now();
+    }
+    
+    public StudyPlan(String name, Long userId) {
+        this();
+        this.name = name;
+        this.userId = userId;
     }
     
     public StudyPlan(String name, Long userId, StudyProgram studyProgram) {
