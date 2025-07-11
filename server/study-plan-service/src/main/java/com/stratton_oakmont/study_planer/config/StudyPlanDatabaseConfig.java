@@ -58,7 +58,7 @@ public class StudyPlanDatabaseConfig {
         
         Properties properties = new Properties();
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-        properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
+        properties.setProperty("hibernate.hbm2ddl.auto", "update"); // Changed from create-drop to preserve data
         properties.setProperty("hibernate.show_sql", "true");
         em.setJpaProperties(properties);
         

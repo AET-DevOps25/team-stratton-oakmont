@@ -49,7 +49,7 @@ def main():
         csv_files_to_upload = [
             {
                 'file_path': 'data-collection/csv_tables/degree_programs.csv',
-                'table_name': 'degree_programs'
+                'table_name': 'study_programs'
             },
             {
                 'file_path': 'data-collection/csv_tables/curriculums.csv',
