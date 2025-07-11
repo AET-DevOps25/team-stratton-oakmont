@@ -18,7 +18,13 @@ jobs:
       - name: Set image tag
         id: image_tag
         run: |
-          echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          # Get the PR number from the merge commit
+          PR_NUMBER=$(git log -1 --pretty=format:"%s" | grep -o '#[0-9]*' | head -1 | tr -d '#')
+          if [ -n "$PR_NUMBER" ]; then
+          echo "tag=pr-$PR_NUMBER" >> $GITHUB_OUTPUT
+          else
+          echo "tag=main-$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
+          fi
 
       - name: Set up kubectl
         uses: azure/setup-kubectl@v4

@@ -34,8 +34,7 @@ jobs:
       - name: Set image tag
         id: image_tag
         run: |
-          # Simple approach: use branch name with SHA (like your CD workflow for non-main branches)
-          echo "tag=${{ github.ref_name }}-$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
+          echo "tag=sha-$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
 
       - name: Set up kubectl
         uses: azure/setup-kubectl@v4
