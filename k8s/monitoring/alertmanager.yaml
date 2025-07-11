@@ -34,7 +34,7 @@ data:
     - name: 'default-receiver'
       slack_configs:
       - api_url_file: '/etc/alertmanager/secrets/slack-webhook-url'
-        channel: '#general'
+        channel: '#alerts-warning'
         title: 'TUM Study Planner - {{ .Status | toUpper }}'
         text: >-
           {{ range .Alerts }}
@@ -48,7 +48,7 @@ data:
     - name: 'critical-alerts'
       slack_configs:
       - api_url_file: '/etc/alertmanager/secrets/slack-webhook-url'
-        channel: '#alerts-critical'
+        channel: '#alerts-warning'
         title: '🚨 CRITICAL ALERT - TUM Study Planner'
         color: danger
         text: >-
