@@ -3,12 +3,12 @@ FROM gradle:8.14-jdk21 AS build
 WORKDIR /app
 
 # Copy gradle files from parent directory
-COPY ../build.gradle ../settings.gradle ./
-COPY ../gradle ./gradle
+COPY server/build.gradle server/settings.gradle ./
+COPY server/gradle ./gradle
 
 # Copy this service's build file and source code
-COPY program-catalog-service/build.gradle ./program-catalog-service/
-COPY program-catalog-service/src ./program-catalog-service/src
+COPY server/program-catalog-service/build.gradle ./program-catalog-service/
+COPY server/program-catalog-service/src ./program-catalog-service/src
 
 # Build the application
 RUN gradle :program-catalog-service:bootJar --no-daemon
