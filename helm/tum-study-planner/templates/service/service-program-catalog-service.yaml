@@ -9,8 +9,8 @@ spec:
     app: program-catalog-service
   ports:
     - name: http
-      port: 8082
-      targetPort: 8082
+      port: 8080
+      targetPort: 8080
     - name: management
       port: 9080
       targetPort: 9080

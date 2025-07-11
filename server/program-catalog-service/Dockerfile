@@ -21,6 +21,6 @@ WORKDIR /app
 # Copy the built JAR from build stage
 COPY --from=build /app/program-catalog-service/build/libs/*.jar app.jar
 
-EXPOSE 8082
+EXPOSE 8080
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
