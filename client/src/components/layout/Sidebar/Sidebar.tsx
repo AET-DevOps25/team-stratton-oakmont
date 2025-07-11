@@ -34,6 +34,7 @@ import {
   Delete,
   Edit,
   MenuBook,
+  School,
 } from "@mui/icons-material";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
@@ -334,6 +335,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
     return location.pathname === "/curriculum";
   };
 
+  const isCoursesActive = () => {
+    return location.pathname === "/courses";
+  };
+
   return (
     <Drawer
       variant="persistent"
@@ -393,6 +398,43 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
               </ListItemIcon>
               <ListItemText
                 primary="M.Sc. Information Systems"
+                primaryTypographyProps={{
+                  variant: "body2",
+                  sx: {
+                    fontWeight: 500,
+                    color: "white",
+                  },
+                }}
+              />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton
+              disableRipple
+              onClick={() => navigate("/courses")}
+              selected={isCoursesActive()}
+              sx={{
+                minHeight: 48,
+                borderRadius: 2,
+                mb: 1,
+                "&:hover": {
+                  backgroundColor: "rgba(100, 108, 255, 0.1)",
+                },
+                "&.Mui-selected": {
+                  backgroundColor: "rgba(100, 108, 255, 0.2)",
+                  "& .MuiListItemIcon-root": { color: "#646cff" },
+                  "& .MuiListItemText-primary": {
+                    color: "#646cff",
+                    fontWeight: 600,
+                  },
+                },
+              }}
+            >
+              <ListItemIcon sx={{ color: "rgba(255, 255, 255, 0.7)" }}>
+                <School />
+              </ListItemIcon>
+              <ListItemText
+                primary="Course Catalog"
                 primaryTypographyProps={{
                   variant: "body2",
                   sx: {

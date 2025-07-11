@@ -17,6 +17,7 @@ import { theme } from "./theme/Theme";
 import StudyPlanDetailPage from "./pages/StudyPlans/StudyPlanDetailPage";
 import { StudyPlansProvider } from "./contexts/StudyPlansContext";
 import CurriculumPage from "./pages/Curriculum/CurriculumPage";
+import CoursesPage from "./pages/Courses/CoursesPage";
 
 function App() {
   return (
@@ -81,6 +82,14 @@ function App() {
                     element={
                       <ProtectedRoute requireAuth={true}>
                         <CurriculumPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/courses"
+                    element={
+                      <ProtectedRoute requireAuth={true}>
+                        <CoursesPage />
                       </ProtectedRoute>
                     }
                   />
