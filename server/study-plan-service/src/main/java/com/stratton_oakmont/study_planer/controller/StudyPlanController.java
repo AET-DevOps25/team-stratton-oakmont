@@ -450,6 +450,37 @@ public class StudyPlanController {
         }
     }
 
+    // GET /api/v1/study-plans/study-programs - Get all study programs
+    @GetMapping("/study-programs")
+    public ResponseEntity<List<StudyProgramDto>> getAllStudyPrograms() {
+        List<StudyProgram> programs = studyProgramService.getAllStudyPrograms();
+        List<StudyProgramDto> dtos = programs.stream()
+            .map(this::convertToStudyProgramDto)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
+    }
+
+    // GET /api/v1/study-plans/study-programs/{id} - Get specific study program
+    @GetMapping("/study-programs/{id}")
+    public ResponseEntity<StudyProgramDto> getStudyProgramById(@PathVariable Long id) {
+        StudyProgram program = studyProgramService.getStudyProgramById(id);
+        return ResponseEntity.ok(convertToStudyProgramDto(program));
+    }
+
+    // Helper method to convert StudyProgram entity to DTO
+    private StudyProgramDto convertToStudyProgramDto(StudyProgram program) {
+        StudyProgramDto dto = new StudyProgramDto();
+        dto.setId(program.getId());
+        dto.setName(program.getDegree()); // Using degree as name
+        dto.setDegreeType(program.getDegree());
+        dto.setCurriculum(program.getCurriculum());
+        dto.setFieldOfStudies(program.getFieldOfStudies());
+        dto.setEctsCredits(program.getEctsCredits());
+        dto.setSemester(program.getSemester());
+        dto.setCurriculumLink(program.getCurriculumLink());
+        return dto;
+    }
+
     // Exception handlers
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(
