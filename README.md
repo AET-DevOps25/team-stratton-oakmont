@@ -7,11 +7,20 @@
 ```bash
 cd team-stratton-oakmont
 
-# Start all services locally (including test monitoring stack)
+# Create shared network (only needed once)
+docker network create stratton-oakmont-network
+
+# Start monitoring stack (independent, keeps historical data)
+docker-compose -f docker-compose.monitoring.yml up -d
+
+# Start application services
 docker-compose -f docker-compose.test.yml up -d --build
 
-# Stop services
+# Stop application services (monitoring keeps running)
 docker-compose -f docker-compose.test.yml down
+
+# Stop monitoring stack (if needed)
+docker-compose -f docker-compose.monitoring.yml down
 ```
 
 **Local URLs:**
@@ -58,7 +67,40 @@ The development environment includes a comprehensive monitoring stack:
 - External users cannot access monitoring/health endpoints directly
 - Main application APIs remain publicly accessible for legitimate use
 
-All monitoring services are automatically started with the test environment and provide real-time insights into application performance and health.
+All monitoring services can be started independently and provide real-time insights into application performance and health. In development, monitoring runs alongside the application services, while in production, monitoring is deployed as a separate stack for better resource isolation.
+
+**Production Note:** In production deployments, monitoring services are deployed separately for better resource isolation and scalability. Use the dedicated `docker-compose.monitoring.yml` file alongside your production stack.
+
+### 🏭 Production Deployment (Local/Docker)
+
+> _Deploy the complete stack including monitoring for production._
+
+```bash
+# Deploy complete stack with monitoring (recommended for production)
+./scripts/deploy-with-monitoring.sh
+
+# Clean up everything including monitoring
+./scripts/destroy-with-monitoring.sh
+```
+
+**What the production scripts do:**
+
+- 🔗 Creates shared Docker network for service communication
+- 📊 Starts monitoring stack first (Prometheus, Grafana, Loki, Promtail)
+- 🏗️ Deploys all application services in production mode
+- 🔒 Keeps management endpoints secure (internal network only)
+- 📈 Ensures monitoring is ready to collect metrics from service startup
+
+**Alternative: Manual Production Deployment**
+
+```bash
+# Create network and start monitoring
+docker network create stratton-oakmont-network
+docker-compose -f docker-compose.monitoring.yml up -d
+
+# Start production application services
+docker-compose -f docker-compose.prod.yml up -d --build
+```
 
 ### ☁️ AWS Deployment
 
@@ -77,6 +119,7 @@ All monitoring services are automatically started with the test environment and 
 - 🏗️ Creates AWS EC2 instance with Terraform
 - 🎭 Deploys application with Ansible
 - 🐳 Builds and runs all services in Docker
+- 📊 Deploys monitoring stack (Prometheus, Grafana, Loki, Promtail)
 - 🌐 Sets up nginx reverse proxy with CORS
 
 ### 🛠️ Manual Development (Alternative)
