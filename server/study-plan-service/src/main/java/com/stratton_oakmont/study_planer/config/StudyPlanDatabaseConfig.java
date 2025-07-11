@@ -51,7 +51,7 @@ public class StudyPlanDatabaseConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource());
-        em.setPackagesToScan("com.stratton_oakmont.study_planer.entity");
+        em.setPackagesToScan("com.stratton_oakmont.study_planer.model");
         
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);

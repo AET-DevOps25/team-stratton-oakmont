@@ -1,6 +1,5 @@
-package com.stratton_oakmont.study_planer.entity;
+package com.stratton_oakmont.study_planer.model;
 
-import com.stratton_oakmont.study_planer.entity.studydata.StudyProgram;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -28,10 +27,9 @@ public class StudyPlan {
     @Column(name = "last_modified")
     private LocalDateTime lastModified;
     
-    // Many-to-one relationship with StudyProgram
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "study_program_id", nullable = true) // Made nullable to avoid startup issues
-    private StudyProgram studyProgram;
+    // Store only the study program ID (foreign key reference)
+    @Column(name = "study_program_id", nullable = true)
+    private Long studyProgramId;
     
     // Additional fields for study plan data (JSON for now)
     @Column(name = "plan_data", columnDefinition = "TEXT")
@@ -52,11 +50,11 @@ public class StudyPlan {
         this.userId = userId;
     }
     
-    public StudyPlan(String name, Long userId, StudyProgram studyProgram) {
+    public StudyPlan(String name, Long userId, Long studyProgramId) {
         this();
         this.name = name;
         this.userId = userId;
-        this.studyProgram = studyProgram;
+        this.studyProgramId = studyProgramId;
     }
     
     // Getters and Setters
@@ -100,12 +98,12 @@ public class StudyPlan {
         this.lastModified = lastModified;
     }
     
-    public StudyProgram getStudyProgram() {
-        return studyProgram;
+    public Long getStudyProgramId() {
+        return studyProgramId;
     }
     
-    public void setStudyProgram(StudyProgram studyProgram) {
-        this.studyProgram = studyProgram;
+    public void setStudyProgramId(Long studyProgramId) {
+        this.studyProgramId = studyProgramId;
     }
     
     public String getPlanData() {

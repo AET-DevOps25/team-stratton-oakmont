@@ -2,8 +2,10 @@ package com.stratton_oakmont.study_planer.controller;
 
 import com.stratton_oakmont.study_planer.dto.CreateStudyPlanRequest;
 import com.stratton_oakmont.study_planer.dto.StudyPlanDto;
-import com.stratton_oakmont.study_planer.entity.StudyPlan;
+import com.stratton_oakmont.study_planer.dto.StudyProgramDto;
+import com.stratton_oakmont.study_planer.model.StudyPlan;
 import com.stratton_oakmont.study_planer.service.StudyPlanService;
+import com.stratton_oakmont.study_planer.client.ProgramCatalogClient;
 import com.stratton_oakmont.study_planer.util.JwtUtil;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,12 +33,14 @@ import org.slf4j.LoggerFactory;
 public class StudyPlanController {
 
     private final StudyPlanService studyPlanService;
+    private final ProgramCatalogClient programCatalogClient;
     private final JwtUtil jwtUtil;
     private static final Logger logger = LoggerFactory.getLogger(StudyPlanController.class);
 
     @Autowired
-    public StudyPlanController(StudyPlanService studyPlanService, JwtUtil jwtUtil) {
+    public StudyPlanController(StudyPlanService studyPlanService, ProgramCatalogClient programCatalogClient, JwtUtil jwtUtil) {
         this.studyPlanService = studyPlanService;
+        this.programCatalogClient = programCatalogClient;
         this.jwtUtil = jwtUtil;
         logger.info("LOG: StudyPlanController initialized successfully");
     }
@@ -115,7 +119,7 @@ public class StudyPlanController {
             }
 
             // Get study plans for authenticated user
-            List<StudyPlan> studyPlans = studyPlanService.getUserStudyPlansOrderedByCreatedDate(userId);
+            List<StudyPlan> studyPlans = studyPlanService.getStudyPlansByUserOrderByModified(userId);
             List<StudyPlanDto> studyPlanDtos = studyPlans.stream()
                     .map(this::convertToDto)
                     .collect(Collectors.toList());
@@ -197,9 +201,16 @@ public class StudyPlanController {
         dto.setLastModified(studyPlan.getLastModified());
         
         // Set study program info
-        if (studyPlan.getStudyProgram() != null) {
-            dto.setStudyProgramId(studyPlan.getStudyProgram().getId());
-            dto.setStudyProgramName(studyPlan.getStudyProgram().getDegree());
+        dto.setStudyProgramId(studyPlan.getStudyProgramId());
+        if (studyPlan.getStudyProgramId() != null) {
+            try {
+                StudyProgramDto studyProgram = programCatalogClient.getStudyProgramById(studyPlan.getStudyProgramId()).orElse(null);
+                if (studyProgram != null) {
+                    dto.setStudyProgramName(studyProgram.getDegree());
+                }
+            } catch (Exception e) {
+                logger.warn("Failed to fetch study program details for ID: {}", studyPlan.getStudyProgramId(), e);
+            }
         }
         
         return dto;
@@ -245,10 +256,9 @@ public class StudyPlanController {
                 existingPlan.setPlanData(request.getPlanData());
             }
             
-            // Update study program if different
-            if (!existingPlan.getStudyProgram().getId().equals(request.getStudyProgramId())) {
-                StudyProgram newProgram = studyProgramService.getStudyProgramById(request.getStudyProgramId());
-                existingPlan.setStudyProgram(newProgram);
+            // Update study program ID if different
+            if (!existingPlan.getStudyProgramId().equals(request.getStudyProgramId())) {
+                existingPlan.setStudyProgramId(request.getStudyProgramId());
             }
 
             StudyPlan updatedPlan = studyPlanService.updateStudyPlan(id, existingPlan);
@@ -309,8 +319,7 @@ public class StudyPlanController {
             }
             if (updates.containsKey("studyProgramId")) {
                 Long newProgramId = Long.valueOf(updates.get("studyProgramId").toString());
-                StudyProgram newProgram = studyProgramService.getStudyProgramById(newProgramId);
-                existingPlan.setStudyProgram(newProgram);
+                existingPlan.setStudyProgramId(newProgramId);
             }
 
             StudyPlan updatedPlan = studyPlanService.updateStudyPlan(id, existingPlan);

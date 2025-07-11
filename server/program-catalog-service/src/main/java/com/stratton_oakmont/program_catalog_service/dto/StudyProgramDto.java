@@ -1,8 +1,8 @@
-package com.stratton_oakmont.study_planer.dto;
+package com.stratton_oakmont.program_catalog_service.dto;
 
 public class StudyProgramDto {
     private Long id;
-    private String degree;  // Changed from degreeType
+    private String degree;
     private String curriculum;
     private String fieldOfStudies;
     private Integer ectsCredits;
@@ -11,6 +11,12 @@ public class StudyProgramDto {
     
     // Constructors
     public StudyProgramDto() {}
+    
+    public StudyProgramDto(Long id, String degree, String curriculum) {
+        this.id = id;
+        this.degree = degree;
+        this.curriculum = curriculum;
+    }
     
     // Getters and Setters
     public Long getId() { return id; }
@@ -34,6 +40,6 @@ public class StudyProgramDto {
     public String getCurriculumLink() { return curriculumLink; }
     public void setCurriculumLink(String curriculumLink) { this.curriculumLink = curriculumLink; }
     
-    // Convenience methods for compatibility
+    // Convenience methods
     public String getName() { return curriculum; }
 }

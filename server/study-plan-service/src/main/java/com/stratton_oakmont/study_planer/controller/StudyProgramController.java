@@ -1,14 +1,14 @@
 package com.stratton_oakmont.study_planer.controller;
 
 import com.stratton_oakmont.study_planer.dto.StudyProgramDto;
-import com.stratton_oakmont.study_planer.entity.studydata.StudyProgram;
-import com.stratton_oakmont.study_planer.repository.studydata.StudyProgramRepository;
+import com.stratton_oakmont.study_planer.client.ProgramCatalogClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/study-programs")
@@ -18,36 +18,51 @@ import java.util.stream.Collectors;
     "http://localhost:3000"
 })
 public class StudyProgramController {
-
+    
+    private final ProgramCatalogClient programCatalogClient;
+    
     @Autowired
-    private StudyProgramRepository studyProgramRepository;
-
-    @GetMapping
-    public ResponseEntity<List<StudyProgramDto>> getAllStudyPrograms() {
-        List<StudyProgram> programs = studyProgramRepository.findAll();
-        List<StudyProgramDto> dtos = programs.stream()
-            .map(this::convertToDto)
-            .collect(Collectors.toList());
-        return ResponseEntity.ok(dtos);
+    public StudyProgramController(ProgramCatalogClient programCatalogClient) {
+        this.programCatalogClient = programCatalogClient;
     }
-
+    
+    // GET /study-programs - Get all study programs (proxy to program-catalog-service)
+    @GetMapping({"", "/"})
+    public ResponseEntity<List<StudyProgramDto>> getAllStudyPrograms() {
+        try {
+            List<StudyProgramDto> programs = programCatalogClient.getAllStudyPrograms();
+            return ResponseEntity.ok(programs);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    
+    // GET /study-programs/{id} - Get study program by ID (proxy to program-catalog-service)
     @GetMapping("/{id}")
     public ResponseEntity<StudyProgramDto> getStudyProgramById(@PathVariable Long id) {
-        StudyProgram program = studyProgramRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Study program not found with id: " + id));
-        return ResponseEntity.ok(convertToDto(program));
+        try {
+            Optional<StudyProgramDto> program = programCatalogClient.getStudyProgramById(id);
+            if (program.isPresent()) {
+                return ResponseEntity.ok(program.get());
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
-
-    private StudyProgramDto convertToDto(StudyProgram program) {
-        StudyProgramDto dto = new StudyProgramDto();
-        dto.setId(program.getId());
-        dto.setName(program.getDegree()); // Using degree as name
-        dto.setDegreeType(program.getDegree());
-        dto.setCurriculum(program.getCurriculum());
-        dto.setFieldOfStudies(program.getFieldOfStudies());
-        dto.setEctsCredits(program.getEctsCredits());
-        dto.setSemester(program.getSemester());
-        dto.setCurriculumLink(program.getCurriculumLink());
-        return dto;
+    
+    // GET /study-programs/search - Search study programs (proxy to program-catalog-service)
+    @GetMapping("/search")
+    public ResponseEntity<List<StudyProgramDto>> searchStudyPrograms(
+            @RequestParam(required = false) String degree,
+            @RequestParam(required = false) String curriculum,
+            @RequestParam(required = false) String fieldOfStudies) {
+        try {
+            List<StudyProgramDto> programs = programCatalogClient.searchStudyPrograms(degree, curriculum, fieldOfStudies);
+            return ResponseEntity.ok(programs);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
