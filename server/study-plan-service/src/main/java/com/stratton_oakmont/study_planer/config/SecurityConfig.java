@@ -21,7 +21,7 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/**").permitAll()  // Temporarily allow all requests to test
+                .requestMatchers("/", "/index.html", "/study-plans/**", "/study-programs/**", "/api/v1/study-plans/**", "/api/v1/study-programs/**", "/my", "/programs").permitAll()
                 .anyRequest().authenticated()
             );
         return http.build();
