@@ -204,7 +204,8 @@ public class StudyPlanController {
         // Set study program info
         if (studyPlan.getStudyProgram() != null) {
             dto.setStudyProgramId(studyPlan.getStudyProgram().getId());
-            dto.setStudyProgramName(studyPlan.getStudyProgram().getDegree());        }
+            dto.setStudyProgramName(studyPlan.getStudyProgram().getDegree());
+        }
         
         return dto;
     }
