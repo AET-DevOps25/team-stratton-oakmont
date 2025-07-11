@@ -18,12 +18,15 @@ jobs:
       - name: Set image tag
         id: image_tag
         run: |
-          # Get the PR number from the merge commit
-          PR_NUMBER=$(git log -1 --pretty=format:"%s" | grep -o '#[0-9]*' | head -1 | tr -d '#')
-          if [ -n "$PR_NUMBER" ]; then
-          echo "tag=pr-$PR_NUMBER" >> $GITHUB_OUTPUT
+          # Use the SAME logic as CD workflow for non-main branches
+          # Since this is branch 118-fix-issue..., treat it like a PR branch
+          BRANCH_NAME="${{ github.ref_name }}"
+          if [[ "$BRANCH_NAME" =~ ^[0-9]+-.*$ ]]; then
+            # Extract number from branch name (118 from 118-fix-issue...)
+            PR_NUMBER=$(echo "$BRANCH_NAME" | grep -o '^[0-9]*')
+            echo "tag=pr-$PR_NUMBER" >> $GITHUB_OUTPUT
           else
-          echo "tag=main-$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
+            echo "tag=main-$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
           fi
 
       - name: Set up kubectl
