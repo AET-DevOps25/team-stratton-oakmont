@@ -18,7 +18,7 @@ public class ProgramCatalogClient {
     private final String programCatalogServiceUrl;
     
     public ProgramCatalogClient(RestTemplate restTemplate, 
-                               @Value("${program-catalog-service.url:http://program-catalog-service:8080}") String serviceUrl) {
+                               @Value("${program-catalog-service.url:http://program-catalog-service:8082}") String serviceUrl) {
         this.restTemplate = restTemplate;
         this.programCatalogServiceUrl = serviceUrl;
     }
