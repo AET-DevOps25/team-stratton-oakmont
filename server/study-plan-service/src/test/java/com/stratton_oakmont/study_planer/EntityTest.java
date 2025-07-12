@@ -1,4 +1,7 @@
-package com.stratton_oakmont.study_planer.entity;
+package com.stratton_oakmont.study_planer;
+
+import com.stratton_oakmont.study_planer.model.StudyPlan;
+import com.stratton_oakmont.study_planer.model.StudyProgram;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
