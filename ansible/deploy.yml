@@ -3,54 +3,7 @@
   hosts: webservers
   become: yes
   vars:
-    a    - name: Stop existing application services
-      command: docker-compose -f docker-compose.prod.yml down
-      args:
-        chdir: "{{ app_dir }}"
-      become_user: ec2-user
-      ignore_errors: yes
-
-    - name: Stop existing monitoring services
-      command: docker-compose -f docker-compose.monitoring.yml down
-      args:
-        chdir: "{{ app_dir }}"
-      become_user: ec2-user
-      ignore_errors: yes
-
-    - name: Create shared Docker network
-      command: docker network create stratton-oakmont-network
-      become_user: ec2-user
-      ignore_errors: yes
-
-    - name: Start monitoring stack first
-      command: docker-compose -f docker-compose.monitoring.yml up -d
-      args:
-        chdir: "{{ app_dir }}"
-      become_user: ec2-user
-      async: 300
-      poll: 10
-
-    - name: Wait for monitoring to be ready
-      wait_for:
-        port: "{{ item }}"
-        delay: 5
-        timeout: 120
-      loop:
-        - 9090 # Prometheus
-        - 3001 # Grafana
-        - 3100 # Loki
-        - 9084 # Promtail
-
-    - name: Start application services with PUBLIC_IP environment variable
-      command: docker-compose -f docker-compose.prod.yml up -d --build --force-recreate
-      args:
-        chdir: "{{ app_dir }}"
-      become_user: ec2-user
-      environment:
-        PUBLIC_IP: "http://{{ public_ip }}"
-      async: 500
-      poll: 30
-      register: compose_resultstudy-planner
+    app_dir: /home/ec2-user/tum-study-planner
     repo_url: https://github.com/AET-DevOps25/team-stratton-oakmont.git
 
   tasks:
