@@ -7,7 +7,14 @@
 
   tasks:
     - name: Stop application services
-      command: docker-compose down
+      command: docker-compose -f docker-compose.prod.yml down
+      args:
+        chdir: "{{ app_dir }}"
+      become_user: ec2-user
+      ignore_errors: yes
+
+    - name: Stop monitoring services
+      command: docker-compose -f docker-compose.monitoring.yml down
       args:
         chdir: "{{ app_dir }}"
       become_user: ec2-user

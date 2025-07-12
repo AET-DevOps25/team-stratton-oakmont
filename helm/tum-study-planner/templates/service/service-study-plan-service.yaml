@@ -8,6 +8,10 @@ spec:
   selector:
     app: study-plan-service
   ports:
-    - port: 8081
+    - name: http
+      port: 8081
       targetPort: 8081
+    - name: management
+      port: 9081
+      targetPort: 9081
   type: ClusterIP

@@ -13,6 +13,12 @@ spec:
     metadata:
       labels:
         app: user-auth-service
+        component: backend
+        monitoring: "true"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9083"
+        prometheus.io/path: "/actuator/prometheus"
     spec:
       imagePullSecrets:
         - name: ghcr
@@ -21,6 +27,9 @@ spec:
           image: "{{ .Values.userAuthService.image.repository }}:{{ .Values.userAuthService.image.tag }}"
           ports:
             - containerPort: 8083
+              name: http
+            - containerPort: 9083
+              name: management
           env:
             - name: DB_USER_AUTH_URL
               valueFrom:

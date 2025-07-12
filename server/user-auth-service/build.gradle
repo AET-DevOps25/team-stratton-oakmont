@@ -1,3 +1,26 @@
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
+// Generate build information
+def buildTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+def gitCommit = 'git rev-parse --short HEAD'.execute().text.trim() ?: 'unknown'
+
+// Process resources to substitute variables
+processResources {
+    // Only expand template variables in specific properties, not environment variables
+    filesMatching('application.properties') {
+        expand(
+            version: project.version,
+            buildTimestamp: buildTimestamp,
+            gitCommit: gitCommit,
+            // Provide placeholder values for environment variables that Spring will resolve at runtime
+            DB_USER_AUTH_URL: '${DB_USER_AUTH_URL}',
+            DB_USER_AUTH_USERNAME: '${DB_USER_AUTH_USERNAME}',
+            DB_USER_AUTH_PASSWORD: '${DB_USER_AUTH_PASSWORD}'
+        )
+    }
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	// It allows you to define Java classes (Entities) that map to database tables and provides interfaces (Repositories) to perform database operations (like save, find, delete) without writing boilerplate SQL. It includes Hibernate as the default JPA provider
@@ -9,6 +32,10 @@ dependencies {
 	// for user auth
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// for monitoring
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
 
 	// JWT Libraries
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'

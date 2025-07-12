@@ -13,6 +13,12 @@ spec:
     metadata:
       labels:
         app: program-catalog-service
+        component: backend
+        monitoring: "true"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9080"
+        prometheus.io/path: "/actuator/prometheus"
     spec:
       imagePullSecrets:
         - name: ghcr
@@ -20,7 +26,10 @@ spec:
         - name: program-catalog-service
           image: "{{ .Values.programCatalogService.image.repository }}:{{ .Values.programCatalogService.image.tag }}"
           ports:
-            - containerPort: 8082
+            - containerPort: 8080
+              name: http
+            - containerPort: 9080
+              name: management
           env:
             - name: DB_STUDY_DATA_URL
               valueFrom:

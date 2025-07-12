@@ -7,11 +7,20 @@
 ```bash
 cd team-stratton-oakmont
 
-# Start all services locally
+# Create shared network (only needed once)
+docker network create stratton-oakmont-network
+
+# Start monitoring stack (independent, keeps historical data)
+docker-compose -f docker-compose.monitoring.yml up -d
+
+# Start application services
 docker-compose -f docker-compose.test.yml up -d --build
 
-# Stop services
+# Stop application services (monitoring keeps running)
 docker-compose -f docker-compose.test.yml down
+
+# Stop monitoring stack (if needed)
+docker-compose -f docker-compose.monitoring.yml down
 ```
 
 **Local URLs:**
@@ -22,6 +31,76 @@ docker-compose -f docker-compose.test.yml down
 - AI Advisor Service: http://localhost:8082
 - User Auth Service: http://localhost:8083
 - LLM Service: http://localhost:8000
+
+**Monitoring & Observability:**
+
+- Prometheus (Metrics): http://localhost:9090
+- Grafana (Dashboards): http://localhost:3001 (credentials in .env file)
+- Loki (Logs): http://localhost:3100
+
+  \*This is just the API endpoint. If you visit http://localhost:3100/ready or http://localhost:3100/metrics, you should see responses instead of 404.
+
+- Promtail (Log Collector): http://localhost:9084
+
+Prometheus automatically scrapes metrics from all Spring Boot services via internal management ports. The actuator endpoints are secured and only accessible within the Docker network:
+
+- Program Catalog Service: Internal port 9080 (`/actuator/prometheus`)
+- Study Plan Service: Internal port 9081 (`/actuator/prometheus`)
+- AI Advisor Service: Internal port 9082 (`/actuator/prometheus`)
+- User Auth Service: Internal port 9083 (`/actuator/prometheus`)
+
+_Note: These management endpoints are not exposed to the host machine for security reasons. Metrics are collected automatically by Prometheus and can be viewed in Grafana dashboards._
+
+### 📊 Monitoring & Observability
+
+The development environment includes a comprehensive monitoring stack:
+
+- **Prometheus** scrapes metrics from all Spring Boot services via Actuator endpoints
+- **Grafana** provides pre-configured dashboards for visualizing system metrics and logs
+- **Loki** aggregates logs from all containers for centralized log management
+- **Promtail** collects and ships container logs to Loki
+- **Alerts** are configured for service downtime, high response times, and error rates
+
+**Security Features:**
+
+- Management endpoints (actuator) are only accessible within the Docker network
+- External users cannot access monitoring/health endpoints directly
+- Main application APIs remain publicly accessible for legitimate use
+
+All monitoring services can be started independently and provide real-time insights into application performance and health. In development, monitoring runs alongside the application services, while in production, monitoring is deployed as a separate stack for better resource isolation.
+
+**Production Note:** In production deployments, monitoring services are deployed separately for better resource isolation and scalability. Use the dedicated `docker-compose.monitoring.yml` file alongside your production stack.
+
+### 🏭 Production Deployment (Local/Docker)
+
+> _Deploy the complete stack including monitoring for production._
+
+```bash
+# Deploy complete stack with monitoring (recommended for production)
+./scripts/deploy-with-monitoring.sh
+
+# Clean up everything including monitoring
+./scripts/destroy-with-monitoring.sh
+```
+
+**What the production scripts do:**
+
+- 🔗 Creates shared Docker network for service communication
+- 📊 Starts monitoring stack first (Prometheus, Grafana, Loki, Promtail)
+- 🏗️ Deploys all application services in production mode
+- 🔒 Keeps management endpoints secure (internal network only)
+- 📈 Ensures monitoring is ready to collect metrics from service startup
+
+**Alternative: Manual Production Deployment**
+
+```bash
+# Create network and start monitoring
+docker network create stratton-oakmont-network
+docker-compose -f docker-compose.monitoring.yml up -d
+
+# Start production application services
+docker-compose -f docker-compose.prod.yml up -d --build
+```
 
 ### ☁️ AWS Deployment
 
@@ -40,6 +119,7 @@ docker-compose -f docker-compose.test.yml down
 - 🏗️ Creates AWS EC2 instance with Terraform
 - 🎭 Deploys application with Ansible
 - 🐳 Builds and runs all services in Docker
+- 📊 Deploys monitoring stack (Prometheus, Grafana, Loki, Promtail)
 - 🌐 Sets up nginx reverse proxy with CORS
 
 ### 🛠️ Manual Development (Alternative)
@@ -132,6 +212,8 @@ _List key technologies and frameworks used._
 - **Containerization**: Docker + Docker Compose
 - **Web Server**: Nginx (reverse proxy)
 - **GenAI API**: OpenAI GPT (via Python service)
+- **Monitoring**: Prometheus + Grafana + Loki + Promtail
+- **Observability**: Spring Boot Actuator (includes Micrometer for metrics)
 
 ## 📄 License
 

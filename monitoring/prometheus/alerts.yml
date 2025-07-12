@@ -1,0 +1,29 @@
+groups:
+  - name: application_alerts
+    rules:
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service {{ $labels.instance }} is down"
+          description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 1 minute."
+
+      - alert: HighResponseTime
+        expr: http_request_duration_seconds_sum / http_request_duration_seconds_count > 0.5
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High response time detected"
+          description: "{{ $labels.job }} has high response time (>500ms) for more than 2 minutes."
+
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High error rate detected"
+          description: "{{ $labels.job }} has high error rate (>10%) for more than 2 minutes."

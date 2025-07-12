@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-rules
+  namespace: tum-study-planner-monitoring
+  labels:
+    app: prometheus
+    monitoring: "true"
+data:
+  alert-rules.yml: |
+    groups:
+      - name: application_alerts
+        rules:
+          - alert: ServiceDown
+            expr: up == 0
+            for: 1m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Service {{ $labels.instance }} is down"
+              description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 1 minute."
+
+          - alert: HighResponseTime
+            expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, job)) > 0.5
+            for: 2m
+            labels:
+              severity: warning
+            annotations:
+              summary: "High response time detected"
+              description: "{{ $labels.job }} has high response time (>500ms) for more than 2 minutes."
+
+          - alert: HighErrorRate
+            expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.1
+            for: 2m
+            labels:
+              severity: warning
+            annotations:
+              summary: "High error rate detected"
+              description: "{{ $labels.job }} has high error rate (>10%) for more than 2 minutes."
+
+          - alert: PodRestartingTooMuch
+            expr: rate(kube_pod_container_status_restarts_total[5m]) > 0
+            for: 5m
+            labels:
+              severity: warning
+            annotations:
+              summary: "Pod {{ $labels.pod }} restarting too frequently"
+              description: "Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} has restarted more than 5 times in the last 5 minutes."
+
+          - alert: KubernetesNodeNotReady
+            expr: kube_node_status_condition{condition="Ready",status="true"} == 0
+            for: 5m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Kubernetes node not ready"
+              description: "Node {{ $labels.node }} has been not ready for more than 5 minutes."
+
+          - alert: KubernetesPodCrashLooping
+            expr: rate(kube_pod_container_status_restarts_total[15m]) > 0
+            for: 5m
+            labels:
+              severity: warning
+            annotations:
+              summary: "Pod {{ $labels.pod }} crash looping"
+              description: "Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} is crash looping."
