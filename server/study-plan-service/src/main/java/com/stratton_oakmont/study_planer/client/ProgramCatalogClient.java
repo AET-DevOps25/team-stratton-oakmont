@@ -24,7 +24,7 @@ public class ProgramCatalogClient {
     
     public List<StudyProgramDto> getAllStudyPrograms() {
         try {
-            String url = programCatalogServiceUrl + "/study-programs";
+            String url = programCatalogServiceUrl + "/api/v1/study-programs";
             ResponseEntity<List<StudyProgramDto>> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
@@ -39,7 +39,7 @@ public class ProgramCatalogClient {
     
     public Optional<StudyProgramDto> getStudyProgramById(Long id) {
         try {
-            String url = programCatalogServiceUrl + "/study-programs/" + id;
+            String url = programCatalogServiceUrl + "/api/v1/study-programs/" + id;
             ResponseEntity<StudyProgramDto> response = restTemplate.getForEntity(url, StudyProgramDto.class);
             
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
@@ -54,7 +54,7 @@ public class ProgramCatalogClient {
     
     public List<StudyProgramDto> searchStudyPrograms(String degree, String curriculum, String fieldOfStudies) {
         try {
-            StringBuilder url = new StringBuilder(programCatalogServiceUrl + "/study-programs/search?");
+            StringBuilder url = new StringBuilder(programCatalogServiceUrl + "/api/v1/study-programs/search?");
             
             if (degree != null && !degree.trim().isEmpty()) {
                 url.append("degree=").append(degree).append("&");
