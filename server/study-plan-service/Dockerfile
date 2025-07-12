@@ -3,8 +3,8 @@ FROM gradle:8.14-jdk21 AS build
 WORKDIR /app
 
 # Copy gradle files from parent directory
-COPY build.gradle settings.gradle ./
-COPY gradle ./gradle
+COPY ../build.gradle ../settings.gradle ./
+COPY ../gradle ./gradle
 
 # Copy this service's build file and source code
 COPY study-plan-service/build.gradle ./study-plan-service/
