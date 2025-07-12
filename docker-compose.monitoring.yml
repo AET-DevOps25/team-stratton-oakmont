@@ -57,7 +57,7 @@ services:
     image: grafana/grafana-oss:latest
     container_name: grafana
     env_file:
-      - .env.monitoring
+      - .env
     ports:
       - "3001:3000"
     volumes:
