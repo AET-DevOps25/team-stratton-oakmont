@@ -10,6 +10,7 @@ import {
   MenuItem,
   Box,
   Avatar,
+  Tooltip,
 } from "@mui/material";
 import {
   AccountCircle,
@@ -17,22 +18,27 @@ import {
   Person,
   ViewSidebar,
   Menu as MenuIcon,
+  SmartToy,
 } from "@mui/icons-material";
 import { useAuth } from "../../../contexts/AuthContext";
 import { theme } from "../../../theme/Theme";
 import Sidebar from "../Sidebar/Sidebar";
+import AiChatSidebar from "../AiChatSidebar/AiChatSidebar";
 import sidebarIcon from "../../../assets/icons/sidebar.svg";
 
 const Navbar: React.FC = () => {
   const { isLoggedIn, userEmail, logout } = useAuth();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [aiChatOpen, setAiChatOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const sidebarWidth = isLoggedIn && sidebarOpen ? "260px" : "0px";
+    const aiChatWidth = isLoggedIn && aiChatOpen ? "380px" : "0px";
     document.documentElement.style.setProperty("--sidebar-width", sidebarWidth);
-  }, [isLoggedIn, sidebarOpen]);
+    document.documentElement.style.setProperty("--ai-chat-width", aiChatWidth);
+  }, [isLoggedIn, sidebarOpen, aiChatOpen]);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -59,6 +65,10 @@ const Navbar: React.FC = () => {
 
   const handleSidebarToggle = () => {
     setSidebarOpen(!sidebarOpen);
+  };
+
+  const handleAiChatToggle = () => {
+    setAiChatOpen(!aiChatOpen);
   };
 
   return (
@@ -141,7 +151,25 @@ const Navbar: React.FC = () => {
           </Box>
 
           {isLoggedIn ? (
-            <Box>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              {/* AI Chat Toggle Button */}
+              <Tooltip title={aiChatOpen ? "Close AI Chat" : "Open AI Chat"}>
+                <IconButton
+                  onClick={handleAiChatToggle}
+                  sx={{
+                    color: aiChatOpen ? "#646cff" : "rgba(255, 255, 255, 0.8)",
+                    "&:hover": {
+                      opacity: 0.8,
+                      backgroundColor: "rgba(100, 108, 255, 0.1)",
+                    },
+                  }}
+                  disableRipple
+                >
+                  <SmartToy />
+                </IconButton>
+              </Tooltip>
+
+              {/* User Avatar */}
               <IconButton
                 size="large"
                 aria-label="account of current user"
@@ -298,6 +326,14 @@ const Navbar: React.FC = () => {
       {/* Sidebar */}
       {isLoggedIn && (
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      )}
+
+      {/* AI Chat Sidebar */}
+      {isLoggedIn && (
+        <AiChatSidebar
+          isOpen={aiChatOpen}
+          onClose={() => setAiChatOpen(false)}
+        />
       )}
     </>
   );
