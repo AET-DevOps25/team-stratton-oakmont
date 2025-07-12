@@ -3,10 +3,9 @@ package com.stratton_oakmont.study_planer.controller;
 import com.stratton_oakmont.study_planer.dto.CreateStudyPlanRequest;
 import com.stratton_oakmont.study_planer.dto.StudyPlanDto;
 import com.stratton_oakmont.study_planer.dto.StudyProgramDto;
-import com.stratton_oakmont.study_planer.entity.StudyPlan;
-import com.stratton_oakmont.study_planer.entity.studydata.StudyProgram;
+import com.stratton_oakmont.study_planer.model.StudyPlan;
 import com.stratton_oakmont.study_planer.service.StudyPlanService;
-import com.stratton_oakmont.study_planer.service.StudyProgramService;
+import com.stratton_oakmont.study_planer.client.ProgramCatalogClient;
 import com.stratton_oakmont.study_planer.util.JwtUtil;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RestController
-@RequestMapping("/study-plans") // Base path for all study plan endpoints
+@RequestMapping("/") // Change to root path to match ingress rewrite pattern
 @CrossOrigin(origins = {
     "https://tum-study-planner.student.k8s.aet.cit.tum.de",
     "http://localhost:5173", 
@@ -34,20 +33,20 @@ import org.slf4j.LoggerFactory;
 public class StudyPlanController {
 
     private final StudyPlanService studyPlanService;
-    private final StudyProgramService studyProgramService;
+    private final ProgramCatalogClient programCatalogClient;
     private final JwtUtil jwtUtil;
     private static final Logger logger = LoggerFactory.getLogger(StudyPlanController.class);
 
     @Autowired
-    public StudyPlanController(StudyPlanService studyPlanService, StudyProgramService studyProgramService, JwtUtil jwtUtil) {
+    public StudyPlanController(StudyPlanService studyPlanService, ProgramCatalogClient programCatalogClient, JwtUtil jwtUtil) {
         this.studyPlanService = studyPlanService;
-        this.studyProgramService = studyProgramService;
+        this.programCatalogClient = programCatalogClient;
         this.jwtUtil = jwtUtil;
         logger.info("LOG: StudyPlanController initialized successfully");
     }
 
-    // POST /api/v1/study-plans - Create new study plan
-    @PostMapping("/")
+    // POST /api/v1/ - Create new study plan (from /api/study-plan/ via ingress)
+    @PostMapping({"", "/"})  // Accept both with and without trailing slash
     public ResponseEntity<StudyPlanDto> createStudyPlan(
         @Valid @RequestBody CreateStudyPlanRequest request,
         @RequestHeader("Authorization") String authorizationHeader) {
@@ -95,7 +94,7 @@ public class StudyPlanController {
         }
     }
 
-    // GET /api/v1/study-plans/my - Get study plans for authenticated user
+    // GET /my - Get study plans for authenticated user (from /api/study-plan/my via ingress)
     @GetMapping("/my")
     public ResponseEntity<?> getMyStudyPlans(@RequestHeader("Authorization") String authorizationHeader) {
         try {
@@ -120,7 +119,7 @@ public class StudyPlanController {
             }
 
             // Get study plans for authenticated user
-            List<StudyPlan> studyPlans = studyPlanService.getUserStudyPlansOrderedByCreatedDate(userId);
+            List<StudyPlan> studyPlans = studyPlanService.getStudyPlansByUserOrderByModified(userId);
             List<StudyPlanDto> studyPlanDtos = studyPlans.stream()
                     .map(this::convertToDto)
                     .collect(Collectors.toList());
@@ -202,9 +201,17 @@ public class StudyPlanController {
         dto.setLastModified(studyPlan.getLastModified());
         
         // Set study program info
-        if (studyPlan.getStudyProgram() != null) {
-            dto.setStudyProgramId(studyPlan.getStudyProgram().getId());
-            dto.setStudyProgramName(studyPlan.getStudyProgram().getDegree());        }
+        dto.setStudyProgramId(studyPlan.getStudyProgramId());
+        if (studyPlan.getStudyProgramId() != null) {
+            try {
+                StudyProgramDto studyProgram = programCatalogClient.getStudyProgramById(studyPlan.getStudyProgramId()).orElse(null);
+                if (studyProgram != null) {
+                    dto.setStudyProgramName(studyProgram.getDegree());
+                }
+            } catch (Exception e) {
+                logger.warn("Failed to fetch study program details for ID: {}", studyPlan.getStudyProgramId(), e);
+            }
+        }
         
         return dto;
     }
@@ -249,10 +256,9 @@ public class StudyPlanController {
                 existingPlan.setPlanData(request.getPlanData());
             }
             
-            // Update study program if different
-            if (!existingPlan.getStudyProgram().getId().equals(request.getStudyProgramId())) {
-                StudyProgram newProgram = studyProgramService.getStudyProgramById(request.getStudyProgramId());
-                existingPlan.setStudyProgram(newProgram);
+            // Update study program ID if different
+            if (!existingPlan.getStudyProgramId().equals(request.getStudyProgramId())) {
+                existingPlan.setStudyProgramId(request.getStudyProgramId());
             }
 
             StudyPlan updatedPlan = studyPlanService.updateStudyPlan(id, existingPlan);
@@ -313,8 +319,7 @@ public class StudyPlanController {
             }
             if (updates.containsKey("studyProgramId")) {
                 Long newProgramId = Long.valueOf(updates.get("studyProgramId").toString());
-                StudyProgram newProgram = studyProgramService.getStudyProgramById(newProgramId);
-                existingPlan.setStudyProgram(newProgram);
+                existingPlan.setStudyProgramId(newProgramId);
             }
 
             StudyPlan updatedPlan = studyPlanService.updateStudyPlan(id, existingPlan);

@@ -1,7 +1,6 @@
 package com.stratton_oakmont.study_planer.repository;
 
-import com.stratton_oakmont.study_planer.entity.StudyPlan;  
-import com.stratton_oakmont.study_planer.entity.studydata.StudyProgram;  
+import com.stratton_oakmont.study_planer.model.StudyPlan;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,11 +21,11 @@ public interface StudyPlanRepository extends JpaRepository<StudyPlan, Long> {
     // Find active study plans for a user
     List<StudyPlan> findByUserIdAndIsActiveTrue(Long userId);
     
-    // Find study plans by user and study program
-    List<StudyPlan> findByUserIdAndStudyProgram(Long userId, StudyProgram studyProgram);
+    // Find study plans by user and study program ID
+    List<StudyPlan> findByUserIdAndStudyProgramId(Long userId, Long studyProgramId);
     
-    // Find study plans by study program
-    List<StudyPlan> findByStudyProgram(StudyProgram studyProgram);
+    // Find study plans by study program ID
+    List<StudyPlan> findByStudyProgramId(Long studyProgramId);
     
     // Find study plans by name containing keyword (case-insensitive)
     @Query("SELECT sp FROM StudyPlan sp WHERE LOWER(sp.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
@@ -45,13 +44,15 @@ public interface StudyPlanRepository extends JpaRepository<StudyPlan, Long> {
     // Count total active study plans for a user
     long countByUserIdAndIsActiveTrue(Long userId);
     
-    // Count total study plans for a specific program
-    long countByStudyProgram(StudyProgram studyProgram);
+    // Count total study plans for a user
+    long countByUserId(Long userId);
+    
+    // Count total study plans for a specific program ID
+    long countByStudyProgramId(Long studyProgramId);
     
     // Check if user has any active study plans
     boolean existsByUserIdAndIsActiveTrue(Long userId);
     
-    // Find study plans by user with specific study program name
-    @Query("SELECT sp FROM StudyPlan sp WHERE sp.userId = :userId AND sp.studyProgram.name = :programName")
-    List<StudyPlan> findByUserIdAndStudyProgramName(@Param("userId") Long userId, @Param("programName") String programName);
+    // Find study plans created after a specific date for a user
+    List<StudyPlan> findByUserIdAndCreatedDateAfter(Long userId, LocalDateTime date);
 }

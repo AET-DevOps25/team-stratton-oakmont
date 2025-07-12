@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: tum-study-planner-ingress
+  name: tum-study-planner-api-ingress
   namespace: {{ .Values.namespace }}
   annotations:
     kubernetes.io/ingress.class: "nginx"
@@ -26,13 +26,6 @@ spec:
                 name: study-plan-service
                 port:
                   number: 8081
-          - path: /api/program-catalog(/|$)(.*)
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: program-catalog-service
-                port:
-                  number: 8082
           - path: /api/user-auth(/|$)(.*)
             pathType: ImplementationSpecific
             backend:
@@ -40,6 +33,13 @@ spec:
                 name: user-auth-service
                 port:
                   number: 8083
+          - path: /api/program-catalog(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: program-catalog-service
+                port:
+                  number: 8082
           - path: /api/ai-advisor(/|$)(.*)
             pathType: ImplementationSpecific
             backend:

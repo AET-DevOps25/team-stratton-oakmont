@@ -2,8 +2,8 @@ package com.stratton_oakmont.study_planer.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stratton_oakmont.study_planer.dto.CreateStudyPlanRequest;
-import com.stratton_oakmont.study_planer.entity.StudyPlan;
-import com.stratton_oakmont.study_planer.entity.studydata.StudyProgram;
+import com.stratton_oakmont.study_planer.model.StudyPlan;
+import com.stratton_oakmont.study_planer.model.StudyProgram;
 import com.stratton_oakmont.study_planer.service.StudyPlanService;
 import com.stratton_oakmont.study_planer.service.StudyProgramService;
 import com.stratton_oakmont.study_planer.util.JwtUtil;
