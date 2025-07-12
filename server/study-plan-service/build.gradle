@@ -7,11 +7,19 @@ def gitCommit = 'git rev-parse --short HEAD'.execute().text.trim() ?: 'unknown'
 
 // Process resources to substitute variables
 processResources {
-    expand(
-        version: project.version,
-        buildTimestamp: buildTimestamp,
-        gitCommit: gitCommit
-    )
+    // Only expand template variables in specific properties, not environment variables
+    filesMatching('application.properties') {
+        expand(
+            version: project.version,
+            buildTimestamp: buildTimestamp,
+            gitCommit: gitCommit,
+            // Provide placeholder values for environment variables that Spring will resolve at runtime
+            DB_STUDY_PLAN_URL: '${DB_STUDY_PLAN_URL}',
+            DB_STUDY_PLAN_USERNAME: '${DB_STUDY_PLAN_USERNAME}',
+            DB_STUDY_PLAN_PASSWORD: '${DB_STUDY_PLAN_PASSWORD}',
+            JWT_SECRET: '${JWT_SECRET}'
+        )
+    }
 }
 
 dependencies {

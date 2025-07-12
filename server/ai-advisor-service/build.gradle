@@ -7,11 +7,14 @@ def gitCommit = 'git rev-parse --short HEAD'.execute().text.trim() ?: 'unknown'
 
 // Process resources to substitute variables
 processResources {
-    expand(
-        version: project.version,
-        buildTimestamp: buildTimestamp,
-        gitCommit: gitCommit
-    )
+    // Only expand template variables in the main application.properties file
+    filesMatching('application.properties') {
+        expand(
+            version: project.version,
+            buildTimestamp: buildTimestamp,
+            gitCommit: gitCommit
+        )
+    }
 }
 
 dependencies {
