@@ -40,9 +40,10 @@ function App() {
                   flexGrow: 1,
                   pt: 8, // Account for fixed navbar
                   backgroundColor: theme.palette.background.default,
-                  // Add this CSS variable that will be controlled by the navbar
+                  // Add CSS variables that will be controlled by the navbar
                   marginLeft: "var(--sidebar-width, 0px)",
-                  transition: "margin-left 0.3s ease",
+                  marginRight: "var(--ai-chat-width, 0px)",
+                  transition: "margin-left 0.3s ease, margin-right 0.3s ease",
                 }}
               >
                 <Routes>
