@@ -13,6 +13,12 @@ spec:
     metadata:
       labels:
         app: study-plan-service
+        component: backend
+        monitoring: "true"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9081"
+        prometheus.io/path: "/actuator/prometheus"
     spec:
       imagePullSecrets:
         - name: ghcr
@@ -21,6 +27,9 @@ spec:
           image: "{{ .Values.studyPlanService.image.repository }}:{{ .Values.studyPlanService.image.tag }}"
           ports:
             - containerPort: 8081
+              name: http
+            - containerPort: 9081
+              name: management
           env:
             # Study Plan Database
             - name: DB_STUDY_PLAN_URL

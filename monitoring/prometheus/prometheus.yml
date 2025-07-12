@@ -1,0 +1,46 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "alerts.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: "program-catalog-service"
+    static_configs:
+      - targets: ["program-catalog-service:9080"]
+    metrics_path: "/actuator/prometheus"
+    scrape_interval: 5s
+
+  - job_name: "study-plan-service"
+    static_configs:
+      - targets: ["study-plan-service:9081"]
+    metrics_path: "/actuator/prometheus"
+    scrape_interval: 5s
+
+  - job_name: "ai-advisor-service"
+    static_configs:
+      - targets: ["ai-advisor-service:9082"]
+    metrics_path: "/actuator/prometheus"
+    scrape_interval: 5s
+
+  - job_name: "user-auth-service"
+    static_configs:
+      - targets: ["user-auth-service:9083"]
+    metrics_path: "/actuator/prometheus"
+    scrape_interval: 5s
+
+  - job_name: "llm-inference-service"
+    static_configs:
+      - targets: ["llm-inference-service:8000"]
+    metrics_path: "/metrics"
+    scrape_interval: 5s
