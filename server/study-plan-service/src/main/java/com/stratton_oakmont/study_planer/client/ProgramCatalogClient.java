@@ -16,16 +16,15 @@ public class ProgramCatalogClient {
     
     private final RestTemplate restTemplate;
     private final String programCatalogServiceUrl;
-    
-    public ProgramCatalogClient(RestTemplate restTemplate, 
-                               @Value("${program-catalog-service.url:http://program-catalog-service:8082}") String serviceUrl) {
+     public ProgramCatalogClient(RestTemplate restTemplate,
+                               @Value("${program-catalog-service.url:http://program-catalog-service:8080}") String serviceUrl) {
         this.restTemplate = restTemplate;
         this.programCatalogServiceUrl = serviceUrl;
     }
     
     public List<StudyProgramDto> getAllStudyPrograms() {
         try {
-            String url = programCatalogServiceUrl + "/api/v1/study-programs";
+            String url = programCatalogServiceUrl + "/study-programs";
             ResponseEntity<List<StudyProgramDto>> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
@@ -40,7 +39,7 @@ public class ProgramCatalogClient {
     
     public Optional<StudyProgramDto> getStudyProgramById(Long id) {
         try {
-            String url = programCatalogServiceUrl + "/api/v1/study-programs/" + id;
+            String url = programCatalogServiceUrl + "/study-programs/" + id;
             ResponseEntity<StudyProgramDto> response = restTemplate.getForEntity(url, StudyProgramDto.class);
             
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
@@ -55,7 +54,7 @@ public class ProgramCatalogClient {
     
     public List<StudyProgramDto> searchStudyPrograms(String degree, String curriculum, String fieldOfStudies) {
         try {
-            StringBuilder url = new StringBuilder(programCatalogServiceUrl + "/api/v1/study-programs/search?");
+            StringBuilder url = new StringBuilder(programCatalogServiceUrl + "/study-programs/search?");
             
             if (degree != null && !degree.trim().isEmpty()) {
                 url.append("degree=").append(degree).append("&");
