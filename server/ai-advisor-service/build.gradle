@@ -1,7 +1,31 @@
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
+// Generate build information
+def buildTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+def gitCommit = 'git rev-parse --short HEAD'.execute().text.trim() ?: 'unknown'
+
+// Process resources to substitute variables
+processResources {
+    // Only expand template variables in the main application.properties file
+    filesMatching('application.properties') {
+        expand(
+            version: project.version,
+            buildTimestamp: buildTimestamp,
+            gitCommit: gitCommit
+        )
+    }
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // for monitoring
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
 }

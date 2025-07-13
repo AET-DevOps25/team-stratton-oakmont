@@ -11,3 +11,6 @@ python-dotenv
 pydantic
 psycopg2-binary
 sqlalchemy
+
+prometheus-client
+

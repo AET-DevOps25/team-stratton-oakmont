@@ -8,6 +8,10 @@ spec:
   selector:
     app: ai-advisor-service
   ports:
-    - port: 8082
+    - name: http
+      port: 8082
       targetPort: 8082
+    - name: management
+      port: 9082
+      targetPort: 9082
   type: ClusterIP

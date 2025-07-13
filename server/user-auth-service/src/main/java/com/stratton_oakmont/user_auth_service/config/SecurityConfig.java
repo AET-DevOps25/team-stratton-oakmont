@@ -28,7 +28,7 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity, consider enabling for production
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/", "/index.html", "/auth/**", "/**/auth/**").permitAll()
+                .requestMatchers("/", "/index.html", "/auth/**", "/**/auth/**", "/actuator/**").permitAll()
                 .anyRequest().authenticated() // All other requests need authentication
             );
         return http.build();
