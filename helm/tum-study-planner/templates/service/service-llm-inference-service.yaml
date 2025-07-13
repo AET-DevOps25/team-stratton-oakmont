@@ -1,0 +1,13 @@
+# prettier-ignore
+apiVersion: v1
+kind: Service
+metadata:
+  name: llm-inference-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: llm-inference-service
+  ports:
+    - port: 8082
+      targetPort: 8082
+  type: ClusterIP

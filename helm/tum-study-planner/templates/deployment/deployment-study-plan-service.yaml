@@ -68,3 +68,7 @@ spec:
                 secretKeyRef:
                   name: tum-study-planner-secrets
                   key: JWT_SECRET
+
+            # Program Catalog Service URL
+            - name: PROGRAM_CATALOG_SERVICE_URL
+              value: http://program-catalog-service:8080

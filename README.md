@@ -32,6 +32,26 @@ docker-compose -f docker-compose.monitoring.yml down
 - User Auth Service: http://localhost:8083
 - LLM Service: http://localhost:8000
 
+### 🤖 AI Chat Feature Setup
+
+> _For the AI-powered course Q&A feature._
+
+```bash
+# Quick setup for AI chat functionality
+./scripts/setup-ai-chat.sh
+
+# Test the AI chat feature
+./scripts/test-ai-chat.sh
+```
+
+**AI Service URLs:**
+
+- Weaviate Vector DB: http://localhost:8080
+- LLM Inference Service: http://localhost:8082
+- AI Advisor Gateway: http://localhost:8084
+
+> **Note:** You'll need an OpenAI API key for the AI chat feature. See `AI_CHAT_IMPLEMENTATION.md` for detailed setup instructions.
+
 **Monitoring & Observability:**
 
 - Prometheus (Metrics): http://localhost:9090
@@ -182,31 +202,90 @@ python app.py
 
 ## 🧩 Main Functionality
 
-> What is the core purpose of this app?  
-> _Describe the key features and the problem it solves._
+The TUM Study Planner is a comprehensive academic planning tool for Technical University Munich students. The core purpose is to help students:
+
+- **Plan their study program** with course selection and scheduling
+- **Get AI-powered academic advice** through natural language Q&A
+- **Explore course catalog** with detailed course information
+- **Track degree progress** and ensure requirement fulfillment
+
+### 🤖 AI Chat Feature
+
+Ask questions about TUM courses in natural language and get intelligent responses:
+
+- _"What programming languages are used in IN2003?"_
+- _"Tell me about Machine Learning courses at TUM"_
+- _"What are the prerequisites for Advanced Algorithms?"_
+
+The AI extracts course codes, provides confidence scores, and links to official TUM course pages.
 
 ## 🎯 Intended Users
 
-> Who will use this app?  
-> _Define the target audience and their needs._
+**Primary Users:** M.Sc. Information Systems students at TUM
+
+- Need help with course selection and academic planning
+- Want quick access to course information without navigating complex systems
+- Benefit from AI-powered guidance for study decisions
+
+**Secondary Users:** Academic advisors and TUM faculty
+
+- Can leverage the system for student counseling
+- Access comprehensive course data in an accessible format
 
 ## 🤖 Integration of GenAI
 
-> How is Generative AI integrated meaningfully?  
-> _Explain the role of GenAI in enhancing user experience or solving problems._
+Generative AI is meaningfully integrated through a **Retrieval-Augmented Generation (RAG) pipeline**:
+
+### Core AI Features:
+
+- **Natural Language Understanding**: Parses student questions about courses and academic planning
+- **Course-Specific Q&A**: Provides accurate answers using official TUM course data
+- **Intelligent Course Detection**: Automatically identifies course codes in questions and responses
+- **Confidence Scoring**: Rates response reliability based on data retrieval quality
+- **Source Attribution**: Links answers to official TUM course pages for verification
+
+### Technical Implementation:
+
+- **Vector Database (Weaviate)**: Stores embedded course descriptions for semantic search
+- **LangChain RAG**: Combines retrieval with OpenAI GPT for contextual responses
+- **Real-time Processing**: Answers within 5 seconds with course-specific information
+- **Fallback Handling**: Graceful degradation when AI services are unavailable
 
 ## 💡 Example Scenarios
 
-> How does the app work in real-world use cases?  
-> _List 2–3 example scenarios or workflows to demonstrate functionality._
+### Scenario 1: Course Content Inquiry
+
+**Student Question:** _"What programming languages are mainly used in the 'Introduction to C++' course?"_
+
+**AI Response:** The AI identifies course code IN0001, retrieves course description from the vector database, and responds: _"The Introduction to C++ course (IN0001) primarily focuses on C++ programming language fundamentals, including object-oriented programming concepts, memory management, and STL libraries."_
+
+**Enhanced Features:** Course code highlighted, confidence score displayed, link to official TUM course page provided.
+
+### Scenario 2: Study Planning Assistance
+
+**Student Question:** _"I'm interested in Machine Learning. What courses should I take?"_
+
+**AI Response:** The AI searches for ML-related courses, identifies relevant options like "Machine Learning" (IN2064), "Deep Learning" (IN2346), provides course descriptions, prerequisites, and semester information.
+
+**Enhanced Features:** Multiple course codes detected, prerequisite chains explained, study sequence recommendations.
+
+### Scenario 3: Prerequisite Checking
+
+**Student Question:** _"What do I need to complete before taking Advanced Algorithms?"_
+
+**AI Response:** The AI identifies the Advanced Algorithms course, retrieves prerequisite information, and explains the required prior coursework and knowledge areas.
+
+**Enhanced Features:** Prerequisite course codes highlighted, academic planning guidance provided.
 
 ## 🛠 Tech Stack
 
-_List key technologies and frameworks used._
+_Key technologies and frameworks used._
 
 - **Frontend**: React + TypeScript + Vite + Material-UI
 - **Backend**: Spring Boot (Java) + Gradle
-- **AI Service**: Python + FastAPI
+- **AI Gateway**: Java Spring Boot (AI Advisor Service)
+- **AI/ML Service**: Python + FastAPI + LangChain + OpenAI
+- **Vector Database**: Weaviate (for semantic search)
 - **Database**: PostgreSQL (in production)
 - **Infrastructure**: AWS EC2 + Terraform + Ansible
 - **Containerization**: Docker + Docker Compose
