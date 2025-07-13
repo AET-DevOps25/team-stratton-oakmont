@@ -3,7 +3,7 @@ import { AI_ADVISOR_API_URL } from "../config/api";
 export interface ChatMessage {
   message: string;
   session_id?: string;
-  user_id?: string;  // Add user context
+  user_id?: string; // Add user context
 }
 
 export interface ChatResponse {
@@ -28,7 +28,11 @@ class AiAdvisorAPI {
     this.baseUrl = AI_ADVISOR_API_URL;
   }
 
-  async sendMessage(message: string, sessionId?: string, userId?: string): Promise<ChatResponse> {
+  async sendMessage(
+    message: string,
+    sessionId?: string,
+    userId?: string
+  ): Promise<ChatResponse> {
     try {
       const response = await fetch(`${this.baseUrl}/chat`, {
         method: "POST",
@@ -82,7 +86,7 @@ class AiAdvisorAPI {
       const response = await fetch(`${this.baseUrl}/health`, {
         method: "GET",
       });
-      
+
       return response.ok;
     } catch (error) {
       console.error("Error checking health:", error);

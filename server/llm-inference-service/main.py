@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 import weaviate
-from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_community.vectorstores import Weaviate
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains import RetrievalQA
@@ -149,10 +149,8 @@ def setup_weaviate():
             timeout_config=(5, 15),
         )
         
-        # Initialize embeddings
-        embeddings = OpenAIEmbeddings(
-            openai_api_key=os.getenv("OPENAI_API_KEY")
-        )
+        # Use Gemini embeddings
+        embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
         
         # Check if TUMCourse schema exists
         if not weaviate_client.schema.exists("TUMCourse"):
@@ -264,15 +262,15 @@ def setup_qa_chain():
         )
         
         # Initialize LLM
-        llm = ChatOpenAI(
-            model_name="gpt-3.5-turbo",
-            temperature=0.1,
-            openai_api_key=os.getenv("OPENAI_API_KEY")
-        )
+        # llm = ChatOpenAI(
+        #     model_name="gpt-3.5-turbo",
+        #     temperature=0.1,
+        #     openai_api_key=os.getenv("OPENAI_API_KEY")
+        # )
         
         # Create QA chain
         qa_chain = RetrievalQA.from_chain_type(
-            llm=llm,
+            llm=None,  # Replace with Gemini LLM if available
             chain_type="stuff",
             retriever=vector_store.as_retriever(
                 search_type="similarity",
@@ -292,10 +290,6 @@ def setup_qa_chain():
 async def startup_event():
     """Initialize RAG components on startup"""
     print("Initializing RAG system...")
-    
-    if not os.getenv("OPENAI_API_KEY"):
-        print("Warning: OPENAI_API_KEY not found. RAG functionality will be limited.")
-        return
     
     if setup_weaviate():
         print("Weaviate connected successfully")

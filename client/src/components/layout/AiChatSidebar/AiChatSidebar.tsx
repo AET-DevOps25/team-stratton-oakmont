@@ -77,7 +77,10 @@ const AiChatSidebar: React.FC<AiChatSidebarProps> = ({ isOpen }) => {
   }, [currentMessages]);
 
   // Real AI response function using the API
-  const generateAIResponse = async (userMessage: string, sessionId?: string): Promise<{
+  const generateAIResponse = async (
+    userMessage: string,
+    sessionId?: string
+  ): Promise<{
     content: string;
     courseCodes: string[];
     confidence: number;
@@ -85,7 +88,7 @@ const AiChatSidebar: React.FC<AiChatSidebarProps> = ({ isOpen }) => {
   }> => {
     try {
       const response = await aiAdvisorAPI.sendMessage(userMessage, sessionId);
-      
+
       return {
         content: response.response,
         courseCodes: response.course_codes || [],
@@ -94,7 +97,7 @@ const AiChatSidebar: React.FC<AiChatSidebarProps> = ({ isOpen }) => {
       };
     } catch (error) {
       console.error("Error calling AI advisor API:", error);
-      
+
       // Fallback to mock responses if API is unavailable
       await new Promise((resolve) =>
         setTimeout(resolve, 1000 + Math.random() * 2000)
@@ -102,28 +105,32 @@ const AiChatSidebar: React.FC<AiChatSidebarProps> = ({ isOpen }) => {
 
       if (userMessage.toLowerCase().includes("study plan")) {
         return {
-          content: "I can help you create and optimize your study plan! I can suggest courses, check prerequisites, and ensure you meet all requirements for your degree program. What specific aspect of your study plan would you like assistance with?",
+          content:
+            "I can help you create and optimize your study plan! I can suggest courses, check prerequisites, and ensure you meet all requirements for your degree program. What specific aspect of your study plan would you like assistance with?",
           courseCodes: [],
           confidence: 0.7,
           sources: [],
         };
       } else if (userMessage.toLowerCase().includes("course")) {
         return {
-          content: "I have access to the complete TUM course catalog. I can help you find courses that match your interests, check ECTS credits, prerequisites, and scheduling information. What courses are you interested in?",
+          content:
+            "I have access to the complete TUM course catalog. I can help you find courses that match your interests, check ECTS credits, prerequisites, and scheduling information. What courses are you interested in?",
           courseCodes: [],
           confidence: 0.7,
           sources: [],
         };
       } else if (userMessage.toLowerCase().includes("prerequisite")) {
         return {
-          content: "Prerequisites are important for course planning! I can help you check which courses you need to complete before taking advanced modules. Would you like me to check prerequisites for a specific course?",
+          content:
+            "Prerequisites are important for course planning! I can help you check which courses you need to complete before taking advanced modules. Would you like me to check prerequisites for a specific course?",
           courseCodes: [],
           confidence: 0.7,
           sources: [],
         };
       } else {
         return {
-          content: "Hello! I'm your AI study advisor for TUM. I can help you with course selection, study planning, prerequisite checking, and academic guidance. How can I assist you today?",
+          content:
+            "Hello! I'm your AI study advisor for TUM. I can help you with course selection, study planning, prerequisite checking, and academic guidance. How can I assist you today?",
           courseCodes: [],
           confidence: 0.7,
           sources: [],
@@ -151,7 +158,7 @@ const AiChatSidebar: React.FC<AiChatSidebarProps> = ({ isOpen }) => {
     try {
       // Generate AI response with enhanced data
       const aiResponseData = await generateAIResponse(
-        userMessage.content, 
+        userMessage.content,
         activeChatId || undefined
       );
 
@@ -491,81 +498,94 @@ const AiChatSidebar: React.FC<AiChatSidebarProps> = ({ isOpen }) => {
                     <Typography variant="body2" sx={{ lineHeight: 1.4 }}>
                       {message.content}
                     </Typography>
-                    
+
                     {/* Show course codes for AI messages */}
-                    {!message.isUser && message.courseCodes && message.courseCodes.length > 0 && (
-                      <Box sx={{ mt: 1, display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                        {message.courseCodes.map((code) => (
-                          <Chip
-                            key={code}
-                            label={code}
-                            size="small"
-                            icon={<School fontSize="small" />}
-                            sx={{
-                              backgroundColor: "rgba(100, 108, 255, 0.2)",
-                              color: "#646cff",
-                              border: "1px solid rgba(100, 108, 255, 0.3)",
-                            }}
-                          />
-                        ))}
-                      </Box>
-                    )}
-                    
+                    {!message.isUser &&
+                      message.courseCodes &&
+                      message.courseCodes.length > 0 && (
+                        <Box
+                          sx={{
+                            mt: 1,
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: 0.5,
+                          }}
+                        >
+                          {message.courseCodes.map((code) => (
+                            <Chip
+                              key={code}
+                              label={code}
+                              size="small"
+                              icon={<School fontSize="small" />}
+                              sx={{
+                                backgroundColor: "rgba(100, 108, 255, 0.2)",
+                                color: "#646cff",
+                                border: "1px solid rgba(100, 108, 255, 0.3)",
+                              }}
+                            />
+                          ))}
+                        </Box>
+                      )}
+
                     {/* Show confidence score for AI messages */}
-                    {!message.isUser && message.confidence !== undefined && message.confidence > 0 && (
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          opacity: 0.6,
-                          fontSize: "0.65rem",
-                          mt: 0.5,
-                          display: "block",
-                        }}
-                      >
-                        Confidence: {Math.round(message.confidence * 100)}%
-                      </Typography>
-                    )}
-                    
-                    {/* Show sources for AI messages */}
-                    {!message.isUser && message.sources && message.sources.length > 0 && (
-                      <Box sx={{ mt: 1 }}>
+                    {!message.isUser &&
+                      message.confidence !== undefined &&
+                      message.confidence > 0 && (
                         <Typography
                           variant="caption"
                           sx={{
-                            opacity: 0.7,
+                            opacity: 0.6,
                             fontSize: "0.65rem",
+                            mt: 0.5,
                             display: "block",
-                            mb: 0.5,
                           }}
                         >
-                          Sources:
+                          Confidence: {Math.round(message.confidence * 100)}%
                         </Typography>
-                        {message.sources.slice(0, 2).map((source, index) => (
-                          <Link
-                            key={index}
-                            href={source}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                      )}
+
+                    {/* Show sources for AI messages */}
+                    {!message.isUser &&
+                      message.sources &&
+                      message.sources.length > 0 && (
+                        <Box sx={{ mt: 1 }}>
+                          <Typography
+                            variant="caption"
                             sx={{
-                              color: "#646cff",
+                              opacity: 0.7,
                               fontSize: "0.65rem",
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 0.5,
-                              mb: 0.25,
-                              textDecoration: "none",
-                              "&:hover": {
-                                textDecoration: "underline",
-                              },
+                              display: "block",
+                              mb: 0.5,
                             }}
                           >
-                            <OpenInNew fontSize="inherit" />
-                            TUM Course Details
-                          </Link>
-                        ))}
-                      </Box>
-                    )}
-                    
+                            Sources:
+                          </Typography>
+                          {message.sources.slice(0, 2).map((source, index) => (
+                            <Link
+                              key={index}
+                              href={source}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              sx={{
+                                color: "#646cff",
+                                fontSize: "0.65rem",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 0.5,
+                                mb: 0.25,
+                                textDecoration: "none",
+                                "&:hover": {
+                                  textDecoration: "underline",
+                                },
+                              }}
+                            >
+                              <OpenInNew fontSize="inherit" />
+                              TUM Course Details
+                            </Link>
+                          ))}
+                        </Box>
+                      )}
+
                     <Typography
                       variant="caption"
                       sx={{

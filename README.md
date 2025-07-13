@@ -132,6 +132,7 @@ The TUM Study Planner is a comprehensive academic planning tool for Technical Un
 ### 🤖 AI Chat Feature
 
 Ask questions about TUM courses in natural language and get intelligent responses:
+
 - _"What programming languages are used in IN2003?"_
 - _"Tell me about Machine Learning courses at TUM"_
 - _"What are the prerequisites for Advanced Algorithms?"_
@@ -141,11 +142,13 @@ The AI extracts course codes, provides confidence scores, and links to official 
 ## 🎯 Intended Users
 
 **Primary Users:** M.Sc. Information Systems students at TUM
+
 - Need help with course selection and academic planning
 - Want quick access to course information without navigating complex systems
 - Benefit from AI-powered guidance for study decisions
 
 **Secondary Users:** Academic advisors and TUM faculty
+
 - Can leverage the system for student counseling
 - Access comprehensive course data in an accessible format
 
@@ -154,6 +157,7 @@ The AI extracts course codes, provides confidence scores, and links to official 
 Generative AI is meaningfully integrated through a **Retrieval-Augmented Generation (RAG) pipeline**:
 
 ### Core AI Features:
+
 - **Natural Language Understanding**: Parses student questions about courses and academic planning
 - **Course-Specific Q&A**: Provides accurate answers using official TUM course data
 - **Intelligent Course Detection**: Automatically identifies course codes in questions and responses
@@ -161,6 +165,7 @@ Generative AI is meaningfully integrated through a **Retrieval-Augmented Generat
 - **Source Attribution**: Links answers to official TUM course pages for verification
 
 ### Technical Implementation:
+
 - **Vector Database (Weaviate)**: Stores embedded course descriptions for semantic search
 - **LangChain RAG**: Combines retrieval with OpenAI GPT for contextual responses
 - **Real-time Processing**: Answers within 5 seconds with course-specific information
@@ -169,6 +174,7 @@ Generative AI is meaningfully integrated through a **Retrieval-Augmented Generat
 ## 💡 Example Scenarios
 
 ### Scenario 1: Course Content Inquiry
+
 **Student Question:** _"What programming languages are mainly used in the 'Introduction to C++' course?"_
 
 **AI Response:** The AI identifies course code IN0001, retrieves course description from the vector database, and responds: _"The Introduction to C++ course (IN0001) primarily focuses on C++ programming language fundamentals, including object-oriented programming concepts, memory management, and STL libraries."_
@@ -176,6 +182,7 @@ Generative AI is meaningfully integrated through a **Retrieval-Augmented Generat
 **Enhanced Features:** Course code highlighted, confidence score displayed, link to official TUM course page provided.
 
 ### Scenario 2: Study Planning Assistance
+
 **Student Question:** _"I'm interested in Machine Learning. What courses should I take?"_
 
 **AI Response:** The AI searches for ML-related courses, identifies relevant options like "Machine Learning" (IN2064), "Deep Learning" (IN2346), provides course descriptions, prerequisites, and semester information.
@@ -183,6 +190,7 @@ Generative AI is meaningfully integrated through a **Retrieval-Augmented Generat
 **Enhanced Features:** Multiple course codes detected, prerequisite chains explained, study sequence recommendations.
 
 ### Scenario 3: Prerequisite Checking
+
 **Student Question:** _"What do I need to complete before taking Advanced Algorithms?"_
 
 **AI Response:** The AI identifies the Advanced Algorithms course, retrieves prerequisite information, and explains the required prior coursework and knowledge areas.
@@ -202,7 +210,7 @@ _Key technologies and frameworks used._
 - **Infrastructure**: AWS EC2 + Terraform + Ansible
 - **Containerization**: Docker + Docker Compose
 - **Web Server**: Nginx (reverse proxy)
-- **GenAI Integration**: 
+- **GenAI Integration**:
   - OpenAI GPT-3.5-turbo for text generation
   - OpenAI Embeddings for vector search
   - LangChain for RAG pipeline orchestration

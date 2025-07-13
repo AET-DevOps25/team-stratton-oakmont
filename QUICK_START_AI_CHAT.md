@@ -1,36 +1,43 @@
 # 🚀 Quick Start Guide: AI Chat with Study Plan Integration
 
 ## Overview
+
 This enhanced AI chat feature now includes:
+
 - ✅ **Pre-populated Weaviate database** with 70K+ TUM courses
-- ✅ **Study plan integration** for personalized recommendations  
+- ✅ **Study plan integration** for personalized recommendations
 - ✅ **One-time data setup** (no need to reload data every startup)
 - ✅ **PostgreSQL integration** for user context
 
 ## 🏃‍♂️ Quick Setup (5 minutes)
 
 ### 1. Set up your OpenAI API key
+
 ```bash
 cp server/llm-inference-service/.env.example server/llm-inference-service/.env
 # Edit the .env file and add your OpenAI API key
 ```
 
 ### 2. Start Weaviate database
+
 ```bash
 docker-compose -f docker-compose.ai.yml up -d weaviate
 ```
 
 ### 3. Populate Weaviate with course data (one-time setup)
+
 ```bash
 ./scripts/populate-weaviate.sh
 ```
 
 ### 4. Start all AI services
+
 ```bash
 docker-compose -f docker-compose.ai.yml up -d
 ```
 
 ### 5. Start the frontend
+
 ```bash
 cd client && npm run dev
 ```
@@ -38,18 +45,22 @@ cd client && npm run dev
 ## 🎯 What's New
 
 ### **Pre-populated Database**
+
 - No more waiting for data loading on startup
 - 70K+ courses indexed with embeddings
 - Fast similarity search ready immediately
 
 ### **Study Plan Integration**
+
 The AI now considers user context when available:
+
 - Current degree program
 - Completed courses
-- Planned courses  
+- Planned courses
 - Current semester
 
 **Example enhanced interaction:**
+
 ```
 User: "What Machine Learning courses should I take?"
 
@@ -62,6 +73,7 @@ These fit well with your current semester plan..."
 ```
 
 ### **Improved Data Pipeline**
+
 ```
 PostgreSQL study_data_db → Weaviate (one-time) → RAG Pipeline
 PostgreSQL study_plan_db → User Context → Personalized Responses
@@ -70,6 +82,7 @@ PostgreSQL study_plan_db → User Context → Personalized Responses
 ## 📊 Database Schema Integration
 
 ### Course Data (study_data_db)
+
 ```sql
 -- Expected table structure
 CREATE TABLE courses (
@@ -88,6 +101,7 @@ CREATE TABLE courses (
 ```
 
 ### Study Plan Data (study_plan_db)
+
 ```sql
 -- Expected table structure
 CREATE TABLE study_plans (
@@ -112,12 +126,14 @@ CREATE TABLE study_plan_planned (
 ## 🔧 Configuration
 
 ### Environment Variables
+
 Update `server/llm-inference-service/.env`:
+
 ```bash
 # OpenAI Configuration
 OPENAI_API_KEY=your_openai_api_key_here
 
-# Weaviate Configuration  
+# Weaviate Configuration
 WEAVIATE_URL=http://localhost:8080
 
 # PostgreSQL - Course Data
@@ -136,6 +152,7 @@ STUDY_PLAN_DB_PASSWORD=password
 ## 🧪 Testing
 
 ### Test Course Q&A
+
 ```bash
 # Test specific course
 curl -X POST http://localhost:8082/chat/ \
@@ -152,6 +169,7 @@ curl -X POST http://localhost:8082/chat/ \
 ```
 
 ### Verify Data Population
+
 ```bash
 # Check Weaviate has data
 curl http://localhost:8080/v1/objects?class=TUMCourse&limit=1
@@ -167,12 +185,14 @@ curl http://localhost:8080/v1/objects?class=TUMCourse&limit=1
 ## 🛠️ Maintenance
 
 ### Re-populate Data (if course data updates)
+
 ```bash
 # Just run the population script again
 ./scripts/populate-weaviate.sh
 ```
 
 ### Update User Study Plans
+
 The system automatically fetches fresh study plan data from PostgreSQL on each request.
 
 ## 💡 Tips

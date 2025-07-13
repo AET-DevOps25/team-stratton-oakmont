@@ -1,18 +1,19 @@
-version: '3.8'
+version: "3.8"
 
 services:
   # Weaviate vector database
   weaviate:
-    image: semitechnologies/weaviate:1.21.2
+    image: semitechnologies/weaviate:1.24.10
     ports:
-      - "8080:8080"
+      - "8080:8080" # REST API
+      - "50051:50051" # gRPC API
     environment:
       QUERY_DEFAULTS_LIMIT: 25
-      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
-      PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
-      DEFAULT_VECTORIZER_MODULE: 'none'
-      ENABLE_MODULES: 'text2vec-openai'
-      CLUSTER_HOSTNAME: 'node1'
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: "true"
+      PERSISTENCE_DATA_PATH: "/var/lib/weaviate"
+      DEFAULT_VECTORIZER_MODULE: "none"
+      ENABLE_MODULES: "text2vec-openai"
+      CLUSTER_HOSTNAME: "node1"
     volumes:
       - weaviate_data:/var/lib/weaviate
 

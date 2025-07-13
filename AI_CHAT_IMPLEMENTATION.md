@@ -24,21 +24,25 @@ The AI chat feature allows students to ask natural language questions about TUM 
 ## Components
 
 ### 1. Frontend (React)
+
 - **AiChatSidebar**: Enhanced chat interface with course code highlighting, confidence scores, and source links
 - **API Integration**: Type-safe API client for communication with backend services
 
 ### 2. AI Advisor Service (Java Spring Boot)
+
 - **Gateway Service**: Routes requests between frontend and LLM inference service
 - **Error Handling**: Provides fallback responses when services are unavailable
 - **Health Monitoring**: Monitors the health of downstream services
 
 ### 3. LLM Inference Service (Python FastAPI)
+
 - **RAG Pipeline**: Retrieval-Augmented Generation using LangChain
 - **Vector Database**: Weaviate for storing and searching course embeddings
 - **Course Extraction**: Automatic detection of course codes in questions and responses
 - **Confidence Scoring**: Provides confidence scores based on retrieval relevance
 
 ### 4. Vector Database (Weaviate)
+
 - **Course Data Storage**: Stores embedded course descriptions and metadata
 - **Similarity Search**: Enables semantic search across course content
 - **Scalable Indexing**: Efficient storage and retrieval of course information
@@ -46,31 +50,37 @@ The AI chat feature allows students to ask natural language questions about TUM 
 ## Features Implemented
 
 ### ✅ Natural Language Q&A
+
 - Students can ask questions about specific courses using natural language
 - AI correctly identifies course codes mentioned in questions (e.g., "IN2003", "Introduction to C++")
 - Provides relevant answers from indexed TUM course data
 
 ### ✅ Course Code Detection
+
 - Automatic extraction of course codes from questions and responses
 - Support for multiple course code formats (IN2003, MGTHN0131, etc.)
 - Visual highlighting of detected courses in the chat interface
 
 ### ✅ Confidence Scoring
+
 - AI provides confidence scores based on retrieval relevance
 - Scores help users understand the reliability of responses
 - Low confidence triggers clear disclaimers
 
 ### ✅ Source Attribution
+
 - Direct links to official TUM course pages
 - Transparent sourcing of information
 - Limited to top 3 most relevant sources per response
 
 ### ✅ Fallback Handling
+
 - Graceful degradation when AI services are unavailable
 - Clear error messages when specific information cannot be found
 - Maintains chat functionality even with reduced features
 
 ### ✅ Performance Optimization
+
 - Response times under 5 seconds for most queries
 - Efficient vector search with similarity thresholds
 - Caching of frequently accessed course data
@@ -78,6 +88,7 @@ The AI chat feature allows students to ask natural language questions about TUM 
 ## API Endpoints
 
 ### AI Advisor Service (`localhost:8084`)
+
 ```
 POST /api/v1/chat
 GET  /api/v1/course/{courseCode}
@@ -85,6 +96,7 @@ GET  /api/v1/health
 ```
 
 ### LLM Inference Service (`localhost:8082`)
+
 ```
 POST /chat/
 GET  /course/{courseCode}
@@ -94,6 +106,7 @@ GET  /health
 ## Setup Instructions
 
 ### Prerequisites
+
 - Docker and Docker Compose
 - OpenAI API key
 - Node.js 18+ (for frontend development)
@@ -102,11 +115,13 @@ GET  /health
 ### Environment Setup
 
 1. **Create environment file:**
+
 ```bash
 cp server/llm-inference-service/.env.example server/llm-inference-service/.env
 ```
 
 2. **Add your OpenAI API key:**
+
 ```bash
 # Edit server/llm-inference-service/.env
 OPENAI_API_KEY=your_openai_api_key_here
@@ -115,11 +130,13 @@ OPENAI_API_KEY=your_openai_api_key_here
 ### Development Setup
 
 1. **Start AI services:**
+
 ```bash
 docker-compose -f docker-compose.ai.yml up -d
 ```
 
 2. **Start the frontend:**
+
 ```bash
 cd client
 npm install
@@ -127,6 +144,7 @@ npm run dev
 ```
 
 3. **Monitor service health:**
+
 ```bash
 # Check Weaviate
 curl http://localhost:8080/v1/meta
