@@ -38,6 +38,10 @@ spec:
               value: "25"
             - name: PERSISTENCE_DATA_PATH
               value: "/var/lib/weaviate"
+            - name: CLUSTER_HOSTNAME
+              value: "node1"
+            - name: ENABLE_GRPC_SERVER
+              value: "true"
           volumeMounts:
             - name: weaviate-storage
               mountPath: /var/lib/weaviate

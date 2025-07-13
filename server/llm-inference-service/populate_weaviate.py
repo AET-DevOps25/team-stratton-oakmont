@@ -21,9 +21,18 @@ class WeaviatePopulator:
     def setup_weaviate(self):
         """Initialize Weaviate client (v4) and Gemini embeddings"""
         try:
-            self.client = weaviate.connect_to_local()
+            # Connect to Weaviate via local port-forwarding
+            self.client = weaviate.connect_to_custom(
+                http_host="localhost",
+                http_port=8080,
+                http_secure=False,
+                grpc_host="localhost",
+                grpc_port=50051,
+                grpc_secure=False,
+                skip_init_checks=True
+            )
             self.embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
-            print("\u2705 Connected to Weaviate (v4 API) and Gemini Embeddings")
+            print("\u2705 Connected to Weaviate (localhost port-forward) and Gemini Embeddings")
         except Exception as e:
             print(f"\u274c Failed to connect to Weaviate or Gemini: {e}")
             sys.exit(1)
