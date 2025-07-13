@@ -1,0 +1,69 @@
+# PVC for Weaviate vector DB
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: weaviate-vector-pvc
+  namespace: tum-study-planner
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+# Weaviate Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weaviate-vector
+  namespace: tum-study-planner
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: weaviate-vector
+  template:
+    metadata:
+      labels:
+        app: weaviate-vector
+    spec:
+      containers:
+        - name: weaviate
+          image: semitechnologies/weaviate:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: QUERY_DEFAULTS_LIMIT
+              value: "25"
+            - name: PERSISTENCE_DATA_PATH
+              value: "/var/lib/weaviate"
+          volumeMounts:
+            - name: weaviate-storage
+              mountPath: /var/lib/weaviate
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "1"
+      volumes:
+        - name: weaviate-storage
+          persistentVolumeClaim:
+            claimName: weaviate-vector-pvc
+
+---
+# Weaviate Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: weaviate-vector-service
+  namespace: tum-study-planner
+spec:
+  selector:
+    app: weaviate-vector
+  ports:
+    - port: 8080
+      targetPort: 8080
+  type: ClusterIP
