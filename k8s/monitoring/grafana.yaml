@@ -42,7 +42,7 @@ data:
         updateIntervalSeconds: 10
         allowUiUpdates: true
         options:
-          path: /var/lib/grafana/dashboards
+          path: /etc/grafana/provisioning/dashboards/files
 ---
 apiVersion: v1
 kind: Secret
@@ -108,6 +108,8 @@ spec:
               mountPath: /etc/grafana/provisioning/datasources
             - name: grafana-dashboards-config
               mountPath: /etc/grafana/provisioning/dashboards
+            - name: grafana-dashboards-files
+              mountPath: /etc/grafana/provisioning/dashboards/files
           resources:
             requests:
               memory: "256Mi"
@@ -137,6 +139,8 @@ spec:
         - name: grafana-dashboards-config
           configMap:
             name: grafana-dashboards-config
+        - name: grafana-dashboards-files
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
