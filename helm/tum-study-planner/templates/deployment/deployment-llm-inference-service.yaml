@@ -1,0 +1,69 @@
+# prettier-ignore
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llm-inference-service
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: llm-inference-service
+  template:
+    metadata:
+      labels:
+        app: llm-inference-service
+    spec:
+      imagePullSecrets:
+        - name: ghcr
+      containers:
+        - name: llm-inference-service
+          image: "{{ .Values.llmInferenceService.image.repository }}:{{ .Values.llmInferenceService.image.tag }}"
+          ports:
+            - containerPort: 8082
+          env:
+            - name: GOOGLE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: google-api-key
+                  key: GOOGLE_API_KEY
+            - name: WEAVIATE_URL
+              value: {{ .Values.llmInferenceService.env.WEAVIATE_URL | quote }}
+            - name: STUDY_DATA_DB_HOST
+              value: {{ .Values.llmInferenceService.env.STUDY_DATA_DB_HOST | quote }}
+            - name: STUDY_DATA_DB_PORT
+              value: {{ .Values.llmInferenceService.env.STUDY_DATA_DB_PORT | quote }}
+            - name: STUDY_DATA_DB_NAME
+              value: {{ .Values.llmInferenceService.env.STUDY_DATA_DB_NAME | quote }}
+            - name: STUDY_DATA_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: tum-study-planner-secrets
+                  key: STUDY_DATA_DB_USER
+            - name: STUDY_DATA_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: tum-study-planner-secrets
+                  key: STUDY_DATA_DB_PASSWORD
+            - name: STUDY_PLAN_DB_HOST
+              value: {{ .Values.llmInferenceService.env.STUDY_PLAN_DB_HOST | quote }}
+            - name: STUDY_PLAN_DB_PORT
+              value: {{ .Values.llmInferenceService.env.STUDY_PLAN_DB_PORT | quote }}
+            - name: STUDY_PLAN_DB_NAME
+              value: {{ .Values.llmInferenceService.env.STUDY_PLAN_DB_NAME | quote }}
+            - name: STUDY_PLAN_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: tum-study-planner-secrets
+                  key: STUDY_PLAN_DB_USER
+            - name: STUDY_PLAN_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: tum-study-planner-secrets
+                  key: STUDY_PLAN_DB_PASSWORD
+          volumeMounts:
+            - name: course-data
+              mountPath: /app/data
+      volumes:
+        - name: course-data
+          emptyDir: {}
