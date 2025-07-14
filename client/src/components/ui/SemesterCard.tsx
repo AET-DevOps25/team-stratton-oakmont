@@ -158,7 +158,6 @@ const CourseItem: React.FC<CourseItemProps> = ({
             sx={{
               fontWeight: 600,
               color: course.completed ? "#aaa" : "white",
-              textDecoration: course.completed ? "line-through" : "none",
               cursor: "pointer",
               overflow: "hidden",
               textOverflow: "ellipsis",

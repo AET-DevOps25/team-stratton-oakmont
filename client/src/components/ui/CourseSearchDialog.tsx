@@ -545,26 +545,7 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
               <TableHead>
                 <TableRow sx={{ backgroundColor: "#333" }}>
                   <TableCell sx={{ color: "white", fontWeight: "bold", backgroundColor: "#333", width: "50px" }}>
-                    <Checkbox
-                      indeterminate={selectedCourses.size > 0 && selectedCourses.size < sortedCourses.length}
-                      checked={sortedCourses.length > 0 && selectedCourses.size === sortedCourses.length}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setSelectedCourses(new Set(sortedCourses.map(course => course.id)));
-                        } else {
-                          setSelectedCourses(new Set());
-                        }
-                      }}
-                      sx={{
-                        color: "#646cff",
-                        '&.Mui-checked': {
-                          color: "#646cff",
-                        },
-                        '&.MuiCheckbox-indeterminate': {
-                          color: "#646cff",
-                        },
-                      }}
-                    />
+                    Select
                   </TableCell>
                   <TableCell sx={{ color: "white", fontWeight: "bold", backgroundColor: "#333" }}>
                     <TableSortLabel

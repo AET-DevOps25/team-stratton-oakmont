@@ -322,65 +322,6 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                 </Box>
               </Paper>
             </Grid>
-
-            {/* Category Legend */}
-            <Grid size={{ xs: 12, lg: 6 }}>
-              <Paper sx={{ backgroundColor: "#333", p: 3, borderRadius: 2 }}>
-                <Typography variant="h6" sx={{ color: "white", mb: 3, textAlign: "center" }}>
-                  Course Statistics
-                </Typography>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                  <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <Typography variant="body2" sx={{ color: "white" }}>
-                      Total Courses Planned
-                    </Typography>
-                    <Chip
-                      label={courses.length}
-                      sx={{ backgroundColor: "#646cff", color: "white" }}
-                    />
-                  </Box>
-                  <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <Typography variant="body2" sx={{ color: "white" }}>
-                      Courses Completed
-                    </Typography>
-                    <Chip
-                      label={completedCourses.length}
-                      sx={{ backgroundColor: "#4caf50", color: "white" }}
-                    />
-                  </Box>
-                  <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <Typography variant="body2" sx={{ color: "white" }}>
-                      Courses Remaining
-                    </Typography>
-                    <Chip
-                      label={courses.length - completedCourses.length}
-                      sx={{ backgroundColor: "#ff9800", color: "white" }}
-                    />
-                  </Box>
-                  <Box sx={{ mt: 2, p: 2, backgroundColor: "#2a2a2a", borderRadius: 2 }}>
-                    <Typography variant="caption" sx={{ color: "#aaa", display: "block", mb: 1 }}>
-                      Completion Progress
-                    </Typography>
-                    <LinearProgress
-                      variant="determinate"
-                      value={courses.length > 0 ? (completedCourses.length / courses.length) * 100 : 0}
-                      sx={{
-                        height: 8,
-                        borderRadius: 4,
-                        backgroundColor: "#555",
-                        "& .MuiLinearProgress-bar": {
-                          backgroundColor: "#4caf50",
-                          borderRadius: 4,
-                        },
-                      }}
-                    />
-                    <Typography variant="caption" sx={{ color: "#aaa", mt: 1 }}>
-                      {courses.length > 0 ? ((completedCourses.length / courses.length) * 100).toFixed(0) : 0}% of courses completed
-                    </Typography>
-                  </Box>
-                </Box>
-              </Paper>
-            </Grid>
           </Grid>
 
           {/* Category Breakdown */}
