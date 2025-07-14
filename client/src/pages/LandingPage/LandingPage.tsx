@@ -34,7 +34,6 @@ import type {
 import { useStudyPlans } from "../../contexts/StudyPlansContext";
 import {
   School,
-  AutoStories,
   Psychology,
   TrendingUp,
   Rocket,
@@ -391,32 +390,6 @@ const LandingPage: React.FC = () => {
             >
               {isLoggedIn ? "Create Study Plan" : "Get Started"}
             </Button>
-
-            <Button
-              variant="outlined"
-              size="large"
-              onClick={() => navigate("/curriculum")}
-              startIcon={<AutoStories />}
-              sx={{
-                px: 6,
-                py: 2,
-                fontSize: "1.2rem",
-                borderRadius: "50px",
-                borderColor: "rgba(255, 255, 255, 0.3)",
-                color: "white",
-                textTransform: "none",
-                fontWeight: 600,
-                "&:hover": {
-                  borderColor: "#646cff",
-                  backgroundColor: "rgba(100, 108, 255, 0.1)",
-                  transform: "translateY(-3px)",
-                  boxShadow: "0 8px 32px rgba(100, 108, 255, 0.2)",
-                },
-                transition: "all 0.3s ease",
-              }}
-            >
-              Explore Curriculum
-            </Button>
           </Box>
 
           {/* Stats */}
@@ -702,10 +675,18 @@ const LandingPage: React.FC = () => {
             }}
           />
           <FormControl fullWidth variant="outlined">
+            <InputLabel 
+              sx={{ 
+                color: "#aaa",
+                "&.Mui-focused": { color: "#646cff" }
+              }}
+            >
+              Study Program
+            </InputLabel>
             <Select
               value={selectedProgramId}
               onChange={handleProgramChange}
-              placeholder="Study Program"
+              label="Study Program"
               disabled={loadingPrograms}
               sx={{
                 backgroundColor: "rgba(255, 255, 255, 0.05)",
