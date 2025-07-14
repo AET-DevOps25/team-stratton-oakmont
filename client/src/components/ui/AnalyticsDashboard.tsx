@@ -5,8 +5,6 @@ import {
   Box,
   Grid,
   LinearProgress,
-  Card,
-  Chip,
   IconButton,
   Collapse,
 } from "@mui/material";
@@ -58,7 +56,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
     return acc;
   }, {} as Record<string, { total: number; completed: number; planned: number }>);
 
-  // Data for visual representations (simplified without charts)
+  // Data for visual representations
   const categoryBreakdown = Object.entries(categoryStats).map(([category, stats]) => ({
     category: category === "Mandatory Courses" ? "Mandatory" 
             : category === "Practical Courses" ? "Practical"
@@ -70,6 +68,32 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
     percentage: stats.total > 0 ? (stats.completed / stats.total) * 100 : 0,
     color: getCategoryColor(category),
   }));
+
+  // Data for completed progress (only completed courses)
+  const completedBreakdown = Object.entries(categoryStats).map(([category, stats]) => ({
+    category: category === "Mandatory Courses" ? "Mandatory" 
+            : category === "Practical Courses" ? "Practical"
+            : category === "Cross-Disciplinary Electives" ? "Electives"
+            : category === "Elective Modules in Interdisciplinary Fundamentals" ? "Interdisciplinary"
+            : category,
+    completed: stats.completed,
+    total: stats.completed, // For completed section, total = completed
+    percentage: 100, // Always 100% for completed courses
+    color: getCategoryColor(category),
+  })).filter(item => item.completed > 0); // Only show categories with completed courses
+
+  // Data for planned progress (all planned courses)
+  const plannedBreakdown = Object.entries(categoryStats).map(([category, stats]) => ({
+    category: category === "Mandatory Courses" ? "Mandatory" 
+            : category === "Practical Courses" ? "Practical"
+            : category === "Cross-Disciplinary Electives" ? "Electives"
+            : category === "Elective Modules in Interdisciplinary Fundamentals" ? "Interdisciplinary"
+            : category,
+    completed: stats.total, // For planned section, show total as the "completed" amount
+    total: stats.total,
+    percentage: 100, // Always 100% for planned courses
+    color: getCategoryColor(category),
+  })).filter(item => item.total > 0); // Only show categories with planned courses
 
   function getCategoryColor(category: string): string {
     switch (category) {
@@ -108,62 +132,65 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
     let cumulativePercentage = 0;
     
     return (
-      <Box sx={{ position: "relative", display: "inline-block" }}>
-        <svg width={size} height={size}>
-          {/* Background circle */}
-          <circle
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-            fill="none"
-            stroke="#555"
-            strokeWidth={strokeWidth}
-          />
-          
-          {/* Data segments */}
-          {data.map((item, index) => {
-            const percentage = totalCredits > 0 ? item.total / totalCredits : 0;
-            const strokeDasharray = `${percentage * circumference} ${circumference}`;
-            const strokeDashoffset = -cumulativePercentage * circumference;
-            cumulativePercentage += percentage;
+      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "100%" }}>
+        {/* Donut Chart */}
+        <Box sx={{ position: "relative", display: "inline-block", mb: 2 }}>
+          <svg width={size} height={size}>
+            {/* Background circle */}
+            <circle
+              cx={size / 2}
+              cy={size / 2}
+              r={radius}
+              fill="none"
+              stroke="#555"
+              strokeWidth={strokeWidth}
+            />
             
-            return (
-              <circle
-                key={index}
-                cx={size / 2}
-                cy={size / 2}
-                r={radius}
-                fill="none"
-                stroke={item.color}
-                strokeWidth={strokeWidth}
-                strokeDasharray={strokeDasharray}
-                strokeDashoffset={strokeDashoffset}
-                transform={`rotate(-90 ${size / 2} ${size / 2})`}
-              />
-            );
-          })}
-        </svg>
-        
-        {/* Center text */}
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            textAlign: "center",
-          }}
-        >
-          <Typography variant="h6" sx={{ color: "white", fontWeight: "bold" }}>
-            {totalCredits}
-          </Typography>
-          <Typography variant="caption" sx={{ color: "#aaa" }}>
-            Total ECTS
-          </Typography>
+            {/* Data segments */}
+            {data.map((item, index) => {
+              const percentage = totalCredits > 0 ? item.total / totalCredits : 0;
+              const strokeDasharray = `${percentage * circumference} ${circumference}`;
+              const strokeDashoffset = -cumulativePercentage * circumference;
+              cumulativePercentage += percentage;
+              
+              return (
+                <circle
+                  key={index}
+                  cx={size / 2}
+                  cy={size / 2}
+                  r={radius}
+                  fill="none"
+                  stroke={item.color}
+                  strokeWidth={strokeWidth}
+                  strokeDasharray={strokeDasharray}
+                  strokeDashoffset={strokeDashoffset}
+                  transform={`rotate(-90 ${size / 2} ${size / 2})`}
+                />
+              );
+            })}
+          </svg>
+          
+          {/* Center text */}
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              textAlign: "center",
+            }}
+          >
+            <Typography variant="h6" sx={{ color: "white", fontWeight: "bold" }}>
+              {totalCredits}
+            </Typography>
+            <Typography variant="caption" sx={{ color: "#aaa" }}>
+              Total ECTS
+            </Typography>
+          </Box>
         </Box>
         
         {/* Legend */}
-        <Box sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 1 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1, alignItems: "center" }}>
           {data.map((item, index) => (
             <Box key={index} sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <Box
@@ -243,153 +270,234 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
 
       <Collapse in={expanded}>
         <Box sx={{ p: 3 }}>
-          {/* Overall Progress */}
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h6" sx={{ color: "white", mb: 2 }}>
-              Overall Progress
-            </Typography>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <LinearProgress
-                variant="determinate"
-                value={completionPercentage}
-                sx={{
-                  flexGrow: 1,
-                  height: 12,
-                  borderRadius: 6,
-                  backgroundColor: "#444",
-                  "& .MuiLinearProgress-bar": {
-                    backgroundColor: "#4caf50",
-                    borderRadius: 6,
-                  },
-                }}
-              />
-              <Typography variant="body2" sx={{ color: "white", minWidth: 60 }}>
-                {totalCompletedCredits}/{totalRequiredCredits} ECTS
-              </Typography>
-            </Box>
-          </Box>
-
-          {/* Visual Progress Representation */}
-          <Grid container spacing={3}>
-            {/* Credits Distribution */}
-            <Grid size={{ xs: 12, lg: 6 }}>
-              <Paper sx={{ backgroundColor: "#333", p: 3, borderRadius: 2 }}>
-                <Typography variant="h6" sx={{ color: "white", mb: 3, textAlign: "center" }}>
-                  Credits Distribution
-                </Typography>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                  {categoryBreakdown
-                    .filter(item => item.total > 0)
-                    .map((item) => (
-                      <Box key={item.category}>
-                        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-                          <Typography variant="body2" sx={{ color: "white" }}>
-                            {item.category}
-                          </Typography>
-                          <Typography variant="body2" sx={{ color: "#aaa" }}>
-                            {item.completed}/{item.total} ECTS
-                          </Typography>
-                        </Box>
-                        <Box sx={{ position: "relative", height: 20, backgroundColor: "#555", borderRadius: 2, overflow: "hidden" }}>
-                          <Box
-                            sx={{
-                              position: "absolute",
-                              top: 0,
-                              left: 0,
-                              height: "100%",
-                              width: `${item.percentage}%`,
-                              backgroundColor: item.color,
-                              transition: "width 0.3s ease",
-                            }}
-                          />
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              position: "absolute",
-                              top: "50%",
-                              left: "50%",
-                              transform: "translate(-50%, -50%)",
-                              color: "white",
-                              fontWeight: "bold",
-                              fontSize: "0.7rem",
-                            }}
-                          >
-                            {item.percentage.toFixed(0)}%
-                          </Typography>
-                        </Box>
-                      </Box>
-                    ))}
-                </Box>
-              </Paper>
-            </Grid>
-          </Grid>
-
-          {/* Category Breakdown */}
-          <Box sx={{ mt: 4 }}>
+          {/* Progress Section */}
+          <Box sx={{ mb: 6 }}>
             <Typography variant="h6" sx={{ color: "white", mb: 3 }}>
-              Category Breakdown
+              Progress
             </Typography>
-            <Grid container spacing={4}>
+            
+            {/* Overall Progress */}
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="subtitle1" sx={{ color: "#aaa", mb: 2 }}>
+                Overall Progress
+              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <LinearProgress
+                  variant="determinate"
+                  value={completionPercentage}
+                  sx={{
+                    flexGrow: 1,
+                    height: 12,
+                    borderRadius: 6,
+                    backgroundColor: "#444",
+                    "& .MuiLinearProgress-bar": {
+                      backgroundColor: "#4caf50",
+                      borderRadius: 6,
+                    },
+                  }}
+                />
+                <Typography variant="body2" sx={{ color: "white", minWidth: 60 }}>
+                  {totalCompletedCredits}/{totalRequiredCredits} ECTS
+                </Typography>
+              </Box>
+            </Box>
+
+            {/* Progress Visualization */}
+            <Grid container spacing={3}>
               {/* Donut Chart */}
               <Grid size={{ xs: 12, md: 6 }}>
-                <Paper sx={{ backgroundColor: "#333", p: 3, borderRadius: 2 }}>
+                <Paper sx={{ backgroundColor: "#333", p: 3, borderRadius: 2, minHeight: "300px", display: "flex", flexDirection: "column" }}>
                   <Typography variant="h6" sx={{ color: "white", mb: 3, textAlign: "center" }}>
-                    Credit Distribution
+                    Completed Credits Distribution
                   </Typography>
-                  <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                  <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", flex: 1 }}>
                     <DonutChart
-                      data={categoryBreakdown}
+                      data={completedBreakdown}
+                      totalCredits={totalCompletedCredits}
+                    />
+                  </Box>
+                </Paper>
+              </Grid>
+
+              {/* Progress Bars */}
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Paper sx={{ backgroundColor: "#333", p: 3, borderRadius: 2, minHeight: "300px", display: "flex", flexDirection: "column" }}>
+                  <Typography variant="h6" sx={{ color: "white", mb: 3, textAlign: "center" }}>
+                    Category Progress
+                  </Typography>
+                  <Box sx={{ display: "flex", flexDirection: "column", gap: 2, flex: 1, justifyContent: categoryBreakdown.filter(item => item.total > 0).length === 0 ? "center" : "flex-start" }}>
+                    {categoryBreakdown.filter(item => item.total > 0).length === 0 ? (
+                      <Box sx={{ textAlign: "center", color: "#aaa" }}>
+                        <Typography variant="body2" sx={{ mb: 1 }}>
+                          No courses added yet
+                        </Typography>
+                        <Typography variant="caption">
+                          Add courses to see category progress
+                        </Typography>
+                      </Box>
+                    ) : (
+                      categoryBreakdown
+                        .filter(item => item.total > 0)
+                        .map((item) => (
+                          <Box key={item.category}>
+                            <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                              <Typography variant="body2" sx={{ color: "white" }}>
+                                {item.category}
+                              </Typography>
+                              <Typography variant="body2" sx={{ color: "#aaa" }}>
+                                {item.completed}/{item.total} ECTS
+                              </Typography>
+                            </Box>
+                            <Box sx={{ position: "relative", height: 20, backgroundColor: "#555", borderRadius: 2, overflow: "hidden" }}>
+                              <Box
+                                sx={{
+                                  position: "absolute",
+                                  top: 0,
+                                  left: 0,
+                                  height: "100%",
+                                  width: `${item.percentage}%`,
+                                  backgroundColor: item.color,
+                                  transition: "width 0.3s ease",
+                                }}
+                              />
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  position: "absolute",
+                                  top: "50%",
+                                  left: "50%",
+                                  transform: "translate(-50%, -50%)",
+                                  color: "white",
+                                  fontWeight: "bold",
+                                  fontSize: "0.7rem",
+                                }}
+                              >
+                                {item.percentage.toFixed(0)}%
+                              </Typography>
+                            </Box>
+                          </Box>
+                        ))
+                    )}
+                  </Box>
+                </Paper>
+              </Grid>
+            </Grid>
+          </Box>
+
+          {/* Planned Progress Section */}
+          <Box>
+            <Typography variant="h6" sx={{ color: "white", mb: 3 }}>
+              Planned Progress
+            </Typography>
+            
+            {/* Overall Planned Progress */}
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="subtitle1" sx={{ color: "#aaa", mb: 2 }}>
+                Overall Planned Progress
+              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <LinearProgress
+                  variant="determinate"
+                  value={totalRequiredCredits > 0 ? (totalPlannedCredits / totalRequiredCredits) * 100 : 0}
+                  sx={{
+                    flexGrow: 1,
+                    height: 12,
+                    borderRadius: 6,
+                    backgroundColor: "#444",
+                    "& .MuiLinearProgress-bar": {
+                      backgroundColor: "#646cff",
+                      borderRadius: 6,
+                    },
+                  }}
+                />
+                <Typography variant="body2" sx={{ color: "white", minWidth: 60 }}>
+                  {totalPlannedCredits}/{totalRequiredCredits} ECTS
+                </Typography>
+              </Box>
+            </Box>
+
+            {/* Planned Progress Visualization */}
+            <Grid container spacing={3}>
+              {/* Donut Chart */}
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Paper sx={{ backgroundColor: "#333", p: 3, borderRadius: 2, minHeight: "300px", display: "flex", flexDirection: "column" }}>
+                  <Typography variant="h6" sx={{ color: "white", mb: 3, textAlign: "center" }}>
+                    Planned Credits Distribution
+                  </Typography>
+                  <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", flex: 1 }}>
+                    <DonutChart
+                      data={plannedBreakdown}
                       totalCredits={totalPlannedCredits}
                     />
                   </Box>
                 </Paper>
               </Grid>
 
-              {/* Category Details */}
+              {/* Progress Bars */}
               <Grid size={{ xs: 12, md: 6 }}>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                  {Object.entries(categoryStats).map(([category, stats]) => (
-                    <Card key={category} sx={{ backgroundColor: "#333", p: 2 }}>
-                      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
-                        <Typography variant="subtitle2" sx={{ color: "white" }}>
-                          {category === "Mandatory Courses" ? "Mandatory" 
-                           : category === "Practical Courses" ? "Practical"
-                           : category === "Cross-Disciplinary Electives" ? "Electives"
-                           : category === "Elective Modules in Interdisciplinary Fundamentals" ? "Interdisciplinary"
-                           : category}
+                <Paper sx={{ backgroundColor: "#333", p: 3, borderRadius: 2, minHeight: "300px", display: "flex", flexDirection: "column" }}>
+                  <Typography variant="h6" sx={{ color: "white", mb: 3, textAlign: "center" }}>
+                    Category Planning
+                  </Typography>
+                  <Box sx={{ display: "flex", flexDirection: "column", gap: 2, flex: 1, justifyContent: Object.entries(categoryStats).filter(([, stats]) => stats.total > 0).length === 0 ? "center" : "flex-start" }}>
+                    {Object.entries(categoryStats).filter(([, stats]) => stats.total > 0).length === 0 ? (
+                      <Box sx={{ textAlign: "center", color: "#aaa" }}>
+                        <Typography variant="body2" sx={{ mb: 1 }}>
+                          No courses planned yet
                         </Typography>
-                        <Chip
-                          label={`${stats.completed}/${stats.total} ECTS`}
-                          size="small"
-                          sx={{
-                            backgroundColor: getCategoryColor(category),
-                            color: "white",
-                            fontSize: "0.7rem",
-                          }}
-                        />
+                        <Typography variant="caption">
+                          Add courses to see planning distribution
+                        </Typography>
                       </Box>
-                      <LinearProgress
-                        variant="determinate"
-                        value={stats.total > 0 ? (stats.completed / stats.total) * 100 : 0}
-                        sx={{
-                          height: 8,
-                          borderRadius: 4,
-                          backgroundColor: "#555",
-                          "& .MuiLinearProgress-bar": {
-                            backgroundColor: getCategoryColor(category),
-                            borderRadius: 4,
-                          },
-                        }}
-                      />
-                      <Typography
-                        variant="caption"
-                        sx={{ color: "#aaa", display: "block", mt: 1 }}
-                      >
-                        {stats.total > 0 ? `${((stats.completed / stats.total) * 100).toFixed(0)}% Complete` : "No courses"}
-                      </Typography>
-                    </Card>
-                  ))}
-                </Box>
+                    ) : (
+                      Object.entries(categoryStats).map(([category, stats]) => (
+                        stats.total > 0 && (
+                          <Box key={category}>
+                            <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                              <Typography variant="body2" sx={{ color: "white" }}>
+                                {category === "Mandatory Courses" ? "Mandatory" 
+                                 : category === "Practical Courses" ? "Practical"
+                                 : category === "Cross-Disciplinary Electives" ? "Electives"
+                                 : category === "Elective Modules in Interdisciplinary Fundamentals" ? "Interdisciplinary"
+                                 : category}
+                              </Typography>
+                              <Typography variant="body2" sx={{ color: "#aaa" }}>
+                                {stats.total} ECTS
+                              </Typography>
+                            </Box>
+                            <Box sx={{ position: "relative", height: 20, backgroundColor: "#555", borderRadius: 2, overflow: "hidden" }}>
+                              <Box
+                                sx={{
+                                  position: "absolute",
+                                  top: 0,
+                                  left: 0,
+                                  height: "100%",
+                                  width: "100%",
+                                  backgroundColor: getCategoryColor(category),
+                                  transition: "width 0.3s ease",
+                                }}
+                              />
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  position: "absolute",
+                                  top: "50%",
+                                  left: "50%",
+                                  transform: "translate(-50%, -50%)",
+                                  color: "white",
+                                  fontWeight: "bold",
+                                  fontSize: "0.7rem",
+                                }}
+                              >
+                                {stats.total} ECTS
+                              </Typography>
+                            </Box>
+                          </Box>
+                        )
+                      ))
+                    )}
+                  </Box>
+                </Paper>
               </Grid>
             </Grid>
           </Box>
