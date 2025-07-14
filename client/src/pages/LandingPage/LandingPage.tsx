@@ -41,7 +41,7 @@ import {
   Star,
   Code,
   Analytics,
-  Speed,
+  Business,
 } from "@mui/icons-material";
 
 const LandingPage: React.FC = () => {
@@ -432,7 +432,7 @@ const LandingPage: React.FC = () => {
             {[
               { icon: Code, label: "Courses", value: "120+" },
               { icon: Analytics, label: "Study Plans", value: "50+" },
-              { icon: Speed, label: "ECTS Credits", value: "120" },
+              { icon: Business, label: "TUM Schools", value: "15" },
             ].map((stat, index) => (
               <Box key={index} sx={{ textAlign: "center" }}>
                 <stat.icon sx={{ fontSize: "2rem", color: "#646cff", mb: 1 }} />
@@ -594,7 +594,7 @@ const LandingPage: React.FC = () => {
               }}
             />
             <Chip
-              icon={<Speed />}
+              icon={<Business />}
               label="Instant Setup"
               sx={{
                 backgroundColor: "rgba(76, 175, 80, 0.2)",
