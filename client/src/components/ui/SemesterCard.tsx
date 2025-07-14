@@ -265,9 +265,6 @@ const SemesterCard: React.FC<SemesterCardProps> = ({
   const [courseDetailsOpen, setCourseDetailsOpen] = useState(false);
 
   const totalCredits = semester.courses.reduce((sum, course) => sum + course.credits, 0);
-  const completedCredits = semester.courses
-    .filter((course) => course.completed)
-    .reduce((sum, course) => sum + course.credits, 0);
 
   const handleStartEdit = () => {
     setIsEditing(true);
@@ -405,7 +402,7 @@ const SemesterCard: React.FC<SemesterCardProps> = ({
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography variant="body2" sx={{ color: "#aaa" }}>
-              {completedCredits}/{totalCredits} ECTS
+              {totalCredits} ECTS
             </Typography>
             <IconButton
               onClick={() => onToggleExpanded(semester.id)}

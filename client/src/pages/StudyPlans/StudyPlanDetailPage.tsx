@@ -143,18 +143,14 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
   // Semester management functions
   const generateNextSemesterName = () => {
     if (semesters.length === 0) {
-      return "1st Semester (Winter)";
+      return "1st Semester";
     }
     
     const lastSemester = semesters[semesters.length - 1];
     const lastSemesterNumber = parseInt(lastSemester.name.match(/(\d+)/)?.[1] || "0");
     const nextNumber = lastSemesterNumber + 1;
     
-    // Determine if next semester should be winter or summer
-    // Odd numbers = Winter, Even numbers = Summer
-    const seasonType = nextNumber % 2 === 1 ? "Winter" : "Summer";
-    
-    return `${nextNumber}${getOrdinalSuffix(nextNumber)} Semester (${seasonType})`;
+    return `${nextNumber}${getOrdinalSuffix(nextNumber)} Semester`;
   };
 
   const getOrdinalSuffix = (num: number) => {
@@ -275,6 +271,19 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
       setSemesters(semesters.map(semester => 
         semester.id === activeSemesterId
           ? { ...semester, courses: [...semester.courses, { ...course, completed: false }] }
+          : semester
+      ));
+    }
+  };
+
+  const handleAddCoursesToSemester = (courses: Course[]) => {
+    if (activeSemesterId) {
+      setSemesters(semesters.map(semester => 
+        semester.id === activeSemesterId
+          ? { 
+              ...semester, 
+              courses: [...semester.courses, ...courses.map(course => ({ ...course, completed: false }))]
+            }
           : semester
       ));
     }
@@ -568,6 +577,7 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
           open={courseSearchOpen}
           onClose={() => setCourseSearchOpen(false)}
           onAddCourse={handleAddCourseToSemester}
+          onAddCourses={handleAddCoursesToSemester}
           title="Add Course to Semester"
           excludeIds={usedCourseIds}
         />

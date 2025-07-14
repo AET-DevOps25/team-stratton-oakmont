@@ -19,8 +19,9 @@ import {
   Typography,
   IconButton,
   CircularProgress,
+  Checkbox,
 } from "@mui/material";
-import { Search, Add, Close } from "@mui/icons-material";
+import { Search, Close, Info } from "@mui/icons-material";
 import { CourseDetailsDialog } from "./CourseDetailsDialog";
 
 // Course interface matching CurriculumPage
@@ -47,6 +48,7 @@ interface CourseSearchDialogProps {
   open: boolean;
   onClose: () => void;
   onAddCourse: (course: Course) => void;
+  onAddCourses?: (courses: Course[]) => void; // New prop for multi-selection
   title?: string;
   excludeIds?: string[];
 }
@@ -55,6 +57,7 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
   open,
   onClose,
   onAddCourse,
+  onAddCourses,
   title = "Add Course",
   excludeIds = [],
 }) => {
@@ -67,6 +70,8 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [courseDetailsOpen, setCourseDetailsOpen] = useState(false);
+  const [selectedCourses, setSelectedCourses] = useState<Set<string>>(new Set());
+  const multiSelectMode = true; // Always use multi-select mode
 
   // Mock data - same as CurriculumPage
   const mockCourses: Course[] = [
@@ -364,8 +369,39 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
   };
 
   const handleAddCourse = (course: Course) => {
-    onAddCourse(course);
-    onClose();
+    if (multiSelectMode) {
+      // In multi-select mode, toggle selection
+      const newSelected = new Set(selectedCourses);
+      if (newSelected.has(course.id)) {
+        newSelected.delete(course.id);
+      } else {
+        newSelected.add(course.id);
+      }
+      setSelectedCourses(newSelected);
+    } else {
+      // In single-select mode, add immediately and close
+      onAddCourse(course);
+      onClose();
+    }
+  };
+
+  const handleAddSelectedCourses = () => {
+    if (onAddCourses && selectedCourses.size > 0) {
+      const coursesToAdd = courses.filter(course => selectedCourses.has(course.id));
+      onAddCourses(coursesToAdd);
+    }
+    handleClose();
+  };
+
+  const handleCourseRowClick = (course: Course, event: React.MouseEvent) => {
+    // Check if the click was on a button or checkbox
+    const target = event.target as HTMLElement;
+    if (target.closest('button') || target.closest('[role="checkbox"]')) {
+      return; // Don't handle row click if button/checkbox was clicked
+    }
+    
+    // In multi-select mode (which is always on), only handle adding to selection
+    handleAddCourse(course);
   };
 
   const handleCourseClick = (course: Course) => {
@@ -381,6 +417,7 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
   const handleClose = () => {
     setSearchQuery("");
     setSelectedCategories([]);
+    setSelectedCourses(new Set());
     onClose();
   };
 
@@ -406,7 +443,14 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
           borderBottom: "1px solid #444",
         }}
       >
-        <Typography variant="h6">{title}</Typography>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <Typography variant="h6">{title}</Typography>
+          {selectedCourses.size > 0 && (
+            <Typography variant="body2" sx={{ color: "#646cff" }}>
+              {selectedCourses.size} selected
+            </Typography>
+          )}
+        </Box>
         <IconButton onClick={handleClose} sx={{ color: "#aaa" }}>
           <Close />
         </IconButton>
@@ -500,6 +544,28 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
             <Table stickyHeader>
               <TableHead>
                 <TableRow sx={{ backgroundColor: "#333" }}>
+                  <TableCell sx={{ color: "white", fontWeight: "bold", backgroundColor: "#333", width: "50px" }}>
+                    <Checkbox
+                      indeterminate={selectedCourses.size > 0 && selectedCourses.size < sortedCourses.length}
+                      checked={sortedCourses.length > 0 && selectedCourses.size === sortedCourses.length}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedCourses(new Set(sortedCourses.map(course => course.id)));
+                        } else {
+                          setSelectedCourses(new Set());
+                        }
+                      }}
+                      sx={{
+                        color: "#646cff",
+                        '&.Mui-checked': {
+                          color: "#646cff",
+                        },
+                        '&.MuiCheckbox-indeterminate': {
+                          color: "#646cff",
+                        },
+                      }}
+                    />
+                  </TableCell>
                   <TableCell sx={{ color: "white", fontWeight: "bold", backgroundColor: "#333" }}>
                     <TableSortLabel
                       active={orderBy === "name"}
@@ -536,8 +602,8 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
                   <TableCell sx={{ color: "white", fontWeight: "bold", backgroundColor: "#333" }}>
                     Category
                   </TableCell>
-                  <TableCell sx={{ color: "white", fontWeight: "bold", backgroundColor: "#333" }}>
-                    Action
+                  <TableCell sx={{ color: "white", fontWeight: "bold", backgroundColor: "#333", width: "50px" }}>
+                    Info
                   </TableCell>
                 </TableRow>
               </TableHead>
@@ -548,20 +614,28 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
                     sx={{
                       "&:hover": { backgroundColor: "#333" },
                       borderBottom: "1px solid #444",
+                      cursor: "pointer",
                     }}
+                    onClick={(event) => handleCourseRowClick(course, event)}
                   >
+                    <TableCell sx={{ color: "white", width: "50px" }}>
+                      <Checkbox
+                        checked={selectedCourses.has(course.id)}
+                        onChange={() => handleAddCourse(course)}
+                        sx={{
+                          color: "#646cff",
+                          '&.Mui-checked': {
+                            color: "#646cff",
+                          },
+                        }}
+                      />
+                    </TableCell>
                     <TableCell sx={{ color: "white" }}>
                       <Typography 
                         variant="body2" 
                         sx={{ 
                           fontWeight: 500,
-                          cursor: "pointer",
-                          "&:hover": {
-                            color: "#646cff",
-                            textDecoration: "underline",
-                          },
                         }}
-                        onClick={() => handleCourseClick(course)}
                       >
                         {course.name}
                       </Typography>
@@ -598,15 +672,18 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
                         }}
                       />
                     </TableCell>
-                    <TableCell sx={{ color: "white" }}>
+                    <TableCell sx={{ color: "white", width: "50px" }}>
                       <IconButton
-                        onClick={() => handleAddCourse(course)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCourseClick(course);
+                        }}
                         sx={{
                           color: "#646cff",
                           "&:hover": { backgroundColor: "rgba(100, 108, 255, 0.1)" },
                         }}
                       >
-                        <Add />
+                        <Info />
                       </IconButton>
                     </TableCell>
                   </TableRow>
@@ -628,7 +705,7 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
         )}
       </DialogContent>
 
-      <DialogActions sx={{ p: 3, borderTop: "1px solid #444" }}>
+      <DialogActions sx={{ p: 3, borderTop: "1px solid #444", justifyContent: "space-between" }}>
         <Button
           onClick={handleClose}
           sx={{
@@ -640,6 +717,24 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
           }}
         >
           Cancel
+        </Button>
+        <Button
+          onClick={handleAddSelectedCourses}
+          disabled={selectedCourses.size === 0}
+          sx={{
+            backgroundColor: selectedCourses.size > 0 ? "#646cff" : "#555",
+            color: "white",
+            textTransform: "none",
+            "&:hover": {
+              backgroundColor: selectedCourses.size > 0 ? "#5a5acf" : "#555",
+            },
+            "&:disabled": {
+              backgroundColor: "#555",
+              color: "#999",
+            },
+          }}
+        >
+          Add {selectedCourses.size > 0 ? `${selectedCourses.size} ` : ""}Selected Course{selectedCourses.size !== 1 ? 's' : ''}
         </Button>
       </DialogActions>
 
