@@ -4,21 +4,43 @@ import {
   Container,
   Typography,
   Box,
-  LinearProgress,
   Paper,
   CircularProgress,
   Alert,
   Button,
   Grid,
-  Divider,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  IconButton,
+  Collapse,
 } from "@mui/material";
-import { ExpandMore, ExpandLess } from "@mui/icons-material";
+import { Add, ExpandMore, ExpandLess, School } from "@mui/icons-material";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import type { DragEndEvent } from "@dnd-kit/core";
+import {
+  arrayMove,
+  sortableKeyboardCoordinates,
+} from "@dnd-kit/sortable";
 import {
   getStudyPlanById,
   getStudyProgramById,
   StudyPlanApiError,
 } from "../../api/studyPlans";
 import type { StudyPlanDto, StudyProgramDto } from "../../api/studyPlans";
+import AnalyticsDashboard from "../../components/ui/AnalyticsDashboard";
+import SemesterCard from "../../components/ui/SemesterCard";
+import type { SemesterData, Course } from "../../components/ui/SemesterCard";
+import CourseSearchDialog from "../../components/ui/CourseSearchDialog";
 
 interface StudyPlanDetailPageProps {}
 
@@ -28,11 +50,34 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
 
   // State for the specific study plan
   const [studyPlan, setStudyPlan] = useState<StudyPlanDto | null>(null);
-  const [studyProgram, setStudyProgram] = useState<StudyProgramDto | null>(
-    null
-  );
+  const [studyProgram, setStudyProgram] = useState<StudyProgramDto | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  // State for semesters and courses
+  const [semesters, setSemesters] = useState<SemesterData[]>([
+    { id: "1", name: "1st Semester", courses: [], expanded: true },
+    { id: "2", name: "2nd Semester", courses: [], expanded: true },
+  ]);
+  
+  // State for dialogs
+  const [courseSearchOpen, setCourseSearchOpen] = useState(false);
+  const [activeSemesterId, setActiveSemesterId] = useState<string | null>(null);
+  const [newSemesterDialogOpen, setNewSemesterDialogOpen] = useState(false);
+  const [newSemesterName, setNewSemesterName] = useState("");
+  const [analyticsExpanded, setAnalyticsExpanded] = useState(false);
+  const [studyPlanDetailsExpanded, setStudyPlanDetailsExpanded] = useState(false);
+
+  // Get all courses from all semesters
+  const allCourses = semesters.flatMap(semester => semester.courses);
+
+  // Drag and drop sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const fetchStudyPlanById = async (planId: string) => {
     try {
@@ -43,16 +88,25 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
       const planResponse = await getStudyPlanById(planId);
       setStudyPlan(planResponse);
 
+      // Parse plan data if it exists
+      if (planResponse.planData) {
+        try {
+          const parsedPlanData = JSON.parse(planResponse.planData);
+          if (parsedPlanData.semesters && Array.isArray(parsedPlanData.semesters)) {
+            setSemesters(parsedPlanData.semesters);
+          }
+        } catch (parseError) {
+          console.warn("Could not parse plan data:", parseError);
+        }
+      }
+
       // Fetch the study program if studyProgramId exists
       if (planResponse.studyProgramId) {
         try {
-          const programResponse = await getStudyProgramById(
-            planResponse.studyProgramId
-          );
+          const programResponse = await getStudyProgramById(planResponse.studyProgramId);
           setStudyProgram(programResponse);
         } catch (programErr) {
           console.warn("Could not fetch study program details:", programErr);
-          // Continue without study program details
         }
       }
     } catch (err) {
@@ -62,9 +116,7 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
         if (err.statusCode === 401) {
           setError("Authentication failed. Please log in again.");
         } else if (err.statusCode === 403) {
-          setError(
-            "Access denied. You don't have permission to view this study plan."
-          );
+          setError("Access denied. You don't have permission to view this study plan.");
         } else if (err.statusCode === 404) {
           setError("Study plan not found.");
         } else {
@@ -85,19 +137,174 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
   }, [id]);
 
   const handleBack = () => {
-    // TODO: Find something better then this navigation
     navigate("/study-plans");
   };
 
-  const handleEdit = () => {
-    // TODO: Navigate to edit page or open edit modal
-    console.log("Edit study plan:", id);
+  // Semester management functions
+  const generateNextSemesterName = () => {
+    if (semesters.length === 0) {
+      return "1st Semester (Winter)";
+    }
+    
+    const lastSemester = semesters[semesters.length - 1];
+    const lastSemesterNumber = parseInt(lastSemester.name.match(/(\d+)/)?.[1] || "0");
+    const nextNumber = lastSemesterNumber + 1;
+    
+    // Determine if next semester should be winter or summer
+    // Odd numbers = Winter, Even numbers = Summer
+    const seasonType = nextNumber % 2 === 1 ? "Winter" : "Summer";
+    
+    return `${nextNumber}${getOrdinalSuffix(nextNumber)} Semester (${seasonType})`;
   };
 
-  const handleDelete = () => {
-    // TODO: Implement delete functionality
-    console.log("Delete study plan:", id);
+  const getOrdinalSuffix = (num: number) => {
+    const lastDigit = num % 10;
+    const lastTwoDigits = num % 100;
+    
+    if (lastTwoDigits >= 11 && lastTwoDigits <= 13) {
+      return "th";
+    }
+    
+    switch (lastDigit) {
+      case 1: return "st";
+      case 2: return "nd";
+      case 3: return "rd";
+      default: return "th";
+    }
   };
+
+  const handleAddSemester = () => {
+    const newSemesterName = generateNextSemesterName();
+    const newSemester: SemesterData = {
+      id: Date.now().toString(),
+      name: newSemesterName,
+      courses: [],
+      expanded: true,
+    };
+    setSemesters([...semesters, newSemester]);
+  };
+
+  const handleCreateSemester = () => {
+    if (newSemesterName.trim()) {
+      const newSemester: SemesterData = {
+        id: Date.now().toString(),
+        name: newSemesterName.trim(),
+        courses: [],
+        expanded: true,
+      };
+      setSemesters([...semesters, newSemester]);
+      setNewSemesterName("");
+      setNewSemesterDialogOpen(false);
+    }
+  };
+
+  const handleRemoveSemester = (semesterId: string) => {
+    setSemesters(semesters.filter(semester => semester.id !== semesterId));
+  };
+
+  const handleToggleSemesterExpanded = (semesterId: string) => {
+    setSemesters(semesters.map(semester => 
+      semester.id === semesterId 
+        ? { ...semester, expanded: !semester.expanded }
+        : semester
+    ));
+  };
+
+  const handleRenameSemester = (semesterId: string, newName: string) => {
+    setSemesters(semesters.map(semester => 
+      semester.id === semesterId 
+        ? { ...semester, name: newName }
+        : semester
+    ));
+  };
+
+  // Drag and drop handler
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over) return;
+
+    const activeId = active.id as string;
+    const overId = over.id as string;
+
+    // Find which semesters contain the dragged and target courses
+    const activeSemester = semesters.find(s => s.courses.some(c => c.id === activeId));
+    const overSemester = semesters.find(s => s.courses.some(c => c.id === overId)) || 
+                         semesters.find(s => s.id === overId);
+
+    if (!activeSemester || !overSemester) return;
+
+    const activeCourse = activeSemester.courses.find(c => c.id === activeId);
+    if (!activeCourse) return;
+
+    // If moving within the same semester
+    if (activeSemester.id === overSemester.id) {
+      const oldIndex = activeSemester.courses.findIndex(c => c.id === activeId);
+      const newIndex = activeSemester.courses.findIndex(c => c.id === overId);
+
+      if (oldIndex !== newIndex) {
+        setSemesters(semesters.map(semester => 
+          semester.id === activeSemester.id
+            ? { ...semester, courses: arrayMove(semester.courses, oldIndex, newIndex) }
+            : semester
+        ));
+      }
+    } else {
+      // Moving between semesters
+      setSemesters(semesters.map(semester => {
+        if (semester.id === activeSemester.id) {
+          // Remove from source semester
+          return { ...semester, courses: semester.courses.filter(c => c.id !== activeId) };
+        } else if (semester.id === overSemester.id) {
+          // Add to target semester
+          return { ...semester, courses: [...semester.courses, activeCourse] };
+        }
+        return semester;
+      }));
+    }
+  };
+
+  // Course management functions
+  const handleAddCourse = (semesterId: string) => {
+    setActiveSemesterId(semesterId);
+    setCourseSearchOpen(true);
+  };
+
+  const handleAddCourseToSemester = (course: Course) => {
+    if (activeSemesterId) {
+      setSemesters(semesters.map(semester => 
+        semester.id === activeSemesterId
+          ? { ...semester, courses: [...semester.courses, { ...course, completed: false }] }
+          : semester
+      ));
+    }
+  };
+
+  const handleRemoveCourse = (semesterId: string, courseId: string) => {
+    setSemesters(semesters.map(semester => 
+      semester.id === semesterId
+        ? { ...semester, courses: semester.courses.filter(course => course.id !== courseId) }
+        : semester
+    ));
+  };
+
+  const handleToggleCourseCompleted = (semesterId: string, courseId: string) => {
+    setSemesters(semesters.map(semester => 
+      semester.id === semesterId
+        ? {
+            ...semester,
+            courses: semester.courses.map(course => 
+              course.id === courseId
+                ? { ...course, completed: !course.completed }
+                : course
+            )
+          }
+        : semester
+    ));
+  };
+
+  // Get used course IDs to exclude from search
+  const usedCourseIds = allCourses.map(course => course.id);
 
   if (loading) {
     return (
@@ -158,10 +365,7 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
     );
   }
 
-  // Calculate progress values - using study program data if available
-  const totalCredits = studyProgram?.totalCredits || 120; // fallback value
-  const completedCredits = 0; // TODO: Calculate from actual course data
-  const plannedCredits = 0; // TODO: Calculate from actual course data
+  const totalCredits = studyProgram?.totalCredits || 120;
 
   return (
     <Box
@@ -172,27 +376,98 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
         p: 3,
       }}
     >
-      <Container maxWidth="lg">
+      <Container maxWidth="xl">
         {/* Header */}
         <Box sx={{ mb: 4 }}>
           <Typography variant="h4" sx={{ fontWeight: "bold", mb: 1 }}>
             {studyPlan.name}
           </Typography>
           <Typography variant="h6" sx={{ color: "#aaa", mb: 1 }}>
-            {studyProgram?.name ||
-              studyPlan.studyProgramName ||
-              "No Program Assigned"}
+            {studyProgram?.name || studyPlan.studyProgramName || "No Program Assigned"}
           </Typography>
           <Typography variant="body2" sx={{ color: "#666" }}>
-            Last modified:{" "}
-            {new Date(studyPlan.lastModified).toLocaleDateString()}
+            Last modified: {new Date(studyPlan.lastModified).toLocaleDateString()}
           </Typography>
         </Box>
+
+        {/* Study Program Details */}
+        <Paper sx={{ backgroundColor: "#2a2a2a", borderRadius: 3, mb: 4 }}>
+          <Box
+            sx={{
+              p: 3,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              borderBottom: studyPlanDetailsExpanded ? "1px solid #444" : "none",
+              cursor: "pointer",
+              "&:hover": {
+                backgroundColor: "rgba(255, 255, 255, 0.02)",
+              },
+            }}
+            onClick={() => setStudyPlanDetailsExpanded(!studyPlanDetailsExpanded)}
+          >
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <School sx={{ color: "#646cff", fontSize: "2rem" }} />
+              <Typography variant="h6" sx={{ color: "#e0e0e0", fontWeight: 600 }}>
+                Study Program Details
+              </Typography>
+            </Box>
+            <IconButton
+              sx={{ color: "#aaa" }}
+            >
+              {studyPlanDetailsExpanded ? <ExpandLess /> : <ExpandMore />}
+            </IconButton>
+          </Box>
+          <Collapse in={studyPlanDetailsExpanded}>
+            <Box sx={{ p: 3, pt: 0 }}>
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Typography variant="body2" sx={{ color: "#aaa", mb: 1 }}>
+                    Status
+                  </Typography>
+                  <Typography variant="body1" sx={{ mb: 2, color: "#e0e0e0" }}>
+                    {studyPlan.isActive ? "Active" : "Inactive"}
+                  </Typography>
+
+                  <Typography variant="body2" sx={{ color: "#aaa", mb: 1 }}>
+                    Created
+                  </Typography>
+                  <Typography variant="body1" sx={{ mb: 2, color: "#e0e0e0" }}>
+                    {new Date(studyPlan.createdDate).toLocaleDateString()}
+                  </Typography>
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Typography variant="body2" sx={{ color: "#aaa", mb: 1 }}>
+                    Plan ID
+                  </Typography>
+                  <Typography variant="body1" sx={{ mb: 2, color: "#e0e0e0" }}>
+                    {studyPlan.id}
+                  </Typography>
+
+                  <Typography variant="body2" sx={{ color: "#aaa", mb: 1 }}>
+                    User ID
+                  </Typography>
+                  <Typography variant="body1" sx={{ mb: 2, color: "#e0e0e0" }}>
+                    {studyPlan.userId}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Box>
+          </Collapse>
+        </Paper>
+
+        {/* Analytics Dashboard */}
+        <AnalyticsDashboard
+          courses={allCourses}
+          totalRequiredCredits={totalCredits}
+          expanded={analyticsExpanded}
+          onToggleExpanded={() => setAnalyticsExpanded(!analyticsExpanded)}
+        />
 
         {/* Study Program Information */}
         {studyProgram && (
           <Paper
-            sx={{ p: 3, mb: 4, backgroundColor: "#2a2a2a", color: "white" }}
+            sx={{ p: 3, mb: 4, backgroundColor: "#2a2a2a", color: "white", borderRadius: 3 }}
           >
             <Typography variant="h6" sx={{ mb: 2 }}>
               Program Information
@@ -242,144 +517,117 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
           </Paper>
         )}
 
-        {/* Progress Bars */}
+        {/* Semesters Section */}
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h6" sx={{ mb: 3 }}>
-            Progress Overview
-          </Typography>
-
-          <Box sx={{ mb: 2 }}>
-            <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-              <ExpandMore sx={{ mr: 1 }} />
-              <Typography variant="body2">Completed Progress</Typography>
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Typography variant="caption" sx={{ mr: 2, minWidth: 20 }}>
-                {completedCredits}
-              </Typography>
-              <LinearProgress
-                variant="determinate"
-                value={
-                  totalCredits > 0 ? (completedCredits / totalCredits) * 100 : 0
-                }
-                sx={{
-                  flexGrow: 1,
-                  height: 8,
-                  borderRadius: 4,
-                  backgroundColor: "#333",
-                  "& .MuiLinearProgress-bar": {
-                    backgroundColor: "#4caf50",
-                  },
-                }}
-              />
-              <Typography variant="caption" sx={{ ml: 2, minWidth: 30 }}>
-                {totalCredits}
-              </Typography>
-            </Box>
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 3 }}>
+            <Typography variant="h5" sx={{ color: "white", fontWeight: 600 }}>
+              Study Plan
+            </Typography>
+            <Button
+              variant="outlined"
+              startIcon={<Add />}
+              onClick={handleAddSemester}
+              sx={{
+                borderColor: "#646cff",
+                color: "#646cff",
+                "&:hover": {
+                  borderColor: "#535bf2",
+                  backgroundColor: "rgba(100, 108, 255, 0.1)",
+                },
+              }}
+            >
+              Add Semester
+            </Button>
           </Box>
 
-          <Box sx={{ mb: 2 }}>
-            <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-              <ExpandLess sx={{ mr: 1 }} />
-              <Typography variant="body2">Planned Progress</Typography>
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Typography variant="caption" sx={{ mr: 2, minWidth: 20 }}>
-                {plannedCredits}
-              </Typography>
-              <LinearProgress
-                variant="determinate"
-                value={
-                  totalCredits > 0 ? (plannedCredits / totalCredits) * 100 : 0
-                }
-                sx={{
-                  flexGrow: 1,
-                  height: 8,
-                  borderRadius: 4,
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <Grid container spacing={3} direction="column">
+              {semesters.map((semester) => (
+                <Grid size={{ xs: 12 }} key={semester.id}>
+                  <SemesterCard
+                    semester={semester}
+                    onAddCourse={handleAddCourse}
+                    onRemoveSemester={handleRemoveSemester}
+                    onToggleCourseCompleted={handleToggleCourseCompleted}
+                    onRemoveCourse={handleRemoveCourse}
+                    onToggleExpanded={handleToggleSemesterExpanded}
+                    onRenameSemester={handleRenameSemester}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          </DndContext>
+        </Box>
+
+        {/* Course Search Dialog */}
+        <CourseSearchDialog
+          open={courseSearchOpen}
+          onClose={() => setCourseSearchOpen(false)}
+          onAddCourse={handleAddCourseToSemester}
+          title="Add Course to Semester"
+          excludeIds={usedCourseIds}
+        />
+
+        {/* New Semester Dialog */}
+        <Dialog
+          open={newSemesterDialogOpen}
+          onClose={() => setNewSemesterDialogOpen(false)}
+          maxWidth="sm"
+          fullWidth
+          PaperProps={{
+            sx: {
+              backgroundColor: "#2a2a2a",
+              color: "white",
+            },
+          }}
+        >
+          <DialogTitle>Add New Semester</DialogTitle>
+          <DialogContent>
+            <TextField
+              autoFocus
+              margin="dense"
+              label="Semester Name"
+              fullWidth
+              variant="outlined"
+              value={newSemesterName}
+              onChange={(e) => setNewSemesterName(e.target.value)}
+              placeholder="e.g., 3rd Semester, Summer 2024"
+              sx={{
+                "& .MuiOutlinedInput-root": {
                   backgroundColor: "#333",
-                  "& .MuiLinearProgress-bar": {
-                    backgroundColor: "#646cff",
-                  },
-                }}
-              />
-              <Typography variant="caption" sx={{ ml: 2, minWidth: 30 }}>
-                {totalCredits}
-              </Typography>
-            </Box>
-          </Box>
-        </Box>
-
-        {/* Study Plan Data */}
-        <Paper sx={{ p: 3, mb: 4, backgroundColor: "#2a2a2a", color: "white" }}>
-          <Typography variant="h6" sx={{ mb: 2 }}>
-            Study Plan Details
-          </Typography>
-          <Grid container spacing={2}>
-            <Grid size={{ xs: 12, md: 6 }}>
-              <Typography variant="body2" sx={{ color: "#aaa", mb: 1 }}>
-                Status
-              </Typography>
-              <Typography variant="body1" sx={{ mb: 2 }}>
-                {studyPlan.isActive ? "Active" : "Inactive"}
-              </Typography>
-
-              <Typography variant="body2" sx={{ color: "#aaa", mb: 1 }}>
-                Created
-              </Typography>
-              <Typography variant="body1" sx={{ mb: 2 }}>
-                {new Date(studyPlan.createdDate).toLocaleDateString()}
-              </Typography>
-            </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
-              <Typography variant="body2" sx={{ color: "#aaa", mb: 1 }}>
-                Plan ID
-              </Typography>
-              <Typography variant="body1" sx={{ mb: 2 }}>
-                {studyPlan.id}
-              </Typography>
-
-              <Typography variant="body2" sx={{ color: "#aaa", mb: 1 }}>
-                User ID
-              </Typography>
-              <Typography variant="body1" sx={{ mb: 2 }}>
-                {studyPlan.userId}
-              </Typography>
-            </Grid>
-
-            {studyPlan.planData && (
-              <Grid size={{ xs: 12 }}>
-                <Divider sx={{ my: 2, borderColor: "#555" }} />
-                <Typography variant="body2" sx={{ color: "#aaa", mb: 1 }}>
-                  Plan Data
-                </Typography>
-                <Box
-                  sx={{
-                    backgroundColor: "#333",
-                    p: 2,
-                    borderRadius: 1,
-                    fontFamily: "monospace",
-                    fontSize: "0.875rem",
-                    whiteSpace: "pre-wrap",
-                    overflow: "auto",
-                    maxHeight: "200px",
-                  }}
-                >
-                  {studyPlan.planData}
-                </Box>
-              </Grid>
-            )}
-          </Grid>
-        </Paper>
-
-        {/* Action Buttons */}
-        <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 4 }}>
-          <Button variant="outlined" onClick={handleEdit}>
-            Edit Plan
-          </Button>
-          <Button variant="outlined" color="error" onClick={handleDelete}>
-            Delete Plan
-          </Button>
-        </Box>
+                  "& fieldset": { borderColor: "#555" },
+                  "&:hover fieldset": { borderColor: "#646cff" },
+                  "&.Mui-focused fieldset": { borderColor: "#646cff" },
+                },
+                "& .MuiInputBase-input": { color: "white" },
+                "& .MuiInputLabel-root": { color: "#aaa" },
+                "& .MuiInputLabel-root.Mui-focused": { color: "#646cff" },
+              }}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => setNewSemesterDialogOpen(false)}
+              sx={{ color: "#aaa" }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleCreateSemester}
+              variant="contained"
+              disabled={!newSemesterName.trim()}
+              sx={{
+                background: "linear-gradient(135deg, #646cff 0%, #535bf2 100%)",
+              }}
+            >
+              Add Semester
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Container>
     </Box>
   );
