@@ -39,8 +39,8 @@ import {
   TrendingUp,
   Rocket,
   Star,
-  Code,
-  Analytics,
+  MenuBook,
+  Assignment,
   Business,
 } from "@mui/icons-material";
 
@@ -430,8 +430,8 @@ const LandingPage: React.FC = () => {
             }}
           >
             {[
-              { icon: Code, label: "Courses", value: "120+" },
-              { icon: Analytics, label: "Study Plans", value: "50+" },
+              { icon: MenuBook, label: "Courses", value: "120+" },
+              { icon: Assignment, label: "Study Plans", value: "50+" },
               { icon: Business, label: "TUM Schools", value: "15" },
             ].map((stat, index) => (
               <Box key={index} sx={{ textAlign: "center" }}>
