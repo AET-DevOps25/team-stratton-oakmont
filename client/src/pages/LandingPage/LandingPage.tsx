@@ -7,31 +7,20 @@ import {
   Card,
   CardContent,
   Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Paper,
   Chip,
 } from "@mui/material";
-import type { SelectChangeEvent } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import {
-  getStudyPrograms,
   createStudyPlan,
   StudyPlanApiError,
 } from "../../api/studyPlans";
 import type {
   CreateStudyPlanRequest,
-  StudyProgramDto,
 } from "../../api/studyPlans";
 import { useStudyPlans } from "../../contexts/StudyPlansContext";
+import StudyProgramSelectionDialog from "../../components/ui/StudyProgramSelectionDialog";
 import {
   School,
   Psychology,
@@ -49,10 +38,6 @@ const LandingPage: React.FC = () => {
 
   // State for create study plan modal
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [newPlanName, setNewPlanName] = useState("");
-  const [selectedProgramId, setSelectedProgramId] = useState<number | "">("");
-  const [studyPrograms, setStudyPrograms] = useState<StudyProgramDto[]>([]);
-  const [loadingPrograms, setLoadingPrograms] = useState(false);
   const { addStudyPlan } = useStudyPlans();
 
   // Animation states
@@ -71,45 +56,31 @@ const LandingPage: React.FC = () => {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
-  // Fetch study programs for the dropdown
-  const fetchStudyPrograms = async () => {
+  // Create new study plan from our dialog
+  const handleCreateStudyPlan = async (studyPlanName: string, program: { id: string; name: string; degree: string; }) => {
     try {
-      setLoadingPrograms(true);
-      const programs = await getStudyPrograms();
-      setStudyPrograms(programs);
+      // Map from our dialog's string id to API's expected format
+      // For now, we'll use a mapping based on the program name until we integrate with real API
+      const programIdMapping: { [key: string]: number } = {
+        "is-master": 1,
+        "cs-master": 2,
+        "ds-master": 3,
+        "ai-master": 4,
+        "se-master": 5,
+        "cs-bachelor": 6,
+        "is-bachelor": 7,
+        "ee-master": 8,
+        "me-master": 9,
+        "bwl-bachelor": 10,
+      };
 
-      if (programs.length === 1) {
-        setSelectedProgramId(programs[0].id);
-      } else {
-        setSelectedProgramId(programs[0].id);
-      }
-    } catch (err) {
-      console.error("Error fetching study programs:", err);
-      setStudyPrograms([]);
-    } finally {
-      setLoadingPrograms(false);
-    }
-  };
-
-  // Create new study plan
-  const handleCreateStudyPlan = async () => {
-    if (!newPlanName.trim() || !selectedProgramId) {
-      return;
-    }
-
-    try {
       const request: CreateStudyPlanRequest = {
-        name: newPlanName.trim(),
-        studyProgramId: selectedProgramId as number,
+        name: studyPlanName,
+        studyProgramId: programIdMapping[program.id] || 1, // fallback to 1
       };
 
       const newPlan = await createStudyPlan(request);
       addStudyPlan(newPlan);
-
-      // Close modal and reset form
-      setCreateModalOpen(false);
-      setNewPlanName("");
-      setSelectedProgramId("");
 
       // Navigate to the newly created study plan
       navigate(`/study-plans/${newPlan.id}`);
@@ -132,15 +103,9 @@ const LandingPage: React.FC = () => {
     }
   };
 
-  // Handle program selection
-  const handleProgramChange = (event: SelectChangeEvent<number>) => {
-    setSelectedProgramId(event.target.value as number);
-  };
-
-  // Open modal and fetch programs
+  // Open modal
   const handleOpenCreateModal = () => {
     setCreateModalOpen(true);
-    fetchStudyPrograms();
   };
 
   const handleGetStarted = () => {
@@ -588,194 +553,13 @@ const LandingPage: React.FC = () => {
         </Box>
       </Container>
 
-      {/* Create Study Plan Modal */}
-      <Dialog
+      {/* Create Study Plan Dialog */}
+      <StudyProgramSelectionDialog
         open={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
-        maxWidth="sm"
-        fullWidth
-        PaperProps={{
-          sx: {
-            background: "rgba(42, 42, 42, 0.95)",
-            backdropFilter: "blur(20px)",
-            border: "1px solid rgba(100, 108, 255, 0.2)",
-            borderRadius: 4,
-            color: "white",
-            position: "relative",
-            overflow: "hidden",
-            "&::before": {
-              content: '""',
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background:
-                "linear-gradient(135deg, rgba(100, 108, 255, 0.05) 0%, transparent 100%)",
-              zIndex: -1,
-            },
-          },
-        }}
-        BackdropProps={{
-          sx: {
-            backgroundColor: "rgba(0, 0, 0, 0.8)",
-            backdropFilter: "blur(8px)",
-          },
-        }}
-      >
-        <DialogTitle
-          sx={{
-            color: "white",
-            borderBottom: "1px solid rgba(100, 108, 255, 0.2)",
-            fontWeight: 700,
-            background:
-              "linear-gradient(135deg, #ffffff 0%, #646cff 50%, #ffffff 100%)",
-            backgroundClip: "text",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-          }}
-        >
-          Create New Study Plan
-        </DialogTitle>
-        <DialogContent sx={{ pt: 3 }}>
-          <TextField
-            autoFocus
-            margin="dense"
-            placeholder="Study Plan Name"
-            fullWidth
-            variant="outlined"
-            value={newPlanName}
-            onChange={(e) => setNewPlanName(e.target.value)}
-            sx={{
-              mb: 3,
-              "& .MuiOutlinedInput-root": {
-                backgroundColor: "rgba(255, 255, 255, 0.05)",
-                borderRadius: 3,
-                "& fieldset": {
-                  borderColor: "rgba(255, 255, 255, 0.2)",
-                },
-                "&:hover fieldset": {
-                  borderColor: "rgba(100, 108, 255, 0.5)",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "#646cff",
-                  borderWidth: "2px",
-                },
-              },
-              "& .MuiInputBase-input": {
-                color: "white",
-                fontSize: "1.1rem",
-              },
-              "& .MuiInputLabel-root": {
-                color: "#aaa",
-                "&.Mui-focused": {
-                  color: "#646cff",
-                },
-              },
-            }}
-          />
-          <FormControl fullWidth variant="outlined">
-            <InputLabel 
-              sx={{ 
-                color: "#aaa",
-                "&.Mui-focused": { color: "#646cff" }
-              }}
-            >
-              Study Program
-            </InputLabel>
-            <Select
-              value={selectedProgramId}
-              onChange={handleProgramChange}
-              label="Study Program"
-              disabled={loadingPrograms}
-              sx={{
-                backgroundColor: "rgba(255, 255, 255, 0.05)",
-                borderRadius: 3,
-                "& .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "rgba(255, 255, 255, 0.2)",
-                },
-                "&:hover .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "rgba(100, 108, 255, 0.5)",
-                },
-                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "#646cff",
-                  borderWidth: "2px",
-                },
-                "& .MuiSelect-select": {
-                  color: "white",
-                  fontSize: "1.1rem",
-                },
-                "& .MuiSvgIcon-root": { color: "#aaa" },
-              }}
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    backgroundColor: "rgba(42, 42, 42, 0.95)",
-                    backdropFilter: "blur(10px)",
-                    border: "1px solid rgba(100, 108, 255, 0.2)",
-                    borderRadius: 3,
-                    "& .MuiMenuItem-root": {
-                      color: "white",
-                      fontSize: "1rem",
-                      "&:hover": {
-                        backgroundColor: "rgba(100, 108, 255, 0.1)",
-                      },
-                    },
-                  },
-                },
-              }}
-            >
-              {studyPrograms.map((program) => (
-                <MenuItem key={program.id} value={program.id}>
-                  {program.name} ({program.degreeType})
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </DialogContent>
-        <DialogActions
-          sx={{ p: 3, borderTop: "1px solid rgba(100, 108, 255, 0.2)" }}
-        >
-          <Button
-            onClick={() => setCreateModalOpen(false)}
-            sx={{
-              color: "#aaa",
-              textTransform: "none",
-              "&:hover": {
-                backgroundColor: "rgba(255, 255, 255, 0.05)",
-              },
-            }}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleCreateStudyPlan}
-            variant="contained"
-            disabled={!newPlanName.trim() || !selectedProgramId}
-            sx={{
-              background: "linear-gradient(135deg, #646cff 0%, #535bf2 100%)",
-              color: "white",
-              textTransform: "none",
-              px: 3,
-              py: 1.5,
-              borderRadius: "50px",
-              fontWeight: 600,
-              boxShadow: "0 8px 32px rgba(100, 108, 255, 0.4)",
-              "&:hover": {
-                transform: "translateY(-2px)",
-                boxShadow: "0 12px 40px rgba(100, 108, 255, 0.6)",
-              },
-              "&:disabled": {
-                background: "rgba(100, 108, 255, 0.3)",
-                transform: "none",
-              },
-              transition: "all 0.3s ease",
-            }}
-          >
-            Create
-          </Button>
-        </DialogActions>
-      </Dialog>
+        onCreateStudyPlan={handleCreateStudyPlan}
+        title="Create New Study Plan"
+      />
     </Box>
   );
 };
