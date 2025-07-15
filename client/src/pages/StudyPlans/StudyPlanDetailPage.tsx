@@ -53,10 +53,7 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
   const [error, setError] = useState<string | null>(null);
 
   // State for semesters and courses
-  const [semesters, setSemesters] = useState<SemesterData[]>([
-    { id: "1", name: "1st Semester", courses: [], expanded: true },
-    { id: "2", name: "2nd Semester", courses: [], expanded: true },
-  ]);
+  const [semesters, setSemesters] = useState<SemesterData[]>([]);
   
   // State for dialogs
   const [courseSearchOpen, setCourseSearchOpen] = useState(false);
@@ -175,6 +172,46 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
       expanded: true,
     };
     setSemesters([...semesters, newSemester]);
+  };
+
+  const handleStartingSemesterSelection = (type: 'winter' | 'summer') => {
+    const currentYear = new Date().getFullYear();
+    
+    const semesters: SemesterData[] = [];
+    
+    for (let i = 0; i < 4; i++) {
+      let semesterName: string;
+      let year: number;
+      
+      if (type === 'winter') {
+        // Winter, Summer, Winter, Summer pattern
+        if (i % 2 === 0) {
+          year = currentYear + Math.floor(i / 2);
+          semesterName = `Winter ${year}`;
+        } else {
+          year = currentYear + Math.floor(i / 2) + 1;
+          semesterName = `Summer ${year}`;
+        }
+      } else {
+        // Summer, Winter, Summer, Winter pattern
+        if (i % 2 === 0) {
+          year = currentYear + Math.floor(i / 2);
+          semesterName = `Summer ${year}`;
+        } else {
+          year = currentYear + Math.floor(i / 2) + 1;
+          semesterName = `Winter ${year}`;
+        }
+      }
+      
+      semesters.push({
+        id: (i + 1).toString(),
+        name: semesterName,
+        courses: [],
+        expanded: true,
+      });
+    }
+    
+    setSemesters(semesters);
   };
 
   const handleCreateSemester = () => {
@@ -481,44 +518,104 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
             <Typography variant="h5" sx={{ color: "white", fontWeight: 600 }}>
               Study Plan
             </Typography>
-            <Button
-              variant="outlined"
-              startIcon={<Add />}
-              onClick={handleAddSemester}
-              sx={{
-                borderColor: "#646cff",
-                color: "#646cff",
-                "&:hover": {
-                  borderColor: "#535bf2",
-                  backgroundColor: "rgba(100, 108, 255, 0.1)",
-                },
-              }}
-            >
-              Add Semester
-            </Button>
+            {semesters.length > 0 && (
+              <Button
+                variant="outlined"
+                startIcon={<Add />}
+                onClick={handleAddSemester}
+                sx={{
+                  borderColor: "#646cff",
+                  color: "#646cff",
+                  "&:hover": {
+                    borderColor: "#535bf2",
+                    backgroundColor: "rgba(100, 108, 255, 0.1)",
+                  },
+                }}
+              >
+                Add Semester
+              </Button>
+            )}
           </Box>
 
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
-            <Grid container spacing={3} direction="column">
-              {semesters.map((semester) => (
-                <Grid size={{ xs: 12 }} key={semester.id}>
-                  <SemesterCard
-                    semester={semester}
-                    onAddCourse={handleAddCourse}
-                    onRemoveSemester={handleRemoveSemester}
-                    onToggleCourseCompleted={handleToggleCourseCompleted}
-                    onRemoveCourse={handleRemoveCourse}
-                    onToggleExpanded={handleToggleSemesterExpanded}
-                    onRenameSemester={handleRenameSemester}
-                  />
-                </Grid>
-              ))}
-            </Grid>
-          </DndContext>
+          {semesters.length === 0 ? (
+            <Box sx={{ textAlign: "center", py: 8 }}>
+              <Typography variant="h6" sx={{ color: "#e0e0e0", mb: 4 }}>
+                In which semester are you planning to start?
+              </Typography>
+              <Box sx={{ display: "flex", gap: 3, justifyContent: "center" }}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={() => handleStartingSemesterSelection('winter')}
+                  sx={{
+                    background: "linear-gradient(135deg, #646cff 0%, #535bf2 100%)",
+                    color: "white",
+                    borderRadius: "50px",
+                    px: 5,
+                    py: 2.5,
+                    fontSize: "1.1rem",
+                    fontWeight: 600,
+                    minWidth: "200px",
+                    "&:hover": {
+                      background: "linear-gradient(135deg, #535bf2 0%, #4c4bef 100%)",
+                      transform: "translateY(-3px)",
+                      boxShadow: "0 12px 24px rgba(100, 108, 255, 0.4)",
+                    },
+                    transition: "all 0.3s ease",
+                    boxShadow: "0 8px 20px rgba(100, 108, 255, 0.2)",
+                  }}
+                >
+                  Winter Semester
+                </Button>
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={() => handleStartingSemesterSelection('summer')}
+                  sx={{
+                    background: "linear-gradient(135deg, #ff9800 0%, #f57c00 100%)",
+                    color: "white",
+                    borderRadius: "50px",
+                    px: 5,
+                    py: 2.5,
+                    fontSize: "1.1rem",
+                    fontWeight: 600,
+                    minWidth: "200px",
+                    "&:hover": {
+                      background: "linear-gradient(135deg, #f57c00 0%, #ef6c00 100%)",
+                      transform: "translateY(-3px)",
+                      boxShadow: "0 12px 24px rgba(255, 152, 0, 0.4)",
+                    },
+                    transition: "all 0.3s ease",
+                    boxShadow: "0 8px 20px rgba(255, 152, 0, 0.2)",
+                  }}
+                >
+                  Summer Semester
+                </Button>
+              </Box>
+            </Box>
+          ) : (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <Grid container spacing={3} direction="column">
+                {semesters.map((semester) => (
+                  <Grid size={{ xs: 12 }} key={semester.id}>
+                    <SemesterCard
+                      semester={semester}
+                      onAddCourse={handleAddCourse}
+                      onRemoveSemester={handleRemoveSemester}
+                      onToggleCourseCompleted={handleToggleCourseCompleted}
+                      onRemoveCourse={handleRemoveCourse}
+                      onToggleExpanded={handleToggleSemesterExpanded}
+                      onRenameSemester={handleRenameSemester}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
+            </DndContext>
+          )}
         </Box>
 
         {/* Course Search Dialog */}
