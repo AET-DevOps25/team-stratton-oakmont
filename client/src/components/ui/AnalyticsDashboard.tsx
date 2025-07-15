@@ -372,7 +372,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                                   fontSize: "0.7rem",
                                 }}
                               >
-                                {item.percentage.toFixed(0)}%
+                                {item.completed} ECTS
                               </Typography>
                             </Box>
                           </Box>
