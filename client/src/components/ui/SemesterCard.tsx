@@ -139,18 +139,6 @@ const CourseItem: React.FC<CourseItemProps> = ({
           <DragIndicator sx={{ color: "#666" }} />
         </Box>
 
-        {/* Checkbox */}
-        <Checkbox
-          checked={course.completed || false}
-          onChange={() => onToggleCompleted(course.id)}
-          sx={{
-            color: "#646cff",
-            "&.Mui-checked": {
-              color: "#4caf50",
-            },
-          }}
-        />
-
         {/* Course Name */}
         <Box sx={{ flex: "1 1 auto", minWidth: 0 }}>
           <Typography
@@ -162,6 +150,11 @@ const CourseItem: React.FC<CourseItemProps> = ({
               overflow: "hidden",
               textOverflow: "ellipsis",
               whiteSpace: "nowrap",
+              "&:hover": {
+                color: course.completed ? "#ccc" : "#646cff",
+                textDecoration: "underline",
+              },
+              transition: "color 0.2s ease",
             }}
             onClick={() => onCourseClick?.(course)}
           >
@@ -221,6 +214,19 @@ const CourseItem: React.FC<CourseItemProps> = ({
             }}
           />
         </Box>
+
+        {/* Checkbox */}
+        <Checkbox
+          checked={course.completed || false}
+          onChange={() => onToggleCompleted(course.id)}
+          sx={{
+            color: "#646cff",
+            "&.Mui-checked": {
+              color: "#4caf50",
+            },
+            ml: 1,
+          }}
+        />
 
         {/* Delete Button */}
         <IconButton
@@ -469,9 +475,6 @@ const SemesterCard: React.FC<SemesterCardProps> = ({
               >
                 {/* Drag Handle Column */}
                 <Box sx={{ width: "24px" }} />
-                
-                {/* Checkbox Column */}
-                <Box sx={{ width: "24px" }} />
 
                 {/* Course Name Column */}
                 <Box sx={{ flex: "1 1 auto" }}>
@@ -505,6 +508,13 @@ const SemesterCard: React.FC<SemesterCardProps> = ({
                 <Box sx={{ width: "100px", textAlign: "center" }}>
                   <Typography variant="caption" sx={{ color: "#aaa", fontWeight: 600 }}>
                     Category
+                  </Typography>
+                </Box>
+
+                {/* Checkbox Column */}
+                <Box sx={{ width: "48px", textAlign: "center" }}>
+                  <Typography variant="caption" sx={{ color: "#aaa", fontWeight: 600 }}>
+                    Done
                   </Typography>
                 </Box>
 
