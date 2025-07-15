@@ -4,7 +4,6 @@ import {
   List,
   ListItem,
   ListItemButton,
-  ListItemIcon,
   ListItemText,
   Toolbar,
   Typography,
@@ -20,11 +19,9 @@ import {
   Button,
   TextField,
   FormControl,
-  InputLabel,
   Select,
   MenuItem,
   Menu,
-  Divider,
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material";
 import {
@@ -33,7 +30,6 @@ import {
   MoreHoriz,
   Delete,
   Edit,
-  MenuBook,
 } from "@mui/icons-material";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
@@ -330,10 +326,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
     }
   };
 
-  const isCurriculumActive = () => {
-    return location.pathname === "/curriculum";
-  };
-
   return (
     <Drawer
       variant="persistent"
@@ -353,71 +345,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
       }}
     >
       <Toolbar /> {/* Space for navbar */}
-      {/* Main Navigation Section */}
-      <Box sx={{ px: 2, py: 1 }}>
-        <Typography
-          variant="subtitle2"
-          sx={{
-            fontWeight: 600,
-            mb: 1,
-            color: "rgba(255, 255, 255, 0.7)",
-          }}
-        >
-          Curriculum
-        </Typography>
-        <List sx={{ pt: 0 }}>
-          <ListItem disablePadding>
-            <ListItemButton
-              disableRipple
-              onClick={() => navigate("/curriculum")}
-              selected={isCurriculumActive()}
-              sx={{
-                minHeight: 48,
-                borderRadius: 2,
-                mb: 1,
-                "&:hover": {
-                  backgroundColor: "rgba(100, 108, 255, 0.1)",
-                },
-                "&.Mui-selected": {
-                  backgroundColor: "rgba(100, 108, 255, 0.2)",
-                  "& .MuiListItemIcon-root": { color: "#646cff" },
-                  "& .MuiListItemText-primary": {
-                    color: "#646cff",
-                    fontWeight: 600,
-                  },
-                },
-              }}
-            >
-              <ListItemIcon sx={{ color: "rgba(255, 255, 255, 0.7)" }}>
-                <MenuBook />
-              </ListItemIcon>
-              <ListItemText
-                primary="M.Sc. Information Systems"
-                primaryTypographyProps={{
-                  variant: "body2",
-                  sx: {
-                    fontWeight: 500,
-                    color: "white",
-                  },
-                }}
-              />
-            </ListItemButton>
-          </ListItem>
-        </List>
-        <Typography
-          variant="caption"
-          sx={{
-            fontStyle: "italic",
-            px: 2,
-            pb: 1,
-            fontSize: "0.7rem",
-            color: "rgba(255, 255, 255, 0.5)",
-          }}
-        >
-          More curriculums coming soon
-        </Typography>
-      </Box>
-      <Divider sx={{ mx: 2, borderColor: "rgba(100, 108, 255, 0.2)" }} />
       {/* Study Plans Section */}
       <Box
         sx={{
