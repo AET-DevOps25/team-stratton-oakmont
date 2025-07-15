@@ -156,7 +156,35 @@ npm install
 npm run dev
 ```
 
-How to start the server:
+How to start the backend services (recommended - uses .env file automatically):
+
+```bash
+# start program-catalog-service (localhost:8080)
+./scripts/start-program-catalog-service.sh
+```
+
+New terminal window:
+
+```bash
+# start study-plan-service (localhost:8081)
+./scripts/start-study-plan-service.sh
+```
+
+New terminal window:
+
+```bash
+# start ai-advisor-service (localhost:8082)
+./scripts/start-ai-advisor-service.sh
+```
+
+New terminal window:
+
+```bash
+# start user-auth-service (localhost:8083)
+./scripts/start-user-auth-service.sh
+```
+
+**Alternative: Manual gradlew commands (requires environment variables):**
 
 ```bash
 # start program-catalog-service (localhost:8080)
