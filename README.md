@@ -160,28 +160,28 @@ How to start the backend services (recommended - uses .env file automatically):
 
 ```bash
 # start program-catalog-service (localhost:8080)
-./start-program-catalog-service.sh
+./scripts/start-program-catalog-service.sh
 ```
 
 New terminal window:
 
 ```bash
 # start study-plan-service (localhost:8081)
-./start-study-plan-service.sh
+./scripts/start-study-plan-service.sh
 ```
 
 New terminal window:
 
 ```bash
 # start ai-advisor-service (localhost:8082)
-./start-ai-advisor-service.sh
+./scripts/start-ai-advisor-service.sh
 ```
 
 New terminal window:
 
 ```bash
 # start user-auth-service (localhost:8083)
-./start-user-auth-service.sh
+./scripts/start-user-auth-service.sh
 ```
 
 **Alternative: Manual gradlew commands (requires environment variables):**
