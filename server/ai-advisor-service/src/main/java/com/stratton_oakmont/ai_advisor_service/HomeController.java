@@ -1,12 +1,29 @@
 package com.stratton_oakmont.ai_advisor_service;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import com.stratton_oakmont.ai_advisor_service.model.ChatRequest;
+import com.stratton_oakmont.ai_advisor_service.model.ChatResponse;
+import com.stratton_oakmont.ai_advisor_service.model.CourseInfo;
+import com.stratton_oakmont.ai_advisor_service.service.AiAdvisorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 
-@Controller
+import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import reactor.core.publisher.Mono;
+
+import jakarta.validation.Valid;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/v1")
+@CrossOrigin(origins = "*") // Configure this properly for production
 public class HomeController {
-    @RequestMapping("/")
-    public String index() {
-        return "index.html";
-    }
+
+    @Autowired
+    private AiAdvisorService aiAdvisorService;
+
+
+
+
+
 }

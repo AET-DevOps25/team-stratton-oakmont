@@ -13,6 +13,12 @@ spec:
     metadata:
       labels:
         app: ai-advisor-service
+        component: backend
+        monitoring: "true"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9082"
+        prometheus.io/path: "/actuator/prometheus"
     spec:
       imagePullSecrets:
         - name: ghcr
@@ -20,7 +26,10 @@ spec:
         - name: ai-advisor-service
           image: "{{ .Values.aiAdvisorService.image.repository }}:{{ .Values.aiAdvisorService.image.tag }}"
           ports:
-            - containerPort: 8083
+            - containerPort: 8082
+              name: http
+            - containerPort: 9082
+              name: management
           env:
             # - name: OPENAI_API_KEY
             #   valueFrom:

@@ -4,10 +4,14 @@ This directory contains automation scripts for deploying and managing the TUM St
 
 ## 📁 Scripts Overview
 
-| Script       | Purpose                        | Usage                  |
-| ------------ | ------------------------------ | ---------------------- |
-| `deploy.sh`  | Complete deployment automation | `./scripts/deploy.sh`  |
-| `destroy.sh` | Clean infrastructure teardown  | `./scripts/destroy.sh` |
+| Script                           | Purpose                           | Usage                                      |
+| -------------------------------- | --------------------------------- | ------------------------------------------ |
+| `deploy.sh`                      | Complete deployment automation    | `./scripts/deploy.sh`                     |
+| `destroy.sh`                     | Clean infrastructure teardown     | `./scripts/destroy.sh`                    |
+| `start-program-catalog-service.sh` | Start program catalog service     | `./scripts/start-program-catalog-service.sh` |
+| `start-study-plan-service.sh`    | Start study plan service          | `./scripts/start-study-plan-service.sh`   |
+| `start-ai-advisor-service.sh`    | Start AI advisor service          | `./scripts/start-ai-advisor-service.sh`   |
+| `start-user-auth-service.sh`     | Start user authentication service | `./scripts/start-user-auth-service.sh`    |
 
 ## 🚀 Quick Start
 
@@ -27,6 +31,26 @@ chmod +x scripts/*.sh
 # Destroy all AWS resources
 ./scripts/destroy.sh
 ```
+
+## 🖥️ Local Development
+
+For local development, you can start individual backend services using the service startup scripts:
+
+```bash
+# Start program catalog service (localhost:8080)
+./scripts/start-program-catalog-service.sh
+
+# Start study plan service (localhost:8081) - new terminal
+./scripts/start-study-plan-service.sh
+
+# Start AI advisor service (localhost:8082) - new terminal
+./scripts/start-ai-advisor-service.sh
+
+# Start user auth service (localhost:8083) - new terminal
+./scripts/start-user-auth-service.sh
+```
+
+These scripts automatically load environment variables from the `.env` file and start the corresponding Spring Boot services using Gradle.
 
 ## 📋 Prerequisites
 

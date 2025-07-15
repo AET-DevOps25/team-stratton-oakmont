@@ -1,0 +1,60 @@
+version: "3.8"
+
+services:
+  # Weaviate vector database
+  weaviate:
+    image: semitechnologies/weaviate:1.24.10
+    ports:
+      - "8080:8080" # REST API
+      - "50051:50051" # gRPC API
+    environment:
+      QUERY_DEFAULTS_LIMIT: 25
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: "true"
+      PERSISTENCE_DATA_PATH: "/var/lib/weaviate"
+      DEFAULT_VECTORIZER_MODULE: "none"
+      ENABLE_MODULES: "text2vec-openai"
+      CLUSTER_HOSTNAME: "node1"
+    volumes:
+      - weaviate_data:/var/lib/weaviate
+
+  # LLM Inference Service (Python FastAPI)
+  llm-inference:
+    build:
+      context: ./server/llm-inference-service
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - WEAVIATE_URL=http://weaviate:8080
+      # PostgreSQL connections
+      - STUDY_DATA_DB_HOST=${STUDY_DATA_DB_HOST:-localhost}
+      - STUDY_DATA_DB_PORT=${STUDY_DATA_DB_PORT:-5432}
+      - STUDY_DATA_DB_NAME=${STUDY_DATA_DB_NAME:-study_data_db}
+      - STUDY_DATA_DB_USER=${STUDY_DATA_DB_USER:-postgres}
+      - STUDY_DATA_DB_PASSWORD=${STUDY_DATA_DB_PASSWORD:-password}
+      - STUDY_PLAN_DB_HOST=${STUDY_PLAN_DB_HOST:-localhost}
+      - STUDY_PLAN_DB_PORT=${STUDY_PLAN_DB_PORT:-5432}
+      - STUDY_PLAN_DB_NAME=${STUDY_PLAN_DB_NAME:-study_plan_db}
+      - STUDY_PLAN_DB_USER=${STUDY_PLAN_DB_USER:-postgres}
+      - STUDY_PLAN_DB_PASSWORD=${STUDY_PLAN_DB_PASSWORD:-password}
+    depends_on:
+      - weaviate
+    volumes:
+      - ./data-collection/csv_tables:/app/data
+    command: uvicorn main:app --host 0.0.0.0 --port 8082 --reload
+
+  # AI Advisor Service (Java Spring Boot)
+  ai-advisor:
+    build:
+      context: ./server/ai-advisor-service
+      dockerfile: Dockerfile
+    ports:
+      - "8084:8080"
+    environment:
+      - LLM_INFERENCE_SERVICE_URL=http://llm-inference:8082
+    depends_on:
+      - llm-inference
+
+volumes:
+  weaviate_data:

@@ -30,6 +30,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/", "/index.html", "/auth/**").permitAll()
                 .requestMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll() // Allow Swagger UI access
+                .requestMatchers("/", "/index.html", "/auth/**", "/**/auth/**", "/actuator/**").permitAll()
                 .anyRequest().authenticated() // All other requests need authentication
             );
         return http.build();

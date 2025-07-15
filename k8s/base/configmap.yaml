@@ -5,6 +5,7 @@ metadata:
   namespace: tum-study-planner
   labels:
     app: tum-study-planner
+    monitoring: "true"
 data:
   # Auth Database configuration
   AUTH_POSTGRES_HOST: "postgres-auth-service"

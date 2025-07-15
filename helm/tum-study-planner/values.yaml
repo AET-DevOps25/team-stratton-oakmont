@@ -32,6 +32,21 @@ aiAdvisorService:
     repository: ghcr.io/AET-DevOps25/team-stratton-oakmont/ai-advisor-service
     tag: latest
 
+# LLM Inference Service configuration
+llmInferenceService:
+  image:
+    repository: ghcr.io/AET-DevOps25/team-stratton-oakmont/llm-inference-service
+    tag: latest
+  env:
+    WEAVIATE_URL: "http://weaviate-vector-service.tum-study-planner:8080"
+    STUDY_DATA_DB_HOST: "postgres-study-data-service"
+    STUDY_DATA_DB_PORT: "5432"
+    STUDY_DATA_DB_NAME: "study_data_db"
+    STUDY_PLAN_DB_HOST: "postgres-study-plan-service"
+    STUDY_PLAN_DB_PORT: "5432"
+    STUDY_PLAN_DB_NAME: "study_plan_db"
+    # GOOGLE_API_KEY: "your_google_api_key_here"
+
 # User Auth Service configuration
 userAuthService:
   image:

@@ -1,2 +1,16 @@
 fastapi
 uvicorn[standard]
+weaviate-client>=4.0.0
+langchain
+langchain-openai
+langchain-community
+pandas
+numpy
+openai
+python-dotenv
+pydantic
+psycopg2-binary
+sqlalchemy
+
+prometheus-client
+
