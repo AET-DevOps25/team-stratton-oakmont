@@ -60,9 +60,10 @@ export const theme = createTheme({
     MuiDialog: {
       styleOverrides: {
         root: {
-          // Use CSS variables that are controlled by the navbar
+          // Use CSS variables that are controlled by the navbar for both sidebars
+          marginLeft: "var(--sidebar-width, 0px)",
           marginRight: "var(--ai-chat-width, 0px)",
-          transition: "margin-right 0.3s ease",
+          transition: "margin-left 0.3s ease, margin-right 0.3s ease",
         },
       },
       defaultProps: {

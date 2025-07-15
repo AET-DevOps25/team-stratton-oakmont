@@ -633,8 +633,6 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
           onClose={() => setNewSemesterDialogOpen(false)}
           maxWidth="sm"
           fullWidth
-          disableEnforceFocus={true}
-          disableAutoFocus={true}
           PaperProps={{
             sx: {
               backgroundColor: "#2a2a2a",
