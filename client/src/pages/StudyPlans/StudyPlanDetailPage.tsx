@@ -14,10 +14,8 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  IconButton,
-  Collapse,
 } from "@mui/material";
-import { Add, ExpandMore, ExpandLess, School } from "@mui/icons-material";
+import { Add } from "@mui/icons-material";
 import {
   DndContext,
   closestCenter,
@@ -66,7 +64,6 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
   const [newSemesterDialogOpen, setNewSemesterDialogOpen] = useState(false);
   const [newSemesterName, setNewSemesterName] = useState("");
   const [analyticsExpanded, setAnalyticsExpanded] = useState(false);
-  const [studyPlanDetailsExpanded, setStudyPlanDetailsExpanded] = useState(false);
 
   // Get all courses from all semesters
   const allCourses = semesters.flatMap(semester => semester.courses);
@@ -387,83 +384,35 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
     >
       <Container maxWidth="xl">
         {/* Header */}
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" sx={{ fontWeight: "bold", mb: 1 }}>
-            {studyPlan.name}
-          </Typography>
-          <Typography variant="h6" sx={{ color: "#aaa", mb: 1 }}>
-            {studyProgram?.name || studyPlan.studyProgramName || "No Program Assigned"}
-          </Typography>
-          <Typography variant="body2" sx={{ color: "#666" }}>
-            Last modified: {new Date(studyPlan.lastModified).toLocaleDateString()}
-          </Typography>
-        </Box>
-
-        {/* Study Program Details */}
-        <Paper sx={{ backgroundColor: "#2a2a2a", borderRadius: 3, mb: 4 }}>
-          <Box
-            sx={{
-              p: 3,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              borderBottom: studyPlanDetailsExpanded ? "1px solid #444" : "none",
-              cursor: "pointer",
-              "&:hover": {
-                backgroundColor: "rgba(255, 255, 255, 0.02)",
-              },
-            }}
-            onClick={() => setStudyPlanDetailsExpanded(!studyPlanDetailsExpanded)}
-          >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <School sx={{ color: "#646cff", fontSize: "2rem" }} />
-              <Typography variant="h6" sx={{ color: "#e0e0e0", fontWeight: 600 }}>
-                Study Program Details
-              </Typography>
-            </Box>
-            <IconButton
-              sx={{ color: "#aaa" }}
-            >
-              {studyPlanDetailsExpanded ? <ExpandLess /> : <ExpandMore />}
-            </IconButton>
+        <Box sx={{ mb: 4, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+          <Box>
+            <Typography variant="h4" sx={{ fontWeight: "bold", mb: 1 }}>
+              {studyPlan.name}
+            </Typography>
+            <Typography variant="h6" sx={{ color: "#aaa", mb: 1 }}>
+              {studyProgram?.name || studyPlan.studyProgramName || "No Program Assigned"}
+            </Typography>
+            <Typography variant="body2" sx={{ color: "#666" }}>
+              Last modified: {new Date(studyPlan.lastModified).toLocaleDateString()}
+            </Typography>
           </Box>
-          <Collapse in={studyPlanDetailsExpanded}>
-            <Box sx={{ p: 3, pt: 0 }}>
-              <Grid container spacing={2}>
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant="body2" sx={{ color: "#aaa", mb: 1 }}>
-                    Status
-                  </Typography>
-                  <Typography variant="body1" sx={{ mb: 2, color: "#e0e0e0" }}>
-                    {studyPlan.isActive ? "Active" : "Inactive"}
-                  </Typography>
-
-                  <Typography variant="body2" sx={{ color: "#aaa", mb: 1 }}>
-                    Created
-                  </Typography>
-                  <Typography variant="body1" sx={{ mb: 2, color: "#e0e0e0" }}>
-                    {new Date(studyPlan.createdDate).toLocaleDateString()}
-                  </Typography>
-                </Grid>
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Typography variant="body2" sx={{ color: "#aaa", mb: 1 }}>
-                    Plan ID
-                  </Typography>
-                  <Typography variant="body1" sx={{ mb: 2, color: "#e0e0e0" }}>
-                    {studyPlan.id}
-                  </Typography>
-
-                  <Typography variant="body2" sx={{ color: "#aaa", mb: 1 }}>
-                    User ID
-                  </Typography>
-                  <Typography variant="body1" sx={{ mb: 2, color: "#e0e0e0" }}>
-                    {studyPlan.userId}
-                  </Typography>
-                </Grid>
-              </Grid>
-            </Box>
-          </Collapse>
-        </Paper>
+          <Button
+            variant="contained"
+            onClick={() => navigate("/curriculum")}
+            sx={{
+              background: "linear-gradient(135deg, #646cff 0%, #535bf2 100%)",
+              color: "white",
+              "&:hover": {
+                background: "linear-gradient(135deg, #535bf2 0%, #4c4bef 100%)",
+                transform: "translateY(-2px)",
+                boxShadow: "0 8px 16px rgba(100, 108, 255, 0.3)",
+              },
+              transition: "all 0.3s ease",
+            }}
+          >
+            View Curriculum
+          </Button>
+        </Box>
 
         {/* Analytics Dashboard */}
         <AnalyticsDashboard
