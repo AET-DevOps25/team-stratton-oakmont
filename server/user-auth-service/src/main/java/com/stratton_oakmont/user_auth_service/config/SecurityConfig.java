@@ -28,7 +28,8 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity, consider enabling for production
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/", "/index.html", "/auth/**", "/**/auth/**").permitAll()
+                .requestMatchers("/", "/index.html", "/auth/**").permitAll()
+                .requestMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll() // Allow Swagger UI access
                 .anyRequest().authenticated() // All other requests need authentication
             );
         return http.build();

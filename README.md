@@ -100,6 +100,58 @@ python app.py
 </details>
 ```
 
+## Swagger Documentation of Services
+
+<details>
+<summary>Expand to explore our APIs</summary>
+
+### Services and Their Documentation URLs
+
+After starting each service, you can access their Swagger UI documentation at the following URLs:
+
+### 1. Program Catalog Service
+
+- **Port**: 8080
+- **Swagger UI**: http://localhost:8080/api/v1/swagger-ui.html
+- **OpenAPI JSON**: http://localhost:8080/api/v1/api-docs
+- **Description**: Provides access to TUM degree programs, modules, and course catalog information
+
+### 2. User Authentication Service
+
+- **Port**: 8083
+- **Swagger UI**: http://localhost:8083/api/v1/swagger-ui.html
+- **OpenAPI JSON**: http://localhost:8083/api/v1/api-docs
+- **Description**: Handles user authentication, registration, and JWT token management
+- **Security**: JWT Bearer token authentication configured
+
+### 3. Study Plan Service
+
+- **Port**: 8081
+- **Swagger UI**: http://localhost:8081/api/v1/swagger-ui.html
+- **OpenAPI JSON**: http://localhost:8081/api/v1/api-docs
+- **Description**: Manages student study plans, course selections, and academic progress tracking
+- **Security**: JWT Bearer token authentication configured
+
+### 4. AI Advisor Service
+
+- **Port**: 8082
+- **Swagger UI**: http://localhost:8082/api/v1/swagger-ui.html
+- **OpenAPI JSON**: http://localhost:8082/api/v1/api-docs
+- **Description**: Provides AI-powered academic advice and recommendations for study planning
+
+## How to Use
+
+1. **Start your services** using your preferred method (Docker, Gradle, etc.)
+2. **Navigate to the Swagger UI URL** for the service you want to explore
+3. **Explore the API endpoints** - you can see all available endpoints, request/response schemas, and try them out directly
+4. **For authenticated endpoints** (User Auth and Study Plan services):
+   - First authenticate through the User Auth Service
+   - Copy the JWT token from the response
+   - In the Swagger UI, click the "Authorize" button
+   - Enter `Bearer <your-jwt-token>` in the authorization field
+
+</details>
+
 ## 🧩 Main Functionality
 
 > What is the core purpose of this app?  
