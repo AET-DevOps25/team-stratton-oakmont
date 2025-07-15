@@ -137,29 +137,28 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
   // Semester management functions
   const generateNextSemesterName = () => {
     if (semesters.length === 0) {
-      return "1st Semester";
+      // Default to Winter of current year if no semesters exist
+      const currentYear = new Date().getFullYear();
+      return `Winter ${currentYear}`;
     }
     
     const lastSemester = semesters[semesters.length - 1];
-    const lastSemesterNumber = parseInt(lastSemester.name.match(/(\d+)/)?.[1] || "0");
-    const nextNumber = lastSemesterNumber + 1;
+    const lastSemesterName = lastSemester.name;
     
-    return `${nextNumber}${getOrdinalSuffix(nextNumber)} Semester`;
-  };
-
-  const getOrdinalSuffix = (num: number) => {
-    const lastDigit = num % 10;
-    const lastTwoDigits = num % 100;
+    // Extract year and season from the last semester
+    const winterMatch = lastSemesterName.match(/Winter (\d+)/);
+    const summerMatch = lastSemesterName.match(/Summer (\d+)/);
     
-    if (lastTwoDigits >= 11 && lastTwoDigits <= 13) {
-      return "th";
-    }
-    
-    switch (lastDigit) {
-      case 1: return "st";
-      case 2: return "nd";
-      case 3: return "rd";
-      default: return "th";
+    if (winterMatch) {
+      const year = parseInt(winterMatch[1]);
+      return `Summer ${year}`;
+    } else if (summerMatch) {
+      const year = parseInt(summerMatch[1]);
+      return `Winter ${year + 1}`;
+    } else {
+      // Fallback: if we can't parse the semester name, default to Winter of current year
+      const currentYear = new Date().getFullYear();
+      return `Winter ${currentYear}`;
     }
   };
 
@@ -651,7 +650,7 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
               variant="outlined"
               value={newSemesterName}
               onChange={(e) => setNewSemesterName(e.target.value)}
-              placeholder="e.g., 3rd Semester, Summer 2024"
+              placeholder="e.g., Winter 2027, Summer 2027"
               sx={{
                 "& .MuiOutlinedInput-root": {
                   backgroundColor: "#333",
