@@ -1,0 +1,219 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: unified-swagger-ui
+  namespace: { { .Values.namespace } }
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>TUM Study Planner - Unified API Documentation</title>
+        <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@4.15.5/swagger-ui.css" />
+        <style>
+            html {
+                box-sizing: border-box;
+                overflow: -moz-scrollbars-vertical;
+                overflow-y: scroll;
+            }
+            *, *:before, *:after {
+                box-sizing: inherit;
+            }
+            body {
+                margin: 0;
+                background: #fafafa;
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            }
+            .service-selector {
+                background: #1b1b1b;
+                padding: 15px 20px;
+                border-bottom: 1px solid #333;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+            .service-selector h1 {
+                color: #fff;
+                margin: 0;
+                font-size: 1.5em;
+            }
+            .service-toggle {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+            .service-toggle label {
+                color: #fff;
+                font-weight: 500;
+            }
+            .service-toggle select {
+                padding: 8px 12px;
+                border: 1px solid #333;
+                background: #2a2a2a;
+                color: #fff;
+                border-radius: 4px;
+                font-size: 14px;
+                min-width: 200px;
+            }
+            .service-toggle select:focus {
+                outline: none;
+                border-color: #4a90e2;
+            }
+            #swagger-ui {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+            .service-info {
+                background: #e8f4f8;
+                padding: 15px 20px;
+                border-left: 4px solid #4a90e2;
+                margin: 20px;
+                border-radius: 4px;
+            }
+            .service-info h3 {
+                margin: 0 0 10px 0;
+                color: #1b1b1b;
+            }
+            .service-info p {
+                margin: 0;
+                color: #666;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="service-selector">
+            <h1>🎓 TUM Study Planner API Documentation</h1>
+            <div class="service-toggle">
+                <label for="service-select">Select Service:</label>
+                <select id="service-select">
+                    <option value="study-plan">📅 Study Plan Service</option>
+                    <option value="user-auth">👤 User Authentication Service</option>
+                    <option value="program-catalog">📖 Program Catalog Service</option>
+                    <option value="ai-advisor">🤖 AI Advisor Service</option>
+                </select>
+            </div>
+        </div>
+        
+        <div id="service-info" class="service-info">
+            <h3>Study Plan Service</h3>
+            <p>Manage study plans, track progress, and organize academic schedules for students.</p>
+        </div>
+        
+        <div id="swagger-ui"></div>
+        
+        <script src="https://unpkg.com/swagger-ui-dist@4.15.5/swagger-ui-bundle.js"></script>
+        <script src="https://unpkg.com/swagger-ui-dist@4.15.5/swagger-ui-standalone-preset.js"></script>
+        <script>
+            const services = {
+                'study-plan': {
+                    name: 'Study Plan Service',
+                    description: 'Manage study plans, track progress, and organize academic schedules for students.',
+                    url: '/docs/study-plan/api-docs'
+                },
+                'user-auth': {
+                    name: 'User Authentication Service', 
+                    description: 'Handle user registration, authentication, authorization, and user management.',
+                    url: '/docs/user-auth/api-docs'
+                },
+                'program-catalog': {
+                    name: 'Program Catalog Service',
+                    description: 'Browse and manage academic programs, courses, and curriculum information.',
+                    url: '/docs/program-catalog/api-docs'
+                },
+                'ai-advisor': {
+                    name: 'AI Advisor Service',
+                    description: 'Get AI-powered academic recommendations and intelligent study plan suggestions.',
+                    url: '/docs/ai-advisor/api-docs'
+                }
+            };
+
+            let ui;
+            
+            function initSwaggerUI(serviceKey) {
+                const service = services[serviceKey];
+                
+                // Update service info
+                document.getElementById('service-info').innerHTML = `
+                    <h3>${service.name}</h3>
+                    <p>${service.description}</p>
+                `;
+                
+                // Initialize/update Swagger UI
+                ui = SwaggerUIBundle({
+                    url: service.url,
+                    dom_id: '#swagger-ui',
+                    deepLinking: true,
+                    presets: [
+                        SwaggerUIBundle.presets.apis,
+                        SwaggerUIStandalonePreset
+                    ],
+                    plugins: [
+                        SwaggerUIBundle.plugins.DownloadUrl
+                    ],
+                    layout: "StandaloneLayout"
+                });
+            }
+            
+            // Initialize with default service
+            initSwaggerUI('study-plan');
+            
+            // Handle service selection
+            document.getElementById('service-select').addEventListener('change', function(e) {
+                initSwaggerUI(e.target.value);
+            });
+        </script>
+    </body>
+    </html>
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: unified-swagger-ui
+  namespace: { { .Values.namespace } }
+  labels:
+    app: unified-swagger-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: unified-swagger-ui
+  template:
+    metadata:
+      labels:
+        app: unified-swagger-ui
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: swagger-ui-volume
+              mountPath: /usr/share/nginx/html
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+      volumes:
+        - name: swagger-ui-volume
+          configMap:
+            name: unified-swagger-ui
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: unified-swagger-ui-service
+  namespace: { { .Values.namespace } }
+spec:
+  selector:
+    app: unified-swagger-ui
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
