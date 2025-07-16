@@ -56,6 +56,8 @@ jobs:
             --set programCatalogService.image.tag=${{ steps.image_tag.outputs.tag }} \
             --set aiAdvisorService.image.repository=${{ env.REGISTRY }}/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')/ai-advisor-service \
             --set aiAdvisorService.image.tag=${{ steps.image_tag.outputs.tag }} \
+            --set llmInferenceService.image.repository=${{ env.REGISTRY }}/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')/llm-inference-service \
+            --set llmInferenceService.image.tag=${{ steps.image_tag.outputs.tag }} \
             --wait --timeout=10m
 
       - name: Verify deployment
