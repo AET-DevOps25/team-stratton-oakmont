@@ -5,17 +5,17 @@ metadata:
   name: tum-study-planner-docs-ingress
   namespace: {{ .Values.namespace }}
   annotations:
-    kubernetes.io/ingress.class: "nginx"
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /api/v1/$2
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      # Add proper headers for Swagger UI
-      add_header 'Access-Control-Allow-Origin' '*' always;
-      add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
-      add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization' always;
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, PATCH, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
 spec:
+  ingressClassName: nginx
   tls:
     - hosts:
         - {{ .Values.ingress.host }}
