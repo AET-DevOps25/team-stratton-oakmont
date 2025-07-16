@@ -1,5 +1,6 @@
 // API calls related to study plans
 import { STUDY_PLAN_API_URL } from "../config/api";
+import { PROGRAM_CATALOG_API_URL } from "../config/api";
 
 // TypeScript interfaces for the API response
 export interface StudyPlanDto {
@@ -58,7 +59,7 @@ export const getMyStudyPlans = async (): Promise<StudyPlanDto[]> => {
     );
   }
 
-  const response = await fetch(`${STUDY_PLAN_API_URL}/my`, {
+  const response = await fetch(`${STUDY_PLAN_API_URL}/my-study-plans`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -81,7 +82,7 @@ export const getMyStudyPlans = async (): Promise<StudyPlanDto[]> => {
 
 // API service function to get all study programs
 export const getStudyPrograms = async (): Promise<StudyProgramDto[]> => {
-  const response = await fetch(`${STUDY_PLAN_API_URL}/study-programs`, {
+  const response = await fetch(`${PROGRAM_CATALOG_API_URL}/study-programs`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -138,7 +139,7 @@ export const createStudyPlan = async (
   return data;
 };
 
-// Add this function to the existing studyPlans.ts file
+// API service function to get a study plan by ID
 export const getStudyPlanById = async (id: string): Promise<StudyPlanDto> => {
   const token = localStorage.getItem("jwtToken");
 
@@ -171,6 +172,7 @@ export const getStudyPlanById = async (id: string): Promise<StudyPlanDto> => {
   return data;
 };
 
+// API service function to get a study program by ID
 export const getStudyProgramById = async (
   id: number
 ): Promise<StudyProgramDto> => {
@@ -184,13 +186,16 @@ export const getStudyProgramById = async (
     );
   }
 
-  const response = await fetch(`${STUDY_PLAN_API_URL}/study-programs/${id}`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
+  const response = await fetch(
+    `${PROGRAM_CATALOG_API_URL}/study-programs/${id}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
 
   const data = await response.json();
 
@@ -205,7 +210,7 @@ export const getStudyProgramById = async (
   return data;
 };
 
-// Delete study plan
+// API service function to delete a study plan
 export const deleteStudyPlan = async (id: number): Promise<void> => {
   const token = localStorage.getItem("jwtToken");
 
@@ -235,7 +240,7 @@ export const deleteStudyPlan = async (id: number): Promise<void> => {
   }
 };
 
-// Rename study plan
+// API service function to rename a study plan
 export const renameStudyPlan = async (
   id: number,
   name: string

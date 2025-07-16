@@ -29,7 +29,7 @@ public class StudyProgramController {
     }
     
     // GET /api/v1/study-programs - Get all study programs
-    @GetMapping({"", "/"})
+    @GetMapping({""})
     public ResponseEntity<List<StudyProgramDto>> getAllStudyPrograms() {
         try {
             List<StudyProgram> programs = studyProgramService.getAllStudyPrograms();
@@ -53,34 +53,6 @@ public class StudyProgramController {
             } else {
                 return ResponseEntity.notFound().build();
             }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-    
-    // GET /api/v1/study-programs/search?degree=... - Search by degree
-    @GetMapping("/search")
-    public ResponseEntity<List<StudyProgramDto>> searchStudyPrograms(
-            @RequestParam(required = false) String degree,
-            @RequestParam(required = false) String curriculum,
-            @RequestParam(required = false) String fieldOfStudies) {
-        try {
-            List<StudyProgram> programs;
-            
-            if (degree != null && !degree.trim().isEmpty()) {
-                programs = studyProgramService.searchStudyProgramsByDegree(degree);
-            } else if (curriculum != null && !curriculum.trim().isEmpty()) {
-                programs = studyProgramService.searchStudyProgramsByCurriculum(curriculum);
-            } else if (fieldOfStudies != null && !fieldOfStudies.trim().isEmpty()) {
-                programs = studyProgramService.getStudyProgramsByFieldOfStudies(fieldOfStudies);
-            } else {
-                programs = studyProgramService.getAllStudyPrograms();
-            }
-            
-            List<StudyProgramDto> dtos = programs.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-            return ResponseEntity.ok(dtos);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
