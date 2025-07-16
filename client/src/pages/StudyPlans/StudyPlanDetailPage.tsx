@@ -25,10 +25,7 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import type { DragEndEvent } from "@dnd-kit/core";
-import {
-  arrayMove,
-  sortableKeyboardCoordinates,
-} from "@dnd-kit/sortable";
+import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import {
   getStudyPlanById,
   getStudyProgramById,
@@ -48,13 +45,15 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
 
   // State for the specific study plan
   const [studyPlan, setStudyPlan] = useState<StudyPlanDto | null>(null);
-  const [studyProgram, setStudyProgram] = useState<StudyProgramDto | null>(null);
+  const [studyProgram, setStudyProgram] = useState<StudyProgramDto | null>(
+    null
+  );
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   // State for semesters and courses
   const [semesters, setSemesters] = useState<SemesterData[]>([]);
-  
+
   // State for dialogs
   const [courseSearchOpen, setCourseSearchOpen] = useState(false);
   const [activeSemesterId, setActiveSemesterId] = useState<string | null>(null);
@@ -63,7 +62,7 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
   const [analyticsExpanded, setAnalyticsExpanded] = useState(false);
 
   // Get all courses from all semesters
-  const allCourses = semesters.flatMap(semester => semester.courses);
+  const allCourses = semesters.flatMap((semester) => semester.courses);
 
   // Drag and drop sensors
   const sensors = useSensors(
@@ -86,21 +85,14 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
       if (planResponse.planData) {
         try {
           const parsedPlanData = JSON.parse(planResponse.planData);
-          if (parsedPlanData.semesters && Array.isArray(parsedPlanData.semesters)) {
+          if (
+            parsedPlanData.semesters &&
+            Array.isArray(parsedPlanData.semesters)
+          ) {
             setSemesters(parsedPlanData.semesters);
           }
         } catch (parseError) {
           console.warn("Could not parse plan data:", parseError);
-        }
-      }
-
-      // Fetch the study program if studyProgramId exists
-      if (planResponse.studyProgramId) {
-        try {
-          const programResponse = await getStudyProgramById(planResponse.studyProgramId);
-          setStudyProgram(programResponse);
-        } catch (programErr) {
-          console.warn("Could not fetch study program details:", programErr);
         }
       }
     } catch (err) {
@@ -110,7 +102,9 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
         if (err.statusCode === 401) {
           setError("Authentication failed. Please log in again.");
         } else if (err.statusCode === 403) {
-          setError("Access denied. You don't have permission to view this study plan.");
+          setError(
+            "Access denied. You don't have permission to view this study plan."
+          );
         } else if (err.statusCode === 404) {
           setError("Study plan not found.");
         } else {
@@ -141,14 +135,14 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
       const currentYear = new Date().getFullYear();
       return `Winter ${currentYear}`;
     }
-    
+
     const lastSemester = semesters[semesters.length - 1];
     const lastSemesterName = lastSemester.name;
-    
+
     // Extract year and season from the last semester
     const winterMatch = lastSemesterName.match(/Winter (\d+)/);
     const summerMatch = lastSemesterName.match(/Summer (\d+)/);
-    
+
     if (winterMatch) {
       const year = parseInt(winterMatch[1]);
       return `Summer ${year}`;
@@ -173,16 +167,16 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
     setSemesters([...semesters, newSemester]);
   };
 
-  const handleStartingSemesterSelection = (type: 'winter' | 'summer') => {
+  const handleStartingSemesterSelection = (type: "winter" | "summer") => {
     const currentYear = new Date().getFullYear();
-    
+
     const semesters: SemesterData[] = [];
-    
+
     for (let i = 0; i < 4; i++) {
       let semesterName: string;
       let year: number;
-      
-      if (type === 'winter') {
+
+      if (type === "winter") {
         // Winter, Summer, Winter, Summer pattern
         if (i % 2 === 0) {
           year = currentYear + Math.floor(i / 2);
@@ -201,7 +195,7 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
           semesterName = `Winter ${year}`;
         }
       }
-      
+
       semesters.push({
         id: (i + 1).toString(),
         name: semesterName,
@@ -209,7 +203,7 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
         expanded: true,
       });
     }
-    
+
     setSemesters(semesters);
   };
 
@@ -228,23 +222,25 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
   };
 
   const handleRemoveSemester = (semesterId: string) => {
-    setSemesters(semesters.filter(semester => semester.id !== semesterId));
+    setSemesters(semesters.filter((semester) => semester.id !== semesterId));
   };
 
   const handleToggleSemesterExpanded = (semesterId: string) => {
-    setSemesters(semesters.map(semester => 
-      semester.id === semesterId 
-        ? { ...semester, expanded: !semester.expanded }
-        : semester
-    ));
+    setSemesters(
+      semesters.map((semester) =>
+        semester.id === semesterId
+          ? { ...semester, expanded: !semester.expanded }
+          : semester
+      )
+    );
   };
 
   const handleRenameSemester = (semesterId: string, newName: string) => {
-    setSemesters(semesters.map(semester => 
-      semester.id === semesterId 
-        ? { ...semester, name: newName }
-        : semester
-    ));
+    setSemesters(
+      semesters.map((semester) =>
+        semester.id === semesterId ? { ...semester, name: newName } : semester
+      )
+    );
   };
 
   // Drag and drop handler
@@ -257,39 +253,57 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
     const overId = over.id as string;
 
     // Find which semesters contain the dragged and target courses
-    const activeSemester = semesters.find(s => s.courses.some(c => c.id === activeId));
-    const overSemester = semesters.find(s => s.courses.some(c => c.id === overId)) || 
-                         semesters.find(s => s.id === overId);
+    const activeSemester = semesters.find((s) =>
+      s.courses.some((c) => c.id === activeId)
+    );
+    const overSemester =
+      semesters.find((s) => s.courses.some((c) => c.id === overId)) ||
+      semesters.find((s) => s.id === overId);
 
     if (!activeSemester || !overSemester) return;
 
-    const activeCourse = activeSemester.courses.find(c => c.id === activeId);
+    const activeCourse = activeSemester.courses.find((c) => c.id === activeId);
     if (!activeCourse) return;
 
     // If moving within the same semester
     if (activeSemester.id === overSemester.id) {
-      const oldIndex = activeSemester.courses.findIndex(c => c.id === activeId);
-      const newIndex = activeSemester.courses.findIndex(c => c.id === overId);
+      const oldIndex = activeSemester.courses.findIndex(
+        (c) => c.id === activeId
+      );
+      const newIndex = activeSemester.courses.findIndex((c) => c.id === overId);
 
       if (oldIndex !== newIndex) {
-        setSemesters(semesters.map(semester => 
-          semester.id === activeSemester.id
-            ? { ...semester, courses: arrayMove(semester.courses, oldIndex, newIndex) }
-            : semester
-        ));
+        setSemesters(
+          semesters.map((semester) =>
+            semester.id === activeSemester.id
+              ? {
+                  ...semester,
+                  courses: arrayMove(semester.courses, oldIndex, newIndex),
+                }
+              : semester
+          )
+        );
       }
     } else {
       // Moving between semesters
-      setSemesters(semesters.map(semester => {
-        if (semester.id === activeSemester.id) {
-          // Remove from source semester
-          return { ...semester, courses: semester.courses.filter(c => c.id !== activeId) };
-        } else if (semester.id === overSemester.id) {
-          // Add to target semester
-          return { ...semester, courses: [...semester.courses, activeCourse] };
-        }
-        return semester;
-      }));
+      setSemesters(
+        semesters.map((semester) => {
+          if (semester.id === activeSemester.id) {
+            // Remove from source semester
+            return {
+              ...semester,
+              courses: semester.courses.filter((c) => c.id !== activeId),
+            };
+          } else if (semester.id === overSemester.id) {
+            // Add to target semester
+            return {
+              ...semester,
+              courses: [...semester.courses, activeCourse],
+            };
+          }
+          return semester;
+        })
+      );
     }
   };
 
@@ -301,52 +315,74 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
 
   const handleAddCourseToSemester = (course: Course) => {
     if (activeSemesterId) {
-      setSemesters(semesters.map(semester => 
-        semester.id === activeSemesterId
-          ? { ...semester, courses: [...semester.courses, { ...course, completed: false }] }
-          : semester
-      ));
+      setSemesters(
+        semesters.map((semester) =>
+          semester.id === activeSemesterId
+            ? {
+                ...semester,
+                courses: [...semester.courses, { ...course, completed: false }],
+              }
+            : semester
+        )
+      );
     }
   };
 
   const handleAddCoursesToSemester = (courses: Course[]) => {
     if (activeSemesterId) {
-      setSemesters(semesters.map(semester => 
-        semester.id === activeSemesterId
-          ? { 
-              ...semester, 
-              courses: [...semester.courses, ...courses.map(course => ({ ...course, completed: false }))]
-            }
-          : semester
-      ));
+      setSemesters(
+        semesters.map((semester) =>
+          semester.id === activeSemesterId
+            ? {
+                ...semester,
+                courses: [
+                  ...semester.courses,
+                  ...courses.map((course) => ({ ...course, completed: false })),
+                ],
+              }
+            : semester
+        )
+      );
     }
   };
 
   const handleRemoveCourse = (semesterId: string, courseId: string) => {
-    setSemesters(semesters.map(semester => 
-      semester.id === semesterId
-        ? { ...semester, courses: semester.courses.filter(course => course.id !== courseId) }
-        : semester
-    ));
+    setSemesters(
+      semesters.map((semester) =>
+        semester.id === semesterId
+          ? {
+              ...semester,
+              courses: semester.courses.filter(
+                (course) => course.id !== courseId
+              ),
+            }
+          : semester
+      )
+    );
   };
 
-  const handleToggleCourseCompleted = (semesterId: string, courseId: string) => {
-    setSemesters(semesters.map(semester => 
-      semester.id === semesterId
-        ? {
-            ...semester,
-            courses: semester.courses.map(course => 
-              course.id === courseId
-                ? { ...course, completed: !course.completed }
-                : course
-            )
-          }
-        : semester
-    ));
+  const handleToggleCourseCompleted = (
+    semesterId: string,
+    courseId: string
+  ) => {
+    setSemesters(
+      semesters.map((semester) =>
+        semester.id === semesterId
+          ? {
+              ...semester,
+              courses: semester.courses.map((course) =>
+                course.id === courseId
+                  ? { ...course, completed: !course.completed }
+                  : course
+              ),
+            }
+          : semester
+      )
+    );
   };
 
   // Get used course IDs to exclude from search
-  const usedCourseIds = allCourses.map(course => course.id);
+  const usedCourseIds = allCourses.map((course) => course.id);
 
   if (loading) {
     return (
@@ -420,16 +456,26 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
     >
       <Container maxWidth="xl">
         {/* Header */}
-        <Box sx={{ mb: 4, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+        <Box
+          sx={{
+            mb: 4,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+          }}
+        >
           <Box>
             <Typography variant="h4" sx={{ fontWeight: "bold", mb: 1 }}>
               {studyPlan.name}
             </Typography>
             <Typography variant="h6" sx={{ color: "#aaa", mb: 1 }}>
-              {studyProgram?.name || studyPlan.studyProgramName || "No Program Assigned"}
+              {studyProgram?.name ||
+                studyPlan.studyProgramName ||
+                "No Program Assigned"}
             </Typography>
             <Typography variant="body2" sx={{ color: "#666" }}>
-              Last modified: {new Date(studyPlan.lastModified).toLocaleDateString()}
+              Last modified:{" "}
+              {new Date(studyPlan.lastModified).toLocaleDateString()}
             </Typography>
           </Box>
           <Button
@@ -461,7 +507,13 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
         {/* Study Program Information */}
         {studyProgram && (
           <Paper
-            sx={{ p: 3, mb: 4, backgroundColor: "#2a2a2a", color: "white", borderRadius: 3 }}
+            sx={{
+              p: 3,
+              mb: 4,
+              backgroundColor: "#2a2a2a",
+              color: "white",
+              borderRadius: 3,
+            }}
           >
             <Typography variant="h6" sx={{ mb: 2 }}>
               Program Information
@@ -513,7 +565,14 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
 
         {/* Semesters Section */}
         <Box sx={{ mb: 4 }}>
-          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 3 }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              mb: 3,
+            }}
+          >
             <Typography variant="h5" sx={{ color: "white", fontWeight: 600 }}>
               Study Plan
             </Typography>
@@ -545,9 +604,10 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
                 <Button
                   variant="contained"
                   size="large"
-                  onClick={() => handleStartingSemesterSelection('winter')}
+                  onClick={() => handleStartingSemesterSelection("winter")}
                   sx={{
-                    background: "linear-gradient(135deg, #646cff 0%, #535bf2 100%)",
+                    background:
+                      "linear-gradient(135deg, #646cff 0%, #535bf2 100%)",
                     color: "white",
                     borderRadius: "50px",
                     px: 5,
@@ -556,7 +616,8 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
                     fontWeight: 600,
                     minWidth: "200px",
                     "&:hover": {
-                      background: "linear-gradient(135deg, #535bf2 0%, #4c4bef 100%)",
+                      background:
+                        "linear-gradient(135deg, #535bf2 0%, #4c4bef 100%)",
                       transform: "translateY(-3px)",
                       boxShadow: "0 12px 24px rgba(100, 108, 255, 0.4)",
                     },
@@ -569,9 +630,10 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
                 <Button
                   variant="contained"
                   size="large"
-                  onClick={() => handleStartingSemesterSelection('summer')}
+                  onClick={() => handleStartingSemesterSelection("summer")}
                   sx={{
-                    background: "linear-gradient(135deg, #ff9800 0%, #f57c00 100%)",
+                    background:
+                      "linear-gradient(135deg, #ff9800 0%, #f57c00 100%)",
                     color: "white",
                     borderRadius: "50px",
                     px: 5,
@@ -580,7 +642,8 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
                     fontWeight: 600,
                     minWidth: "200px",
                     "&:hover": {
-                      background: "linear-gradient(135deg, #f57c00 0%, #ef6c00 100%)",
+                      background:
+                        "linear-gradient(135deg, #f57c00 0%, #ef6c00 100%)",
                       transform: "translateY(-3px)",
                       boxShadow: "0 12px 24px rgba(255, 152, 0, 0.4)",
                     },

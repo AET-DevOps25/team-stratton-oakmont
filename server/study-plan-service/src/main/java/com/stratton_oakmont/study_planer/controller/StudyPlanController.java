@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RestController
-@RequestMapping("/") // Change to root path to match ingress rewrite pattern
+@RequestMapping("")
 @CrossOrigin(origins = {
     "https://tum-study-planner.student.k8s.aet.cit.tum.de",
     "http://localhost:5173", 
@@ -45,8 +45,8 @@ public class StudyPlanController {
         logger.info("LOG: StudyPlanController initialized successfully");
     }
 
-    // POST /api/v1/ - Create new study plan (from /api/study-plan/ via ingress)
-    @PostMapping({"", "/"})  // Accept both with and without trailing slash
+    // POST /api/v1/ - Create new study plan
+    @PostMapping({""})
     public ResponseEntity<StudyPlanDto> createStudyPlan(
         @Valid @RequestBody CreateStudyPlanRequest request,
         @RequestHeader("Authorization") String authorizationHeader) {
@@ -94,8 +94,8 @@ public class StudyPlanController {
         }
     }
 
-    // GET /my - Get study plans for authenticated user (from /api/study-plan/my via ingress)
-    @GetMapping("/my")
+    // GET /my-study-plans - Get study plans for authenticated user
+    @GetMapping("/my-study-plans")
     public ResponseEntity<?> getMyStudyPlans(@RequestHeader("Authorization") String authorizationHeader) {
         try {
             // Extract and validate JWT token
@@ -171,6 +171,7 @@ public class StudyPlanController {
 
             // Get study plan and check ownership
             StudyPlan studyPlan = studyPlanService.getStudyPlanById(id);
+            logger.info("Ownership check: userId from token = {}, studyPlan.userId = {}", userId, studyPlan.getUserId());
             if (!studyPlan.getUserId().equals(userId)) {
                 Map<String, String> error = new HashMap<>();
                 error.put("error", "ACCESS_DENIED");
