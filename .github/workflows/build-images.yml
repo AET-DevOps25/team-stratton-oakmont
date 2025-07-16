@@ -35,8 +35,8 @@ jobs:
             context: ./server/llm-inference-service
             dockerfile: ./server/llm-inference-service/Dockerfile
           - name: swagger-ui
-            context: ./server
-            dockerfile: ./swagger-ui/Dockerfile
+            context: ./server/swagger-ui
+            dockerfile: ./server/swagger-ui/Dockerfile
 
     steps:
       - name: Checkout code
