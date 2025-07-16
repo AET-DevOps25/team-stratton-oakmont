@@ -1,0 +1,77 @@
+# prettier-ignore
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tum-study-planner-docs-ingress
+  namespace: {{ .Values.namespace }}
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /api/v1/$2
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      # Add proper headers for Swagger UI
+      add_header 'Access-Control-Allow-Origin' '*' always;
+      add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+      add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization' always;
+spec:
+  tls:
+    - hosts:
+        - {{ .Values.ingress.host }}
+      secretName: tum-study-planner-tls
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          # Unified Swagger UI
+          - path: /docs
+            pathType: Exact
+            backend:
+              service:
+                name: unified-swagger-ui-service
+                port:
+                  number: 80
+          - path: /docs/
+            pathType: Exact
+            backend:
+              service:
+                name: unified-swagger-ui-service
+                port:
+                  number: 80
+          
+          # Study Plan Service Documentation
+          - path: /docs/study-plan(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: study-plan-service
+                port:
+                  number: 8081
+          
+          # User Auth Service Documentation
+          - path: /docs/user-auth(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: user-auth-service
+                port:
+                  number: 8083
+          
+          # Program Catalog Service Documentation
+          - path: /docs/program-catalog(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: program-catalog-service
+                port:
+                  number: 8082
+          
+          # AI Advisor Service Documentation
+          - path: /docs/ai-advisor(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: ai-advisor-service
+                port:
+                  number: 8084

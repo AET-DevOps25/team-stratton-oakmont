@@ -226,16 +226,17 @@ python app.py
 ```
 
 </details>
-```
 
 ## Swagger Documentation of Services
 
+### Accessing API Documentation
+
+**📚 Unified API Documentation**: `https://https://tum-study-planner.student.k8s.aet.cit.tum.de/docs`
+
+### Local Development URLs
+
 <details>
-<summary>Expand to explore our APIs</summary>
-
-### Services and Their Documentation URLs
-
-After starting each service, you can access their Swagger UI documentation at the following URLs:
+<summary>Urls for local swagger</summary>
 
 ### 1. Program Catalog Service
 
@@ -266,17 +267,6 @@ After starting each service, you can access their Swagger UI documentation at th
 - **Swagger UI**: http://localhost:8082/api/v1/swagger-ui.html
 - **OpenAPI JSON**: http://localhost:8082/api/v1/api-docs
 - **Description**: Provides AI-powered academic advice and recommendations for study planning
-
-## How to Use
-
-1. **Start your services** using your preferred method (Docker, Gradle, etc.)
-2. **Navigate to the Swagger UI URL** for the service you want to explore
-3. **Explore the API endpoints** - you can see all available endpoints, request/response schemas, and try them out directly
-4. **For authenticated endpoints** (User Auth and Study Plan services):
-   - First authenticate through the User Auth Service
-   - Copy the JWT token from the response
-   - In the Swagger UI, click the "Authorize" button
-   - Enter `Bearer <your-jwt-token>` in the authorization field
 
 </details>
 
