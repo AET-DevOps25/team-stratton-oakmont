@@ -31,6 +31,12 @@ jobs:
           - name: ai-advisor-service
             context: ./server
             dockerfile: ./server/ai-advisor-service/Dockerfile
+          - name: llm-inference-service
+            context: ./server/llm-inference-service
+            dockerfile: ./server/llm-inference-service/Dockerfile
+          - name: swagger-ui
+            context: ./server/swagger-ui
+            dockerfile: ./server/swagger-ui/Dockerfile
 
     steps:
       - name: Checkout code

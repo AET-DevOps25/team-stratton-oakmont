@@ -58,6 +58,8 @@ jobs:
             --set aiAdvisorService.image.tag=${{ steps.image_tag.outputs.tag }} \
             --set llmInferenceService.image.repository=${{ env.REGISTRY }}/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')/llm-inference-service \
             --set llmInferenceService.image.tag=${{ steps.image_tag.outputs.tag }} \
+            --set swaggerUi.image.repository=${{ env.REGISTRY }}/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')/swagger-ui \
+            --set swaggerUi.image.tag=${{ steps.image_tag.outputs.tag }} \
             --wait --timeout=10m
 
       - name: Verify deployment

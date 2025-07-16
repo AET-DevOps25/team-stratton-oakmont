@@ -17,13 +17,10 @@ spec:
         app: unified-swagger-ui
     spec:
       containers:
-        - name: nginx
-          image: nginx:alpine
+        - name: swagger-ui
+          image: "{{ .Values.swaggerUi.image.repository }}:{{ .Values.swaggerUi.image.tag }}"
           ports:
             - containerPort: 80
-          volumeMounts:
-            - name: swagger-ui-volume
-              mountPath: /usr/share/nginx/html
           resources:
             requests:
               memory: "64Mi"
@@ -31,7 +28,3 @@ spec:
             limits:
               memory: "128Mi"
               cpu: "100m"
-      volumes:
-        - name: swagger-ui-volume
-          configMap:
-            name: unified-swagger-ui
