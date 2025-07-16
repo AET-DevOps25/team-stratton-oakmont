@@ -1,0 +1,14 @@
+# prettier-ignore
+apiVersion: v1
+kind: Service
+metadata:
+  name: unified-swagger-ui-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: unified-swagger-ui
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
