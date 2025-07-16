@@ -53,6 +53,12 @@ userAuthService:
     repository: ghcr.io/AET-DevOps25/team-stratton-oakmont/user-auth-service
     tag: latest
 
+# Swagger UI configuration
+swaggerUi:
+  image:
+    repository: ghcr.io/AET-DevOps25/team-stratton-oakmont/swagger-ui
+    tag: latest
+
 # Database configurations (using existing k8s manifests)
 postgresql:
   enabled: false # We're using separate manifests in k8s/base/
