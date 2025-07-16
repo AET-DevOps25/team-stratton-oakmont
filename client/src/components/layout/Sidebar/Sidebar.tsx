@@ -523,12 +523,20 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
               vertical: "top",
               horizontal: "left",
             }}
+            slotProps={{
+              root: {
+                sx: {
+                  zIndex: 9999, // Ensure menu appears above everything
+                },
+              },
+            }}
             PaperProps={{
               sx: {
                 backgroundColor: "rgba(42, 42, 42, 0.95)",
                 backdropFilter: "blur(10px)",
                 borderRadius: "12px",
                 boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
+                zIndex: 9999, // Additional z-index for the paper
               },
             }}
           >
