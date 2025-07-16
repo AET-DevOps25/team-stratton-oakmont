@@ -32,7 +32,7 @@ jobs:
             context: ./server
             dockerfile: ./server/ai-advisor-service/Dockerfile
           - name: llm-inference-service
-            context: ./server
+            context: ./server/llm-inference-service
             dockerfile: ./server/llm-inference-service/Dockerfile
           - name: swagger-ui
             context: ./server
