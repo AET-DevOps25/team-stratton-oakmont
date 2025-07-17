@@ -78,7 +78,6 @@ public class ModuleDetailsController {
         return ResponseEntity.ok(summaries);
     }
     
-    // TODO [ ]: doesnt work yet 
     @Operation(summary = "Advanced search with filters", description = "Search modules with multiple filter options")
     @GetMapping("/study-program/{studyProgramId}/advanced-search")
     public ResponseEntity<List<ModuleDetails>> advancedSearch(
@@ -148,7 +147,6 @@ public class ModuleDetailsController {
         return ResponseEntity.ok(modules);
     }
     
-    // TODO [ ]: doesnt work somehow in swagger yet
     @Operation(summary = "Get modules by occurrence", description = "Retrieve modules by semester occurrence (e.g., 'winter semester', 'summer semester')")
     @GetMapping("/study-program/{studyProgramId}/occurrence/{occurrence}")
     public ResponseEntity<List<ModuleDetails>> getModulesByOccurrence(
