@@ -66,23 +66,26 @@ public interface ModuleDetailsRepository extends JpaRepository<ModuleDetails, In
     Integer sumCreditsByStudyProgramId(@Param("studyProgramId") Integer studyProgramId);
     
     // Enhanced search with multiple filters
-    @Query("SELECT md FROM ModuleDetails md WHERE md.studyProgramId = :studyProgramId " +
-           "AND (:category IS NULL OR md.category = :category) " +
-           "AND (:subcategory IS NULL OR md.subcategory = :subcategory) " +
-           "AND (:language IS NULL OR md.language = :language) " +
-           "AND (:occurrence IS NULL OR md.occurrence = :occurrence) " +
-           "AND (:minCredits IS NULL OR md.credits >= :minCredits) " +
-           "AND (:maxCredits IS NULL OR md.credits <= :maxCredits) " +
-           "AND (:searchTerm IS NULL OR LOWER(md.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR LOWER(md.moduleId) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR LOWER(md.responsible) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
-    List<ModuleDetails> findWithFilters(@Param("studyProgramId") Integer studyProgramId,
-                                       @Param("category") String category,
-                                       @Param("subcategory") String subcategory,
-                                       @Param("language") String language,
-                                       @Param("occurrence") String occurrence,
-                                       @Param("minCredits") Integer minCredits,
-                                       @Param("maxCredits") Integer maxCredits,
-                                       @Param("searchTerm") String searchTerm);
-    
+    @Query(value = "SELECT * FROM curriculums_x_module_details md WHERE md.study_program_id = :studyProgramId " +
+       "AND (:category IS NULL OR md.category = :category) " +
+       "AND (:subcategory IS NULL OR md.subcategory = :subcategory) " +
+       "AND (:language IS NULL OR md.language = :language) " +
+       "AND (:occurrence IS NULL OR md.occurrence = :occurrence) " +
+       "AND (:minCredits IS NULL OR md.credits >= :minCredits) " +
+       "AND (:maxCredits IS NULL OR md.credits <= :maxCredits) " +
+       "AND (:searchTerm IS NULL OR " +
+       "LOWER(md.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
+       "LOWER(md.module_id) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
+       "LOWER(md.responsible) LIKE LOWER(CONCAT('%', :searchTerm, '%')))", 
+       nativeQuery = true)
+       List<ModuleDetails> findWithFilters(@Param("studyProgramId") Integer studyProgramId,
+                                          @Param("category") String category,
+                                          @Param("subcategory") String subcategory,
+                                          @Param("language") String language,
+                                          @Param("occurrence") String occurrence,
+                                          @Param("minCredits") Integer minCredits,
+                                          @Param("maxCredits") Integer maxCredits,
+                                          @Param("searchTerm") String searchTerm);
     // Semester-based filtering
     @Query("SELECT md FROM ModuleDetails md WHERE md.studyProgramId = :studyProgramId AND " +
            "(LOWER(md.occurrence) LIKE LOWER(CONCAT('%', :semester, '%')) OR " +

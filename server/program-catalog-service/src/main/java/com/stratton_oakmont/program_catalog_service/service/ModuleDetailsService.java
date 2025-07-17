@@ -175,11 +175,24 @@ public class ModuleDetailsService {
      * Advanced search with multiple filters
      */
     public List<ModuleDetails> searchWithFilters(Integer studyProgramId, String category, String subcategory,
-                                                 String language, String occurrence, Integer minCredits,
-                                                 Integer maxCredits, String searchTerm) {
+                                             String language, String occurrence, Integer minCredits,
+                                             Integer maxCredits, String searchTerm) {
+    try {
+        // Convert empty strings to null for proper query handling
+        category = (category != null && category.trim().isEmpty()) ? null : category;
+        subcategory = (subcategory != null && subcategory.trim().isEmpty()) ? null : subcategory;
+        language = (language != null && language.trim().isEmpty()) ? null : language;
+        occurrence = (occurrence != null && occurrence.trim().isEmpty()) ? null : occurrence;
+        searchTerm = (searchTerm != null && searchTerm.trim().isEmpty()) ? null : searchTerm;
+        
         return moduleDetailsRepository.findWithFilters(studyProgramId, category, subcategory, language,
                                                       occurrence, minCredits, maxCredits, searchTerm);
+    } catch (Exception e) {
+        // Log the error for debugging
+        //logger.error("Error in searchWithFilters: ", e);
+        throw new RuntimeException("Error searching modules with filters", e);
     }
+}
     
     /**
      * Get modules available in a specific semester
