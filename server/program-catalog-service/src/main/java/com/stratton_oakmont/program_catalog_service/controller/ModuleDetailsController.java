@@ -1,5 +1,8 @@
 package com.stratton_oakmont.program_catalog_service.controller;
 
+import com.stratton_oakmont.program_catalog_service.dto.CategoryStatisticsDto;
+import com.stratton_oakmont.program_catalog_service.dto.CurriculumOverviewDto;
+import com.stratton_oakmont.program_catalog_service.dto.ModuleSummaryDto;
 import com.stratton_oakmont.program_catalog_service.model.ModuleDetails;
 import com.stratton_oakmont.program_catalog_service.service.ModuleDetailsService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -49,6 +52,75 @@ public class ModuleDetailsController {
         return moduleDetails.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @Operation(summary = "Get curriculum overview", description = "Get comprehensive curriculum overview with statistics")
+    @GetMapping("/study-program/{studyProgramId}/overview")
+    public ResponseEntity<CurriculumOverviewDto> getCurriculumOverview(
+            @Parameter(description = "Study program ID") @PathVariable Integer studyProgramId) {
+        CurriculumOverviewDto overview = moduleDetailsService.getCurriculumOverview(studyProgramId);
+        return ResponseEntity.ok(overview);
+    }
+    
+    @Operation(summary = "Get category statistics", description = "Get statistics for each category including module counts and total credits")
+    @GetMapping("/study-program/{studyProgramId}/category-stats")
+    public ResponseEntity<List<CategoryStatisticsDto>> getCategoryStatistics(
+            @Parameter(description = "Study program ID") @PathVariable Integer studyProgramId) {
+        List<CategoryStatisticsDto> stats = moduleDetailsService.getCategoryStatistics(studyProgramId);
+        return ResponseEntity.ok(stats);
+    }
+    
+    @Operation(summary = "Get module summaries by category", description = "Get simplified module information for a specific category")
+    @GetMapping("/study-program/{studyProgramId}/category/{category}/summaries")
+    public ResponseEntity<List<ModuleSummaryDto>> getModuleSummariesByCategory(
+            @Parameter(description = "Study program ID") @PathVariable Integer studyProgramId,
+            @Parameter(description = "Category name") @PathVariable String category) {
+        List<ModuleSummaryDto> summaries = moduleDetailsService.getModuleSummariesByCategory(studyProgramId, category);
+        return ResponseEntity.ok(summaries);
+    }
+    
+    // TODO [ ]: doesnt work yet 
+    @Operation(summary = "Advanced search with filters", description = "Search modules with multiple filter options")
+    @GetMapping("/study-program/{studyProgramId}/advanced-search")
+    public ResponseEntity<List<ModuleDetails>> advancedSearch(
+            @Parameter(description = "Study program ID") @PathVariable Integer studyProgramId,
+            @Parameter(description = "Category filter") @RequestParam(required = false) String category,
+            @Parameter(description = "Subcategory filter") @RequestParam(required = false) String subcategory,
+            @Parameter(description = "Language filter") @RequestParam(required = false) String language,
+            @Parameter(description = "Occurrence filter") @RequestParam(required = false) String occurrence,
+            @Parameter(description = "Minimum credits") @RequestParam(required = false) Integer minCredits,
+            @Parameter(description = "Maximum credits") @RequestParam(required = false) Integer maxCredits,
+            @Parameter(description = "Search term") @RequestParam(required = false) String searchTerm) {
+        
+        List<ModuleDetails> modules = moduleDetailsService.searchWithFilters(
+            studyProgramId, category, subcategory, language, occurrence, minCredits, maxCredits, searchTerm);
+        return ResponseEntity.ok(modules);
+    }
+    
+    @Operation(summary = "Get modules by semester", description = "Get modules available in a specific semester")
+    @GetMapping("/study-program/{studyProgramId}/semester/{semester}")
+    public ResponseEntity<List<ModuleDetails>> getModulesBySemester(
+            @Parameter(description = "Study program ID") @PathVariable Integer studyProgramId,
+            @Parameter(description = "Semester (winter/summer)") @PathVariable String semester) {
+        List<ModuleDetails> modules = moduleDetailsService.getModulesBySemester(studyProgramId, semester);
+        return ResponseEntity.ok(modules);
+    }
+    
+    @Operation(summary = "Get distinct languages", description = "Get all unique languages for a study program")
+    @GetMapping("/study-program/{studyProgramId}/languages")
+    public ResponseEntity<List<String>> getDistinctLanguages(
+            @Parameter(description = "Study program ID") @PathVariable Integer studyProgramId) {
+        List<String> languages = moduleDetailsService.getDistinctLanguages(studyProgramId);
+        return ResponseEntity.ok(languages);
+    }
+    
+    @Operation(summary = "Get distinct occurrences", description = "Get all unique semester occurrences for a study program")
+    @GetMapping("/study-program/{studyProgramId}/occurrences")
+    public ResponseEntity<List<String>> getDistinctOccurrences(
+            @Parameter(description = "Study program ID") @PathVariable Integer studyProgramId) {
+        List<String> occurrences = moduleDetailsService.getDistinctOccurrences(studyProgramId);
+        return ResponseEntity.ok(occurrences);
+    }
+
     
     @Operation(summary = "Get modules by study program", description = "Retrieve all modules for a specific study program")
     @GetMapping("/study-program/{studyProgramId}")
@@ -76,6 +148,7 @@ public class ModuleDetailsController {
         return ResponseEntity.ok(modules);
     }
     
+    // TODO [ ]: doesnt work somehow in swagger yet
     @Operation(summary = "Get modules by occurrence", description = "Retrieve modules by semester occurrence (e.g., 'winter semester', 'summer semester')")
     @GetMapping("/study-program/{studyProgramId}/occurrence/{occurrence}")
     public ResponseEntity<List<ModuleDetails>> getModulesByOccurrence(

@@ -49,4 +49,46 @@ public interface ModuleDetailsRepository extends JpaRepository<ModuleDetails, In
     // Get all distinct subcategories for a study program and category
     @Query("SELECT DISTINCT md.subcategory FROM ModuleDetails md WHERE md.studyProgramId = :studyProgramId AND md.category = :category ORDER BY md.subcategory")
     List<String> findDistinctSubcategoriesByStudyProgramIdAndCategory(@Param("studyProgramId") Integer studyProgramId, @Param("category") String category);
+
+    @Query("SELECT DISTINCT md.language FROM ModuleDetails md WHERE md.studyProgramId = :studyProgramId AND md.language IS NOT NULL ORDER BY md.language")
+    List<String> findDistinctLanguagesByStudyProgramId(@Param("studyProgramId") Integer studyProgramId);
+    
+    @Query("SELECT DISTINCT md.occurrence FROM ModuleDetails md WHERE md.studyProgramId = :studyProgramId AND md.occurrence IS NOT NULL ORDER BY md.occurrence")
+    List<String> findDistinctOccurrencesByStudyProgramId(@Param("studyProgramId") Integer studyProgramId);
+    
+    @Query("SELECT md.category, COUNT(md), SUM(md.credits) FROM ModuleDetails md WHERE md.studyProgramId = :studyProgramId GROUP BY md.category ORDER BY md.category")
+    List<Object[]> findCategoryStatisticsByStudyProgramId(@Param("studyProgramId") Integer studyProgramId);
+    
+    @Query("SELECT COUNT(md) FROM ModuleDetails md WHERE md.studyProgramId = :studyProgramId")
+    Integer countByStudyProgramId(@Param("studyProgramId") Integer studyProgramId);
+    
+    @Query("SELECT SUM(md.credits) FROM ModuleDetails md WHERE md.studyProgramId = :studyProgramId")
+    Integer sumCreditsByStudyProgramId(@Param("studyProgramId") Integer studyProgramId);
+    
+    // Enhanced search with multiple filters
+    @Query("SELECT md FROM ModuleDetails md WHERE md.studyProgramId = :studyProgramId " +
+           "AND (:category IS NULL OR md.category = :category) " +
+           "AND (:subcategory IS NULL OR md.subcategory = :subcategory) " +
+           "AND (:language IS NULL OR md.language = :language) " +
+           "AND (:occurrence IS NULL OR md.occurrence = :occurrence) " +
+           "AND (:minCredits IS NULL OR md.credits >= :minCredits) " +
+           "AND (:maxCredits IS NULL OR md.credits <= :maxCredits) " +
+           "AND (:searchTerm IS NULL OR LOWER(md.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR LOWER(md.moduleId) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR LOWER(md.responsible) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
+    List<ModuleDetails> findWithFilters(@Param("studyProgramId") Integer studyProgramId,
+                                       @Param("category") String category,
+                                       @Param("subcategory") String subcategory,
+                                       @Param("language") String language,
+                                       @Param("occurrence") String occurrence,
+                                       @Param("minCredits") Integer minCredits,
+                                       @Param("maxCredits") Integer maxCredits,
+                                       @Param("searchTerm") String searchTerm);
+    
+    // Semester-based filtering
+    @Query("SELECT md FROM ModuleDetails md WHERE md.studyProgramId = :studyProgramId AND " +
+           "(LOWER(md.occurrence) LIKE LOWER(CONCAT('%', :semester, '%')) OR " +
+           "LOWER(md.occurrence) LIKE '%both%' OR " +
+           "LOWER(md.occurrence) LIKE '%winter/summer%' OR " +
+           "LOWER(md.occurrence) LIKE '%summer/winter%')")
+    List<ModuleDetails> findBySemesterAvailability(@Param("studyProgramId") Integer studyProgramId, @Param("semester") String semester);
+
 }
