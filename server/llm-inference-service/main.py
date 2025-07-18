@@ -175,9 +175,9 @@ def setup_weaviate():
         from weaviate import WeaviateClient
         weaviate_http_url = os.getenv("WEAVIATE_URL", "http://localhost:8080")
         weaviate_grpc_url = os.getenv("WEAVIATE_GRPC_URL", "http://localhost:50051")
-        connection_params = ConnectionParams.from_params(
-            http=weaviate_http_url,
-            grpc=weaviate_grpc_url
+        connection_params = ConnectionParams.grpc_both(
+            http_url=weaviate_http_url,
+            grpc_url=weaviate_grpc_url
         )
         weaviate_client = WeaviateClient(connection_params)
 
