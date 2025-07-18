@@ -150,11 +150,15 @@ def setup_weaviate():
     global weaviate_client, vector_store, embeddings
     
     try:
-        # Initialize Weaviate v4 client
+        # Initialize Weaviate v4 client with both HTTP and gRPC ports
+        from weaviate.connect import ConnectionParams
         weaviate_url = os.getenv("WEAVIATE_URL", "http://localhost:8080")
-        weaviate_client = weaviate.WeaviateClient(
-            connection_params=weaviate.ConnectionParams.from_url(weaviate_url)
+        grpc_port = int(os.getenv("WEAVIATE_GRPC_PORT", "50051"))
+        connection_params = ConnectionParams.from_url(
+            http_url=weaviate_url,
+            grpc_port=grpc_port
         )
+        weaviate_client = weaviate.WeaviateClient(connection_params=connection_params)
 
         # Use Gemini embeddings
         embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
