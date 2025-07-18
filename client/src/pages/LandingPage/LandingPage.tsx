@@ -12,13 +12,8 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import {
-  createStudyPlan,
-  StudyPlanApiError,
-} from "../../api/studyPlans";
-import type {
-  CreateStudyPlanRequest,
-} from "../../api/studyPlans";
+import { createStudyPlan, StudyPlanApiError } from "../../api/studyPlans";
+import type { CreateStudyPlanRequest } from "../../api/studyPlans";
 import { useStudyPlans } from "../../contexts/StudyPlansContext";
 import StudyProgramSelectionDialog from "../../components/ui/StudyProgramSelectionDialog";
 import {
@@ -57,7 +52,10 @@ const LandingPage: React.FC = () => {
   }, []);
 
   // Create new study plan from our dialog
-  const handleCreateStudyPlan = async (studyPlanName: string, program: { id: string; name: string; degree: string; }) => {
+  const handleCreateStudyPlan = async (
+    studyPlanName: string,
+    program: { id: string; name: string; degree: string }
+  ) => {
     try {
       // Map from our dialog's string id to API's expected format
       // For now, we'll use a mapping based on the program name until we integrate with real API
@@ -368,9 +366,9 @@ const LandingPage: React.FC = () => {
             }}
           >
             {[
-              { icon: MenuBook, label: "Courses", value: "120+" },
-              { icon: Assignment, label: "Study Plans", value: "50+" },
-              { icon: Business, label: "TUM Schools", value: "15" },
+              { icon: MenuBook, label: "Courses", value: "5000+" }, //TODO: Update with real data count
+              { icon: Assignment, label: "Study Programs", value: "500+" }, //TODO: Update with real data count
+              { icon: Business, label: "TUM Schools", value: "10+" }, //TODO: Update with real data count
             ].map((stat, index) => (
               <Box key={index} sx={{ textAlign: "center" }}>
                 <stat.icon sx={{ fontSize: "2rem", color: "#646cff", mb: 1 }} />
