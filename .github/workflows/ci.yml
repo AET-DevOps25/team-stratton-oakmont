@@ -1,6 +1,7 @@
 name: Continuous Integration
 
 on:
+  workflow_dispatch: # Allows manual triggering of the workflow
   pull_request: # Triggered on pull requests to main branch
     branches: [main]
 

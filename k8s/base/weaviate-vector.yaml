@@ -33,6 +33,7 @@ spec:
           image: semitechnologies/weaviate:latest
           ports:
             - containerPort: 8080
+            - containerPort: 50051
           env:
             - name: QUERY_DEFAULTS_LIMIT
               value: "25"

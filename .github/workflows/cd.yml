@@ -1,6 +1,7 @@
 name: Continuous Deployment
 
 on:
+  workflow_dispatch: # Allows manual triggering of the workflow
   push: # Triggered by merge to main branch
     branches: [main]
 
