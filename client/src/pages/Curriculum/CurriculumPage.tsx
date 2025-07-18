@@ -358,7 +358,7 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
             label={course.language}
             size="small"
             sx={{
-              backgroundColor: "#4caf50",
+              backgroundColor: "#666",
               color: "white",
               "& .MuiChip-icon": { color: "white" },
             }}
@@ -470,19 +470,35 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
   // Helper functions
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case "Master Thesis":
+      case "Master's Thesis":
         return "#9c27b0";
-      case "Required Modules Information Systems":
-      case "Mandatory Courses":
+      case "Required Modules":
         return "#f44336";
-      case "Practical Courses":
+      case "Practical Lab":
         return "#ff9800";
-      case "Cross-Disciplinary Electives":
+      case "Support Electives":
         return "#646cff";
-      case "Elective Modules in Interdisciplinary Fundamentals":
+      case "Elective Courses":
         return "#4caf50";
       default:
         return "#757575";
+    }
+  };
+
+  const getCategoryCreditsStatic = (category: string) => {
+    switch (category) {
+      case "Master's Thesis":
+        return 30;
+      case "Required Modules":
+        return 21;
+      case "Practical Lab":
+        return 10;
+      case "Support Electives":
+        return 6;
+      case "Elective Courses":
+        return 53;
+      default:
+        return 0;
     }
   };
 
@@ -688,12 +704,22 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
         {/* Header with Program Stats */}
         <Box sx={{ mb: 4 }}>
           <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-            <MenuBook sx={{ mr: 2, fontSize: "2.5rem", color: "#646cff" }} />
-            <Box>
-              <Typography variant="h3" sx={{ fontWeight: "bold", mb: 1 }}>
+            <MenuBook sx={{ mr: 2, fontSize: "2rem", color: "#646cff" }} />
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "baseline",
+                gap: 2,
+                flexWrap: "wrap",
+              }}
+            >
+              <Typography variant="h5" sx={{ fontWeight: "bold" }}>
                 {curriculumOverview?.programName || "M.Sc. Information Systems"}
               </Typography>
-              <Typography variant="h6" sx={{ color: "#aaa" }}>
+              <Typography
+                variant="body2"
+                sx={{ color: "#aaa", fontStyle: "italic" }}
+              >
                 Technical University of Munich
               </Typography>
             </Box>
@@ -704,11 +730,11 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
             <Grid container spacing={2} sx={{ mb: 3 }}>
               <Grid size={{ xs: 6, md: 3 }}>
                 <Card sx={{ backgroundColor: "#2a2a2a", color: "white" }}>
-                  <CardContent sx={{ textAlign: "center", p: 2 }}>
+                  <CardContent sx={{ textAlign: "center", p: 1.5 }}>
                     <School
-                      sx={{ fontSize: "2rem", color: "#646cff", mb: 1 }}
+                      sx={{ fontSize: "1.5rem", color: "#646cff", mb: 0.5 }}
                     />
-                    <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+                    <Typography variant="h5" sx={{ fontWeight: "bold" }}>
                       {programStatistics.totalAvailableModules}
                     </Typography>
                     <Typography variant="body2" sx={{ color: "#aaa" }}>
@@ -719,11 +745,11 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
               </Grid>
               <Grid size={{ xs: 6, md: 3 }}>
                 <Card sx={{ backgroundColor: "#2a2a2a", color: "white" }}>
-                  <CardContent sx={{ textAlign: "center", p: 2 }}>
+                  <CardContent sx={{ textAlign: "center", p: 1.5 }}>
                     <Assignment
-                      sx={{ fontSize: "2rem", color: "#4caf50", mb: 1 }}
+                      sx={{ fontSize: "1.5rem", color: "#4caf50", mb: 0.5 }}
                     />
-                    <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+                    <Typography variant="h5" sx={{ fontWeight: "bold" }}>
                       {programStatistics.totalAvailableCredits}
                     </Typography>
                     <Typography variant="body2" sx={{ color: "#aaa" }}>
@@ -734,11 +760,11 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
               </Grid>
               <Grid size={{ xs: 6, md: 3 }}>
                 <Card sx={{ backgroundColor: "#2a2a2a", color: "white" }}>
-                  <CardContent sx={{ textAlign: "center", p: 2 }}>
+                  <CardContent sx={{ textAlign: "center", p: 1.5 }}>
                     <CheckCircle
-                      sx={{ fontSize: "2rem", color: "#ff9800", mb: 1 }}
+                      sx={{ fontSize: "1.5rem", color: "#ff9800", mb: 0.5 }}
                     />
-                    <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+                    <Typography variant="h5" sx={{ fontWeight: "bold" }}>
                       120
                     </Typography>
                     <Typography variant="body2" sx={{ color: "#aaa" }}>
@@ -749,11 +775,11 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
               </Grid>
               <Grid size={{ xs: 6, md: 3 }}>
                 <Card sx={{ backgroundColor: "#2a2a2a", color: "white" }}>
-                  <CardContent sx={{ textAlign: "center", p: 2 }}>
+                  <CardContent sx={{ textAlign: "center", p: 1.5 }}>
                     <AccessTime
-                      sx={{ fontSize: "2rem", color: "#9c27b0", mb: 1 }}
+                      sx={{ fontSize: "1.5rem", color: "#9c27b0", mb: 0.5 }}
                     />
-                    <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+                    <Typography variant="h5" sx={{ fontWeight: "bold" }}>
                       4-6
                     </Typography>
                     <Typography variant="body2" sx={{ color: "#aaa" }}>
@@ -779,14 +805,14 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
           <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
             Program Structure Overview
           </Typography>
-          <Grid container spacing={3}>
+          <Grid container spacing={2}>
             {categories.map((category) => {
-              const categoryCredits = getCategoryCredits(category);
+              const categoryCredits = getCategoryCreditsStatic(category);
               const moduleCount = getCategoryModuleCount(category);
               const isSelected = selectedCategory === category;
 
               return (
-                <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }} key={category}>
+                <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2.4 }} key={category}>
                   <Card
                     sx={{
                       borderRadius: 3,
@@ -813,41 +839,24 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                     }}
                     onClick={() => handleCategoryFilter(category)}
                   >
-                    <CardContent sx={{ p: 3 }}>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "flex-start",
-                          mb: 2,
-                        }}
+                    <CardContent sx={{ p: 2, textAlign: "center" }}>
+                      <Typography
+                        variant="h4"
+                        sx={{ fontWeight: "bold", mb: 1 }}
                       >
-                        <Box>
-                          <Typography
-                            variant="h4"
-                            sx={{ fontWeight: "bold", mb: 1 }}
-                          >
-                            {categoryCredits}
-                          </Typography>
-                          <Typography
-                            variant="caption"
-                            sx={{ display: "block", mb: 1, opacity: 0.8 }}
-                          >
-                            ECTS Credits
-                          </Typography>
-                        </Box>
-                        <Chip
-                          icon={<School />}
-                          label={`${moduleCount} modules`}
-                          size="small"
-                          sx={{
-                            backgroundColor: "rgba(255,255,255,0.2)",
-                            color: "white",
-                          }}
-                        />
-                      </Box>
+                        {categoryCredits}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{ display: "block", mb: 2, opacity: 0.8 }}
+                      >
+                        ECTS Credits
+                      </Typography>
 
-                      <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{ fontWeight: 600, mb: 1 }}
+                      >
                         {category.length > 30
                           ? category
                               .replace(
@@ -861,92 +870,15 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                           : category}
                       </Typography>
 
-                      {/* Category-specific info */}
-                      {category.includes("Required") && (
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 1,
-                            mb: 1,
-                          }}
-                        >
-                          <CheckCircle
-                            sx={{
-                              fontSize: "1rem",
-                              color: "rgba(255,255,255,0.8)",
-                            }}
-                          />
-                          <Typography variant="caption" sx={{ opacity: 0.8 }}>
-                            Mandatory for graduation
-                          </Typography>
-                        </Box>
-                      )}
-
-                      {category.includes("Elective") && (
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 1,
-                            mb: 1,
-                          }}
-                        >
-                          <School
-                            sx={{
-                              fontSize: "1rem",
-                              color: "rgba(255,255,255,0.8)",
-                            }}
-                          />
-                          <Typography variant="caption" sx={{ opacity: 0.8 }}>
-                            Choose based on your interests
-                          </Typography>
-                        </Box>
-                      )}
-
-                      {category.includes("Practical") && (
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 1,
-                            mb: 1,
-                          }}
-                        >
-                          <Assignment
-                            sx={{
-                              fontSize: "1rem",
-                              color: "rgba(255,255,255,0.8)",
-                            }}
-                          />
-                          <Typography variant="caption" sx={{ opacity: 0.8 }}>
-                            Hands-on experience
-                          </Typography>
-                        </Box>
-                      )}
-
-                      {/* Progress bar for category completion */}
-                      <Box sx={{ mt: 2 }}>
-                        <LinearProgress
-                          variant="determinate"
-                          value={Math.min((categoryCredits / 120) * 100, 100)}
-                          sx={{
-                            height: 6,
-                            borderRadius: 3,
-                            backgroundColor: "rgba(255,255,255,0.2)",
-                            "& .MuiLinearProgress-bar": {
-                              backgroundColor: "rgba(255,255,255,0.8)",
-                            },
-                          }}
-                        />
-                        <Typography
-                          variant="caption"
-                          sx={{ opacity: 0.7, mt: 1, display: "block" }}
-                        >
-                          {((categoryCredits / 120) * 100).toFixed(1)}% of total
-                          program
-                        </Typography>
-                      </Box>
+                      <Chip
+                        icon={<School />}
+                        label={`${moduleCount} modules`}
+                        size="small"
+                        sx={{
+                          backgroundColor: "rgba(255, 255, 255, 0.2)",
+                          color: "white",
+                        }}
+                      />
                     </CardContent>
                   </Card>
                 </Grid>

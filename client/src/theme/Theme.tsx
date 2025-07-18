@@ -64,6 +64,7 @@ export const theme = createTheme({
           marginLeft: "var(--sidebar-width, 0px)",
           marginRight: "var(--ai-chat-width, 0px)",
           transition: "margin-left 0.3s ease, margin-right 0.3s ease",
+          marginTop: "64px",
         },
       },
       defaultProps: {
