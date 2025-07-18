@@ -41,6 +41,8 @@ e2e/*.map
 .idea/**/dictionaries
 .idea/**/shelf
 *.todo
+*.png
+zzz_nikolas
 
 # AWS User-specific
 .idea/**/aws.xml

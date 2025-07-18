@@ -1,3 +1,4 @@
+import { PROGRAM_CATALOG_API_URL } from "../config/api";
 export interface ModuleDetails {
   id: number;
   studyProgramId: number;
@@ -75,12 +76,6 @@ export interface Course {
 }
 
 class ModuleDetailsAPI {
-  private baseUrl: string;
-
-  constructor() {
-    // Use environment variable or fallback to localhost
-    this.baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
-  }
 
   /**
    * Get curriculum overview with statistics
@@ -89,7 +84,7 @@ class ModuleDetailsAPI {
     studyProgramId: number
   ): Promise<CurriculumOverviewDto> {
     const response = await fetch(
-      `${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/overview`
+      `${PROGRAM_CATALOG_API_URL}/api/v1/modules/study-program/${studyProgramId}/overview`
     );
     if (!response.ok) {
       throw new Error(
@@ -106,7 +101,7 @@ class ModuleDetailsAPI {
     studyProgramId: number
   ): Promise<CategoryStatisticsDto[]> {
     const response = await fetch(
-      `${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/category-stats`
+      `${PROGRAM_CATALOG_API_URL}/api/v1/modules/study-program/${studyProgramId}/category-stats`
     );
     if (!response.ok) {
       throw new Error(
@@ -123,7 +118,7 @@ class ModuleDetailsAPI {
     studyProgramId: number
   ): Promise<ModuleDetails[]> {
     const response = await fetch(
-      `${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}`
+      `${PROGRAM_CATALOG_API_URL}/api/v1/modules/study-program/${studyProgramId}`
     );
     if (!response.ok) {
       throw new Error(`Failed to fetch modules: ${response.statusText}`);
@@ -140,7 +135,7 @@ class ModuleDetailsAPI {
   ): Promise<ModuleDetails[]> {
     const encodedCategory = encodeURIComponent(category);
     const response = await fetch(
-      `${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/category/${encodedCategory}`
+      `${PROGRAM_CATALOG_API_URL}/api/v1/modules/study-program/${studyProgramId}/category/${encodedCategory}`
     );
     if (!response.ok) {
       throw new Error(
@@ -159,7 +154,7 @@ class ModuleDetailsAPI {
   ): Promise<ModuleSummaryDto[]> {
     const encodedCategory = encodeURIComponent(category);
     const response = await fetch(
-      `${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/category/${encodedCategory}/summaries`
+      `${PROGRAM_CATALOG_API_URL}/api/v1/modules/study-program/${studyProgramId}/category/${encodedCategory}/summaries`
     );
     if (!response.ok) {
       throw new Error(
@@ -196,7 +191,7 @@ class ModuleDetailsAPI {
     if (filters.searchTerm) params.append("searchTerm", filters.searchTerm);
 
     const response = await fetch(
-      `${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/advanced-search?${params}`
+      `${PROGRAM_CATALOG_API_URL}/api/v1/modules/study-program/${studyProgramId}/advanced-search?${params}`
     );
     if (!response.ok) {
       throw new Error(`Failed to search modules: ${response.statusText}`);
@@ -212,7 +207,7 @@ class ModuleDetailsAPI {
     semester: string
   ): Promise<ModuleDetails[]> {
     const response = await fetch(
-      `${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/semester/${semester}`
+      `${PROGRAM_CATALOG_API_URL}/api/v1/modules/study-program/${studyProgramId}/semester/${semester}`
     );
     if (!response.ok) {
       throw new Error(
@@ -227,7 +222,7 @@ class ModuleDetailsAPI {
    */
   async getDistinctCategories(studyProgramId: number): Promise<string[]> {
     const response = await fetch(
-      `${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/categories`
+      `${PROGRAM_CATALOG_API_URL}/api/v1/modules/study-program/${studyProgramId}/categories`
     );
     if (!response.ok) {
       throw new Error(`Failed to fetch categories: ${response.statusText}`);
@@ -244,7 +239,7 @@ class ModuleDetailsAPI {
   ): Promise<string[]> {
     const encodedCategory = encodeURIComponent(category);
     const response = await fetch(
-      `${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/categories/${encodedCategory}/subcategories`
+      `${PROGRAM_CATALOG_API_URL}/api/v1/modules/study-program/${studyProgramId}/categories/${encodedCategory}/subcategories`
     );
     if (!response.ok) {
       throw new Error(`Failed to fetch subcategories: ${response.statusText}`);
@@ -257,7 +252,7 @@ class ModuleDetailsAPI {
    */
   async getDistinctLanguages(studyProgramId: number): Promise<string[]> {
     const response = await fetch(
-      `${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/languages`
+      `${PROGRAM_CATALOG_API_URL}/api/v1/modules/study-program/${studyProgramId}/languages`
     );
     if (!response.ok) {
       throw new Error(`Failed to fetch languages: ${response.statusText}`);
@@ -270,7 +265,7 @@ class ModuleDetailsAPI {
    */
   async getDistinctOccurrences(studyProgramId: number): Promise<string[]> {
     const response = await fetch(
-      `${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/occurrences`
+      `${PROGRAM_CATALOG_API_URL}/api/v1/modules/study-program/${studyProgramId}/occurrences`
     );
     if (!response.ok) {
       throw new Error(`Failed to fetch occurrences: ${response.statusText}`);
@@ -285,7 +280,7 @@ class ModuleDetailsAPI {
     moduleId: string
   ): Promise<ModuleDetails | null> {
     const response = await fetch(
-      `${this.baseUrl}/api/v1/modules/module/${moduleId}`
+      `${PROGRAM_CATALOG_API_URL}/api/v1/modules/module/${moduleId}`
     );
     if (response.status === 404) {
       return null;
