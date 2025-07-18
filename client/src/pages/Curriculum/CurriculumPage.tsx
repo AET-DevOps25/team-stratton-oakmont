@@ -95,6 +95,9 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
   const [selectedCreditsRange, setSelectedCreditsRange] = useState<
     string | null
   >(null);
+  const [selectedCreditsRanges, setSelectedCreditsRanges] = useState<string[]>(
+    []
+  );
 
   // Advanced UI states
   const [filtersExpanded, setFiltersExpanded] = useState<boolean>(false);
@@ -207,17 +210,28 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
           selectedSubcategory ||
           selectedLanguage ||
           selectedOccurrence ||
-          selectedCreditsRange ||
+          selectedCreditsRanges.length > 0 ||
           debouncedSearchQuery;
 
         if (hasFilters) {
-          // Parse credits range
+          // Parse credits ranges for multiple selection
           let minCredits: number | undefined;
           let maxCredits: number | undefined;
-          if (selectedCreditsRange) {
-            const [min, max] = selectedCreditsRange.split("-").map(Number);
-            minCredits = min;
-            maxCredits = max;
+
+          if (selectedCreditsRanges.length > 0) {
+            const ranges = selectedCreditsRanges
+              .map((range) => {
+                if (range === "1-3") return { min: 1, max: 3 };
+                if (range === "4-6") return { min: 4, max: 6 };
+                if (range === "7+") return { min: 7, max: 999 };
+                return null;
+              })
+              .filter((r): r is { min: number; max: number } => r !== null);
+
+            if (ranges.length > 0) {
+              minCredits = Math.min(...ranges.map((r) => r.min));
+              maxCredits = Math.max(...ranges.map((r) => r.max));
+            }
           }
 
           const filters = {
@@ -256,8 +270,8 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
     selectedSubcategory,
     selectedLanguage,
     selectedOccurrence,
-    selectedCreditsRange,
-    debouncedSearchQuery, // Use debounced version
+    selectedCreditsRanges, // Updated from selectedCreditsRange
+    debouncedSearchQuery,
     courses,
     curriculumOverview,
   ]);
@@ -546,8 +560,16 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
     return "#757575"; // Gray for unclear
   };
 
-  const getCreditsRangeOptions = () => {
+  const getCreditsRangeOptions2 = () => {
     return ["1-3", "4-6", "7-9", "10-15", "16-30"];
+  };
+
+  const getCreditsRangeOptions = () => {
+    return [
+      { value: "1-3", label: "1-3 ECTS" },
+      { value: "4-6", label: "4-6 ECTS" },
+      { value: "7+", label: "7+ ECTS" },
+    ];
   };
 
   // Event handlers
@@ -580,7 +602,7 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
     setSelectedSubcategory(null);
     setSelectedLanguage(null);
     setSelectedOccurrence(null);
-    setSelectedCreditsRange(null);
+    setSelectedCreditsRanges([]); // Updated
     setSearchQuery("");
     setDebouncedSearchQuery("");
   };
@@ -591,9 +613,15 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
     if (selectedSubcategory) count++;
     if (selectedLanguage) count++;
     if (selectedOccurrence) count++;
-    if (selectedCreditsRange) count++;
+    if (selectedCreditsRanges.length > 0) count++; // Updated
     if (searchQuery) count++;
     return count;
+  };
+
+  const handleCreditsRangeToggle = (range: string) => {
+    setSelectedCreditsRanges((prev) =>
+      prev.includes(range) ? prev.filter((r) => r !== range) : [...prev, range]
+    );
   };
 
   const categories = categoryStats.map((stat) => stat.category);
@@ -1017,132 +1045,233 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
 
             {/* Advanced Filters */}
             <Collapse in={filtersExpanded}>
-              <Box sx={{ pt: 2, borderTop: "1px solid #444" }}>
-                <Typography variant="h6" sx={{ mb: 2, color: "#646cff" }}>
+              <Box sx={{ pt: 3, borderTop: "1px solid #444" }}>
+                <Typography
+                  variant="h6"
+                  sx={{ mb: 3, color: "#646cff", fontWeight: 600 }}
+                >
                   Advanced Filters
                 </Typography>
 
-                <Grid container spacing={3}>
-                  <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                    <FormControl fullWidth size="small">
-                      <InputLabel sx={{ color: "#aaa" }}>Language</InputLabel>
-                      <Select
-                        value={selectedLanguage || ""}
-                        onChange={(e) =>
-                          setSelectedLanguage(e.target.value || null)
-                        }
+                <Grid container spacing={4}>
+                  {/* Language Filter */}
+                  <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
+                    <Box sx={{ mb: 2 }}>
+                      <Typography
+                        variant="subtitle2"
                         sx={{
-                          color: "white",
-                          "& .MuiOutlinedInput-notchedOutline": {
-                            borderColor: "#555",
-                          },
-                          "&:hover .MuiOutlinedInput-notchedOutline": {
-                            borderColor: "#646cff",
-                          },
-                          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                            borderColor: "#646cff",
-                          },
+                          color: "#aaa",
+                          mb: 2,
+                          fontWeight: 600,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 1,
                         }}
                       >
-                        <MenuItem value="">All Languages</MenuItem>
-                        {availableLanguages.map((language) => (
-                          <MenuItem key={language} value={language}>
-                            <Box
-                              sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 1,
-                              }}
-                            >
-                              <Language sx={{ fontSize: "1rem" }} />
-                              {language}
-                            </Box>
+                        <Language sx={{ fontSize: "1.1rem" }} />
+                        Language
+                      </Typography>
+
+                      <FormControl fullWidth>
+                        <Select
+                          value={selectedLanguage || ""}
+                          onChange={(e) =>
+                            setSelectedLanguage(e.target.value || null)
+                          }
+                          displayEmpty
+                          sx={{
+                            backgroundColor: "#333",
+                            borderRadius: 3,
+                            color: "white",
+                            "& .MuiOutlinedInput-notchedOutline": {
+                              borderColor: "transparent",
+                            },
+                            "&:hover .MuiOutlinedInput-notchedOutline": {
+                              borderColor: "#646cff",
+                            },
+                            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                              borderColor: "#646cff",
+                              borderWidth: "2px",
+                            },
+                            "& .MuiSelect-icon": {
+                              color: "#aaa",
+                            },
+                            "& .MuiSelect-select": {
+                              py: 1.5,
+                            },
+                          }}
+                        >
+                          <MenuItem value="" sx={{ color: "#666" }}>
+                            All Languages
                           </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
+                          {availableLanguages.map((language) => (
+                            <MenuItem key={language} value={language}>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 1,
+                                }}
+                              >
+                                <Language
+                                  sx={{ fontSize: "1rem", color: "#646cff" }}
+                                />
+                                {language}
+                              </Box>
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Box>
                   </Grid>
 
-                  <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                    <FormControl fullWidth size="small">
-                      <InputLabel sx={{ color: "#aaa" }}>Semester</InputLabel>
-                      <Select
-                        value={selectedOccurrence || ""}
-                        onChange={(e) =>
-                          setSelectedOccurrence(e.target.value || null)
-                        }
+                  {/* Semester Filter */}
+                  <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
+                    <Box sx={{ mb: 2 }}>
+                      <Typography
+                        variant="subtitle2"
                         sx={{
-                          color: "white",
-                          "& .MuiOutlinedInput-notchedOutline": {
-                            borderColor: "#555",
-                          },
-                          "&:hover .MuiOutlinedInput-notchedOutline": {
-                            borderColor: "#646cff",
-                          },
-                          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                            borderColor: "#646cff",
-                          },
+                          color: "#aaa",
+                          mb: 2,
+                          fontWeight: 600,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 1,
                         }}
                       >
-                        <MenuItem value="">All Semesters</MenuItem>
-                        {availableOccurrences.map((occurrence) => (
-                          <MenuItem key={occurrence} value={occurrence}>
-                            <Box
-                              sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 1,
-                              }}
-                            >
-                              {getSemesterIcon(occurrence)}
-                              {occurrence}
-                            </Box>
+                        <CalendarToday sx={{ fontSize: "1.1rem" }} />
+                        Semester
+                      </Typography>
+
+                      <FormControl fullWidth>
+                        <Select
+                          value={selectedOccurrence || ""}
+                          onChange={(e) =>
+                            setSelectedOccurrence(e.target.value || null)
+                          }
+                          displayEmpty
+                          sx={{
+                            backgroundColor: "#333",
+                            borderRadius: 3,
+                            color: "white",
+                            "& .MuiOutlinedInput-notchedOutline": {
+                              borderColor: "transparent",
+                            },
+                            "&:hover .MuiOutlinedInput-notchedOutline": {
+                              borderColor: "#646cff",
+                            },
+                            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                              borderColor: "#646cff",
+                              borderWidth: "2px",
+                            },
+                            "& .MuiSelect-icon": {
+                              color: "#aaa",
+                            },
+                            "& .MuiSelect-select": {
+                              py: 1.5,
+                            },
+                          }}
+                        >
+                          <MenuItem value="" sx={{ color: "#666" }}>
+                            All Semesters
                           </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
+                          {availableOccurrences.map((occurrence) => (
+                            <MenuItem key={occurrence} value={occurrence}>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 1,
+                                }}
+                              >
+                                {getSemesterIcon(occurrence)}
+                                {occurrence}
+                              </Box>
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Box>
                   </Grid>
 
-                  <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                    <FormControl fullWidth size="small">
-                      <InputLabel sx={{ color: "#aaa" }}>
+                  {/* Credits Range Filter */}
+                  <Grid size={{ xs: 12, lg: 4 }}>
+                    <Box sx={{ mb: 2 }}>
+                      <Typography
+                        variant="subtitle2"
+                        sx={{
+                          color: "#aaa",
+                          mb: 2,
+                          fontWeight: 600,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 1,
+                        }}
+                      >
+                        <Assignment sx={{ fontSize: "1.1rem" }} />
                         Credits Range
-                      </InputLabel>
-                      <Select
-                        value={selectedCreditsRange || ""}
-                        onChange={(e) =>
-                          setSelectedCreditsRange(e.target.value || null)
-                        }
-                        sx={{
-                          color: "white",
-                          "& .MuiOutlinedInput-notchedOutline": {
-                            borderColor: "#555",
-                          },
-                          "&:hover .MuiOutlinedInput-notchedOutline": {
-                            borderColor: "#646cff",
-                          },
-                          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                            borderColor: "#646cff",
-                          },
-                        }}
-                      >
-                        <MenuItem value="">All Credits</MenuItem>
-                        {getCreditsRangeOptions().map((range) => (
-                          <MenuItem key={range} value={range}>
-                            <Box
-                              sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 1,
-                              }}
-                            >
-                              <Assignment sx={{ fontSize: "1rem" }} />
-                              {range} ECTS
-                            </Box>
-                          </MenuItem>
+                      </Typography>
+
+                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                        {getCreditsRangeOptions().map((option) => (
+                          <Chip
+                            key={option.value}
+                            label={option.label}
+                            onClick={() =>
+                              handleCreditsRangeToggle(option.value)
+                            }
+                            sx={{
+                              backgroundColor: selectedCreditsRanges.includes(
+                                option.value
+                              )
+                                ? "#646cff"
+                                : "#333",
+                              color: "white",
+                              border: selectedCreditsRanges.includes(
+                                option.value
+                              )
+                                ? "2px solid #646cff"
+                                : "2px solid #555",
+                              borderRadius: 3,
+                              px: 2,
+                              py: 1,
+                              fontWeight: 600,
+                              fontSize: "0.85rem",
+                              transition: "all 0.2s ease",
+                              "&:hover": {
+                                backgroundColor: selectedCreditsRanges.includes(
+                                  option.value
+                                )
+                                  ? "#535bf2"
+                                  : "#404040",
+                                borderColor: "#646cff",
+                                transform: "translateY(-1px)",
+                                boxShadow:
+                                  "0 4px 12px rgba(100, 108, 255, 0.3)",
+                              },
+                              "&:active": {
+                                transform: "translateY(0)",
+                              },
+                            }}
+                          />
                         ))}
-                      </Select>
-                    </FormControl>
+                      </Box>
+
+                      {selectedCreditsRanges.length > 0 && (
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "#646cff",
+                            mt: 1,
+                            display: "block",
+                            fontStyle: "italic",
+                          }}
+                        >
+                          {selectedCreditsRanges.length} range
+                          {selectedCreditsRanges.length > 1 ? "s" : ""} selected
+                        </Typography>
+                      )}
+                    </Box>
                   </Grid>
                 </Grid>
               </Box>
@@ -1160,6 +1289,7 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                   sx={{
                     backgroundColor: getCategoryColor(selectedCategory),
                     color: "white",
+                    "& .MuiChip-deleteIcon": { color: "white" },
                   }}
                 />
               )}
@@ -1167,7 +1297,11 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                 <Chip
                   label={`Subcategory: ${selectedSubcategory}`}
                   onDelete={() => setSelectedSubcategory(null)}
-                  sx={{ backgroundColor: "#646cff", color: "white" }}
+                  sx={{
+                    backgroundColor: "#646cff",
+                    color: "white",
+                    "& .MuiChip-deleteIcon": { color: "white" },
+                  }}
                 />
               )}
               {selectedLanguage && (
@@ -1175,7 +1309,11 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                   icon={<Language />}
                   label={selectedLanguage}
                   onDelete={() => setSelectedLanguage(null)}
-                  sx={{ backgroundColor: "#4caf50", color: "white" }}
+                  sx={{
+                    backgroundColor: "#757575",
+                    color: "white",
+                    "& .MuiChip-deleteIcon": { color: "white" },
+                  }}
                 />
               )}
               {selectedOccurrence && (
@@ -1186,15 +1324,20 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                   sx={{
                     backgroundColor: getSemesterColor(selectedOccurrence),
                     color: "white",
+                    "& .MuiChip-deleteIcon": { color: "white" },
                   }}
                 />
               )}
-              {selectedCreditsRange && (
+              {selectedCreditsRanges.length > 0 && (
                 <Chip
                   icon={<Assignment />}
-                  label={`${selectedCreditsRange} ECTS`}
-                  onDelete={() => setSelectedCreditsRange(null)}
-                  sx={{ backgroundColor: "#ff9800", color: "white" }}
+                  label={`Credits: ${selectedCreditsRanges.join(", ")}`}
+                  onDelete={() => setSelectedCreditsRanges([])}
+                  sx={{
+                    backgroundColor: "#757575",
+                    color: "white",
+                    "& .MuiChip-deleteIcon": { color: "white" },
+                  }}
                 />
               )}
             </Box>
