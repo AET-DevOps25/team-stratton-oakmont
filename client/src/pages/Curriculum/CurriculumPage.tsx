@@ -30,6 +30,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Pagination
 } from "@mui/material";
 import {
   MenuBook,
@@ -95,6 +96,10 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
 
   // Configuration
   const STUDY_PROGRAM_ID = 121; // M.Sc. Information Systems
+
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage] = useState<number>(12); // 12 courses per page
+  const [paginatedCourses, setPaginatedCourses] = useState<Course[]>([]);
 
   // Debounce search query to prevent API spam
   useEffect(() => {
@@ -226,6 +231,178 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
     curriculumOverview,
   ]);
 
+  // Memoized Course Card Component for better performance
+  const CourseCard = React.memo(({ course }: { course: Course }) => (
+    <Card
+      sx={{
+        backgroundColor: "#2a2a2a",
+        borderLeft: `6px solid ${getCategoryColor(course.category)}`,
+        borderRadius: 3,
+        transition: "all 0.3s ease",
+        cursor: "pointer",
+        "&:hover": {
+          backgroundColor: "#333",
+          transform: "translateY(-2px)",
+          boxShadow: `0 8px 24px rgba(${getCategoryColor(course.category).slice(1).match(/.{2}/g)?.map(hex => parseInt(hex, 16)).join(', ')}, 0.2)`,
+        },
+      }}
+      onClick={() => handleCourseClick(course)}
+    >
+      <CardContent sx={{ p: 3 }}>
+        {/* Course Header */}
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 2 }}>
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="h6" sx={{ color: "white", mb: 1, fontWeight: 600 }}>
+              {course.name}
+            </Typography>
+            <Typography variant="body2" sx={{ color: "#646cff", mb: 1, fontWeight: 500 }}>
+              {course.code}
+            </Typography>
+          </Box>
+          <Chip
+            label={`${course.credits} ECTS`}
+            sx={{
+              backgroundColor: getCategoryColor(course.category),
+              color: "white",
+              fontWeight: "bold",
+              fontSize: "0.9rem",
+            }}
+          />
+        </Box>
+        
+        {/* Course Tags */}
+        <Box sx={{ display: "flex", gap: 1, mb: 2, flexWrap: "wrap" }}>
+          <Chip
+            label={course.category.replace("Required Modules Information Systems", "Required IS")}
+            size="small"
+            sx={{ 
+              backgroundColor: getCategoryColor(course.category), 
+              color: "white",
+              fontWeight: 500,
+            }}
+          />
+          {course.subcategory && (
+            <Chip
+              label={course.subcategory}
+              size="small"
+              sx={{ backgroundColor: "#666", color: "white" }}
+            />
+          )}
+          
+          {/* Semester availability badge */}
+          <Chip
+            icon={getSemesterIcon(course.occurrence)}
+            label={course.occurrence}
+            size="small"
+            sx={{ 
+              backgroundColor: getSemesterColor(course.occurrence), 
+              color: "white",
+              "& .MuiChip-icon": { color: "white" }
+            }}
+          />
+          
+          {/* Language badge */}
+          <Chip
+            icon={<Language />}
+            label={course.language}
+            size="small"
+            sx={{ 
+              backgroundColor: "#4caf50", 
+              color: "white",
+              "& .MuiChip-icon": { color: "white" }
+            }}
+          />
+        </Box>
+
+        {/* Professor */}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
+          <Person sx={{ fontSize: "1rem", color: "#aaa" }} />
+          <Typography variant="body2" sx={{ color: "#aaa" }}>
+            <strong>Professor:</strong> {course.professor}
+          </Typography>
+        </Box>
+
+        {/* Description */}
+        {course.description && (
+          <Typography variant="body2" sx={{ color: "#ccc", lineHeight: 1.5, mb: 2 }}>
+            {course.description.length > 180 
+              ? `${course.description.substring(0, 180)}...` 
+              : course.description}
+          </Typography>
+        )}
+
+        {/* Prerequisites */}
+        {course.prerequisites && course.prerequisites.length > 0 && (
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="caption" sx={{ color: "#ff9800", fontWeight: 600, display: "block", mb: 1 }}>
+              Prerequisites:
+            </Typography>
+            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+              {course.prerequisites.slice(0, 3).map((prereq, index) => (
+                <Chip
+                  key={index}
+                  label={prereq}
+                  size="small"
+                  sx={{ 
+                    backgroundColor: "rgba(255, 152, 0, 0.2)", 
+                    color: "#ff9800",
+                    border: "1px solid #ff9800"
+                  }}
+                />
+              ))}
+              {course.prerequisites.length > 3 && (
+                <Chip
+                  label={`+${course.prerequisites.length - 3} more`}
+                  size="small"
+                  sx={{ 
+                    backgroundColor: "rgba(255, 152, 0, 0.1)", 
+                    color: "#ff9800",
+                  }}
+                />
+              )}
+            </Box>
+          </Box>
+        )}
+
+        {/* Click to view more indicator */}
+        <Box sx={{ 
+          display: "flex", 
+          justifyContent: "flex-end", 
+          alignItems: "center", 
+          mt: 2, 
+          gap: 1,
+          color: "#646cff",
+          opacity: 0.7
+        }}>
+          <Info sx={{ fontSize: "1rem" }} />
+          <Typography variant="caption">
+            Click for detailed information
+          </Typography>
+        </Box>
+      </CardContent>
+    </Card>
+  ));
+
+  // useEffect for pagination
+  useEffect(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentPageCourses = filteredCourses.slice(startIndex, endIndex);
+    setPaginatedCourses(currentPageCourses);
+  }, [filteredCourses, currentPage, itemsPerPage]);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [
+    selectedCategory,
+    selectedSubcategory,
+    selectedLanguage,
+    selectedOccurrence,
+    selectedCreditsRange,
+    debouncedSearchQuery,
+  ]);
+
   // Helper functions
   const getCategoryColor = (category: string) => {
     switch (category) {
@@ -334,6 +511,18 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
   };
 
   const categories = categoryStats.map(stat => stat.category);
+
+  // pagination helper functions
+  const totalPages = Math.ceil(filteredCourses.length / itemsPerPage);
+
+  const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
+    setCurrentPage(page);
+    // Smooth scroll to top of course list
+    const courseListElement = document.getElementById('course-list-section');
+    if (courseListElement) {
+      courseListElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   // Memoized calculations for performance
   const programStatistics = useMemo(() => {
@@ -478,7 +667,7 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                   <CardContent sx={{ textAlign: "center", p: 2 }}>
                     <AccessTime sx={{ fontSize: "2rem", color: "#9c27b0", mb: 1 }} />
                     <Typography variant="h4" sx={{ fontWeight: "bold" }}>
-                      4
+                      4-6
                     </Typography>
                     <Typography variant="body2" sx={{ color: "#aaa" }}>
                       Semesters
@@ -864,6 +1053,7 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
             backgroundColor: "#2a2a2a",
             borderRadius: 3,
           }}
+          id="course-list-section" // Add this ID for smooth scrolling
         >
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <Box>
@@ -871,8 +1061,12 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                 Search Results
               </Typography>
               <Typography variant="body1" sx={{ color: "#aaa" }}>
-                Showing <strong style={{ color: "#646cff" }}>{filteredCourses.length}</strong> of{" "}
-                <strong style={{ color: "#646cff" }}>{courses.length}</strong> available modules
+                Showing <strong style={{ color: "#646cff" }}>{(currentPage - 1) * itemsPerPage + 1}</strong>-
+                <strong style={{ color: "#646cff" }}>{Math.min(currentPage * itemsPerPage, filteredCourses.length)}</strong> of{" "}
+                <strong style={{ color: "#646cff" }}>{filteredCourses.length}</strong> modules
+                {filteredCourses.length !== courses.length && (
+                  <span> (filtered from {courses.length} total)</span>
+                )}
                 {selectedCategory && (
                   <span> in <strong style={{ color: getCategoryColor(selectedCategory) }}>
                     {selectedCategory.replace("Required Modules Information Systems", "Required IS Modules")}
@@ -892,6 +1086,15 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
               </Box>
             )}
           </Box>
+
+          {/* Page info for mobile */}
+          {totalPages > 1 && (
+            <Box sx={{ mt: 2, display: { xs: 'block', sm: 'none' } }}>
+              <Typography variant="body2" sx={{ color: "#646cff", textAlign: "center" }}>
+                Page {currentPage} of {totalPages}
+              </Typography>
+            </Box>
+          )}
         </Paper>
 
         {/* Enhanced Course List */}
@@ -926,160 +1129,65 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
             </Paper>
           ) : (
             <Grid container spacing={3}>
-              {filteredCourses.map((course) => (
+              {paginatedCourses.map((course) => (
                 <Grid size={{ xs: 12, lg: 6 }} key={course.id}>
-                  <Card
-                    sx={{
-                      backgroundColor: "#2a2a2a",
-                      borderLeft: `6px solid ${getCategoryColor(course.category)}`,
-                      borderRadius: 3,
-                      transition: "all 0.3s ease",
-                      cursor: "pointer",
-                      "&:hover": {
-                        backgroundColor: "#333",
-                        transform: "translateY(-2px)",
-                        boxShadow: `0 8px 24px rgba(${getCategoryColor(course.category).slice(1).match(/.{2}/g)?.map(hex => parseInt(hex, 16)).join(', ')}, 0.2)`,
-                      },
-                    }}
-                    onClick={() => handleCourseClick(course)}
-                  >
-                    <CardContent sx={{ p: 3 }}>
-                      {/* Course Header */}
-                      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 2 }}>
-                        <Box sx={{ flex: 1 }}>
-                          <Typography variant="h6" sx={{ color: "white", mb: 1, fontWeight: 600 }}>
-                            {course.name}
-                          </Typography>
-                          <Typography variant="body2" sx={{ color: "#646cff", mb: 1, fontWeight: 500 }}>
-                            {course.code}
-                          </Typography>
-                        </Box>
-                        <Chip
-                          label={`${course.credits} ECTS`}
-                          sx={{
-                            backgroundColor: getCategoryColor(course.category),
-                            color: "white",
-                            fontWeight: "bold",
-                            fontSize: "0.9rem",
-                          }}
-                        />
-                      </Box>
-                      
-                      {/* Course Tags */}
-                      <Box sx={{ display: "flex", gap: 1, mb: 2, flexWrap: "wrap" }}>
-                        <Chip
-                          label={course.category.replace("Required Modules Information Systems", "Required IS")}
-                          size="small"
-                          sx={{ 
-                            backgroundColor: getCategoryColor(course.category), 
-                            color: "white",
-                            fontWeight: 500,
-                          }}
-                        />
-                        {course.subcategory && (
-                          <Chip
-                            label={course.subcategory}
-                            size="small"
-                            sx={{ backgroundColor: "#666", color: "white" }}
-                          />
-                        )}
-                        
-                        {/* Semester availability badge */}
-                        <Chip
-                          icon={getSemesterIcon(course.occurrence)}
-                          label={course.occurrence}
-                          size="small"
-                          sx={{ 
-                            backgroundColor: getSemesterColor(course.occurrence), 
-                            color: "white",
-                            "& .MuiChip-icon": { color: "white" }
-                          }}
-                        />
-                        
-                        {/* Language badge */}
-                        <Chip
-                          icon={<Language />}
-                          label={course.language}
-                          size="small"
-                          sx={{ 
-                            backgroundColor: "#4caf50", 
-                            color: "white",
-                            "& .MuiChip-icon": { color: "white" }
-                          }}
-                        />
-                      </Box>
-
-                      {/* Professor */}
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
-                        <Person sx={{ fontSize: "1rem", color: "#aaa" }} />
-                        <Typography variant="body2" sx={{ color: "#aaa" }}>
-                          <strong>Professor:</strong> {course.professor}
-                        </Typography>
-                      </Box>
-
-                      {/* Description */}
-                      {course.description && (
-                        <Typography variant="body2" sx={{ color: "#ccc", lineHeight: 1.5, mb: 2 }}>
-                          {course.description.length > 180 
-                            ? `${course.description.substring(0, 180)}...` 
-                            : course.description}
-                        </Typography>
-                      )}
-
-                      {/* Prerequisites */}
-                      {course.prerequisites && course.prerequisites.length > 0 && (
-                        <Box sx={{ mt: 2 }}>
-                          <Typography variant="caption" sx={{ color: "#ff9800", fontWeight: 600, display: "block", mb: 1 }}>
-                            Prerequisites:
-                          </Typography>
-                          <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-                            {course.prerequisites.slice(0, 3).map((prereq, index) => (
-                              <Chip
-                                key={index}
-                                label={prereq}
-                                size="small"
-                                sx={{ 
-                                  backgroundColor: "rgba(255, 152, 0, 0.2)", 
-                                  color: "#ff9800",
-                                  border: "1px solid #ff9800"
-                                }}
-                              />
-                            ))}
-                            {course.prerequisites.length > 3 && (
-                              <Chip
-                                label={`+${course.prerequisites.length - 3} more`}
-                                size="small"
-                                sx={{ 
-                                  backgroundColor: "rgba(255, 152, 0, 0.1)", 
-                                  color: "#ff9800",
-                                }}
-                              />
-                            )}
-                          </Box>
-                        </Box>
-                      )}
-
-                      {/* Click to view more indicator */}
-                      <Box sx={{ 
-                        display: "flex", 
-                        justifyContent: "flex-end", 
-                        alignItems: "center", 
-                        mt: 2, 
-                        gap: 1,
-                        color: "#646cff",
-                        opacity: 0.7
-                      }}>
-                        <Info sx={{ fontSize: "1rem" }} />
-                        <Typography variant="caption">
-                          Click for detailed information
-                        </Typography>
-                      </Box>
-                    </CardContent>
-                  </Card>
+                  <CourseCard course={course} />
                 </Grid>
               ))}
             </Grid>
           )}
+
+          {/* Pagination Controls */}
+          {filteredCourses.length > 0 && totalPages > 1 && (
+            <Box sx={{ 
+              display: "flex", 
+              justifyContent: "center", 
+              alignItems: "center", 
+              mt: 4,
+              gap: 2,
+              flexWrap: "wrap"
+            }}>
+              <Pagination
+                count={totalPages}
+                page={currentPage}
+                onChange={handlePageChange}
+                color="primary"
+                size="large"
+                showFirstButton
+                showLastButton
+                sx={{
+                  "& .MuiPaginationItem-root": {
+                    color: "white",
+                    borderColor: "#555",
+                    "&:hover": {
+                      backgroundColor: "rgba(100, 108, 255, 0.1)",
+                      borderColor: "#646cff",
+                    },
+                    "&.Mui-selected": {
+                      backgroundColor: "#646cff",
+                      color: "white",
+                      "&:hover": {
+                        backgroundColor: "#535bf2",
+                      },
+                    },
+                  },
+                }}
+              />
+              
+              {/* Results info for larger screens */}
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: "#aaa",
+                  display: { xs: 'none', sm: 'block' },
+                  ml: 2
+                }}
+              >
+                {(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, filteredCourses.length)} of {filteredCourses.length}
+              </Typography>
+            </Box>
+          )}
+
         </Box>
 
         {/* Course Details Modal */}
