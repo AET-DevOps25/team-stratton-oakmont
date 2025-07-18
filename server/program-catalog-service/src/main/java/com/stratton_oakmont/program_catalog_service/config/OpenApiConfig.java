@@ -25,7 +25,7 @@ public class OpenApiConfig {
                 .description("Program Catalog Service");
 
         Contact contact = new Contact();
-        contact.setEmail("team@stratton-oakmont.com");
+        contact.setEmail("nikolas.lethaus@gmail.com");
         contact.setName("Team Stratton Oakmont");
 
         License mitLicense = new License()
@@ -36,7 +36,7 @@ public class OpenApiConfig {
                 .title("Program Catalog Service API")
                 .version("1.0")
                 .contact(contact)
-                .description("This API provides access to TUM degree programs, modules, and course catalog information.")
+                .description("This API provides access to TUM module catalog (e.g., Introduction to Deep Learning) and study programs (e.g., MSc Information System).")
                 .license(mitLicense);
 
         return new OpenAPI()

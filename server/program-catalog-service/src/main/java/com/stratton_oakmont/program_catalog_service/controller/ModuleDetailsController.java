@@ -9,10 +9,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -27,7 +31,10 @@ public class ModuleDetailsController {
     
     @Autowired
     private ModuleDetailsService moduleDetailsService;
-    
+
+    @Value("${admin.api.key:default-admin-key-change-me}")
+    private String adminApiKey;
+
     @Operation(summary = "Get all module details", description = "Retrieve all module details from the database")
     @GetMapping
     public ResponseEntity<List<ModuleDetails>> getAllModuleDetails() {
@@ -35,10 +42,10 @@ public class ModuleDetailsController {
         return ResponseEntity.ok(modules);
     }
     
-    @Operation(summary = "Get module details by ID", description = "Retrieve module details by database ID")
+    @Operation(summary = "Get module details by ID", description = "Retrieve module details by database ID (e.g., 1)")
     @GetMapping("/{id}")
     public ResponseEntity<ModuleDetails> getModuleDetailsById(
-            @Parameter(description = "Database ID of the module") @PathVariable Integer id) {
+            @Parameter(description = "Database ID of the module (e.g., 1)") @PathVariable Integer id) {
         Optional<ModuleDetails> moduleDetails = moduleDetailsService.getModuleDetailsById(id);
         return moduleDetails.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -183,31 +190,91 @@ public class ModuleDetailsController {
         return ResponseEntity.ok(subcategories);
     }
     
-    @Operation(summary = "Create module details", description = "Create new module details")
+    @Operation(summary = "Create module details", description = "Create new module details (Admin only)")
     @PostMapping
-    public ResponseEntity<ModuleDetails> createModuleDetails(@RequestBody ModuleDetails moduleDetails) {
-        ModuleDetails created = moduleDetailsService.createModuleDetails(moduleDetails);
-        return ResponseEntity.ok(created);
+    public ResponseEntity<?> createModuleDetails(
+            @RequestBody ModuleDetails moduleDetails,
+            @RequestHeader(value = "X-Admin-API-Key", required = false) String apiKey) {
+        
+        if (!isValidAdminApiKey(apiKey)) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "UNAUTHORIZED");
+            error.put("message", "Valid admin API key required for this operation");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+        }
+        
+        try {
+            ModuleDetails created = moduleDetailsService.createModuleDetails(moduleDetails);
+            return ResponseEntity.ok(created);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "CREATE_ERROR");
+            error.put("message", "Error creating module: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
     }
     
-    @Operation(summary = "Update module details", description = "Update existing module details")
+    @Operation(summary = "Update module details", description = "Update existing module details (Admin only)")
     @PutMapping("/{id}")
-    public ResponseEntity<ModuleDetails> updateModuleDetails(
+    public ResponseEntity<?> updateModuleDetails(
             @Parameter(description = "Database ID of the module") @PathVariable Integer id,
-            @RequestBody ModuleDetails moduleDetails) {
+            @RequestBody ModuleDetails moduleDetails,
+            @RequestHeader(value = "X-Admin-API-Key", required = false) String apiKey) {
+        
+        if (!isValidAdminApiKey(apiKey)) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "UNAUTHORIZED");
+            error.put("message", "Valid admin API key required for this operation");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+        }
+        
         try {
             ModuleDetails updated = moduleDetailsService.updateModuleDetails(id, moduleDetails);
             return ResponseEntity.ok(updated);
         } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "NOT_FOUND");
+            error.put("message", "Module not found with id: " + id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "UPDATE_ERROR");
+            error.put("message", "Error updating module: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
     }
     
-    @Operation(summary = "Delete module details", description = "Delete module details by ID")
+    @Operation(summary = "Delete module details", description = "Delete module details by ID (Admin only)")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteModuleDetails(
-            @Parameter(description = "Database ID of the module") @PathVariable Integer id) {
-        moduleDetailsService.deleteModuleDetails(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> deleteModuleDetails(
+            @Parameter(description = "Database ID of the module") @PathVariable Integer id,
+            @RequestHeader(value = "X-Admin-API-Key", required = false) String apiKey) {
+        
+        if (!isValidAdminApiKey(apiKey)) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "UNAUTHORIZED");
+            error.put("message", "Valid admin API key required for this operation");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+        }
+        
+        try {
+            moduleDetailsService.deleteModuleDetails(id);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Module deleted successfully");
+            response.put("deletedId", id.toString());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "DELETE_ERROR");
+            error.put("message", "Error deleting module: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+    }
+
+    /**
+     * Validates the admin API key
+     */
+    private boolean isValidAdminApiKey(String apiKey) {
+        return apiKey != null && !apiKey.trim().isEmpty() && adminApiKey.equals(apiKey);
     }
 }
