@@ -16,13 +16,7 @@ import {
   MenuItem,
   TextField,
 } from "@mui/material";
-import {
-  Add,
-  Refresh,
-  MoreHoriz,
-  Delete,
-  Edit,
-} from "@mui/icons-material";
+import { Add, Refresh, MoreHoriz, Delete, Edit } from "@mui/icons-material";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   getMyStudyPlans,
@@ -127,28 +121,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
   // Handle creating study plan with the new dialog
   const handleCreateStudyPlan = async (studyPlanName: string, program: any) => {
     try {
-      // Map the mock program to real API format
-      let studyProgramId = 1; // Default fallback
-      
-      // Map mock program names to real program IDs (this should be replaced with real API data)
-      const programMapping: { [key: string]: number } = {
-        "Information Systems": 1,
-        "Computer Science": 2,
-        "Data Science": 3,
-        "Artificial Intelligence": 4,
-        "Software Engineering": 5,
-        "Electrical Engineering": 6,
-        "Mechanical Engineering": 7,
-        "Business Administration": 8,
-      };
-      
-      if (programMapping[program.name]) {
-        studyProgramId = programMapping[program.name];
-      }
-
       const request: CreateStudyPlanRequest = {
         name: studyPlanName,
-        studyProgramId: studyProgramId,
+        studyProgramId: program.id, // Now using the real numeric ID from the backend
       };
 
       const newPlan = await createStudyPlan(request);
@@ -163,7 +138,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
         if (err.statusCode === 401) {
           setError("Authentication failed. Please log in again.");
         } else if (err.statusCode === 403) {
-          setError("Access denied. You don't have permission to create study plans.");
+          setError(
+            "Access denied. You don't have permission to create study plans."
+          );
         } else {
           setError(`Failed to create study plan: ${err.message}`);
         }

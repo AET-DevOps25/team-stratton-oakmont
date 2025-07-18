@@ -22,10 +22,12 @@ import {
   Checkbox,
 } from "@mui/material";
 import { Search, Close } from "@mui/icons-material";
+import { getStudyPrograms } from "../../api/studyPlans";
+import type { StudyProgramDto } from "../../api/studyPlans";
 
-// Study Program interface
+// Study Program interface - now using backend structure
 interface StudyProgram {
-  id: string;
+  id: number; // Changed from string to number
   name: string;
   degree: string; // Bachelor, Master, etc.
   fieldOfStudy: string;
@@ -34,6 +36,12 @@ interface StudyProgram {
   description?: string;
   language: string;
   location: string;
+  // Backend fields
+  curriculum: string;
+  fieldOfStudies: string;
+  ectsCredits: number;
+  semester: number;
+  curriculumLink?: string;
 }
 
 interface StudyProgramSelectionDialogProps {
@@ -54,146 +62,56 @@ const StudyProgramSelectionDialog: React.FC<
   const [order, setOrder] = useState<"asc" | "desc">("asc");
   const [selectedDegrees, setSelectedDegrees] = useState<string[]>([]);
   const [studyPlanName, setStudyPlanName] = useState<string>("");
-  const [selectedProgram, setSelectedProgram] = useState<StudyProgram | null>(null);
-
-  // Mock study programs data
-  const mockPrograms: StudyProgram[] = [
-    {
-      id: "is-master",
-      name: "Information Systems",
-      degree: "Master",
-      fieldOfStudy: "Computer Science",
-      credits: 120,
-      semesters: 4,
-      description:
-        "Master's program focusing on information systems, business processes, and IT management",
-      language: "English",
-      location: "Munich",
-    },
-    {
-      id: "cs-master",
-      name: "Computer Science",
-      degree: "Master",
-      fieldOfStudy: "Computer Science",
-      credits: 120,
-      semesters: 4,
-      description:
-        "Advanced computer science program covering algorithms, software engineering, and AI",
-      language: "English",
-      location: "Munich",
-    },
-    {
-      id: "ds-master",
-      name: "Data Science",
-      degree: "Master",
-      fieldOfStudy: "Data Science",
-      credits: 120,
-      semesters: 4,
-      description:
-        "Interdisciplinary program combining statistics, machine learning, and domain expertise",
-      language: "English",
-      location: "Munich",
-    },
-    {
-      id: "ai-master",
-      name: "Artificial Intelligence",
-      degree: "Master",
-      fieldOfStudy: "Computer Science",
-      credits: 120,
-      semesters: 4,
-      description:
-        "Specialized program in artificial intelligence, machine learning, and cognitive systems",
-      language: "English",
-      location: "Munich",
-    },
-    {
-      id: "se-master",
-      name: "Software Engineering",
-      degree: "Master",
-      fieldOfStudy: "Computer Science",
-      credits: 120,
-      semesters: 4,
-      description:
-        "Focus on large-scale software development, architecture, and project management",
-      language: "English",
-      location: "Munich",
-    },
-    {
-      id: "cs-bachelor",
-      name: "Computer Science",
-      degree: "Bachelor",
-      fieldOfStudy: "Computer Science",
-      credits: 180,
-      semesters: 6,
-      description:
-        "Comprehensive undergraduate program in computer science fundamentals",
-      language: "German",
-      location: "Munich",
-    },
-    {
-      id: "is-bachelor",
-      name: "Information Systems",
-      degree: "Bachelor",
-      fieldOfStudy: "Business Informatics",
-      credits: 180,
-      semesters: 6,
-      description:
-        "Undergraduate program combining business knowledge with IT skills",
-      language: "German",
-      location: "Munich",
-    },
-    {
-      id: "ee-master",
-      name: "Electrical Engineering",
-      degree: "Master",
-      fieldOfStudy: "Engineering",
-      credits: 120,
-      semesters: 4,
-      description:
-        "Advanced electrical engineering with focus on embedded systems and electronics",
-      language: "English",
-      location: "Munich",
-    },
-    {
-      id: "me-master",
-      name: "Mechanical Engineering",
-      degree: "Master",
-      fieldOfStudy: "Engineering",
-      credits: 120,
-      semesters: 4,
-      description:
-        "Mechanical engineering program with robotics and automation specialization",
-      language: "English",
-      location: "Munich",
-    },
-    {
-      id: "bwl-bachelor",
-      name: "Business Administration",
-      degree: "Bachelor",
-      fieldOfStudy: "Business",
-      credits: 180,
-      semesters: 6,
-      description:
-        "Comprehensive business administration program with management focus",
-      language: "German",
-      location: "Munich",
-    },
-  ];
-
-  // Get unique degrees from mock programs
-  const uniqueDegrees = Array.from(
-    new Set(mockPrograms.map((program) => program.degree))
+  const [selectedProgram, setSelectedProgram] = useState<StudyProgram | null>(
+    null
   );
+  const [uniqueDegrees, setUniqueDegrees] = useState<string[]>([]);
 
   const fetchPrograms = async () => {
     try {
       setLoading(true);
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      setPrograms(mockPrograms);
-      setFilteredPrograms(mockPrograms);
+      const studyProgramsData: StudyProgramDto[] = await getStudyPrograms();
+
+      // Transform backend data to frontend format
+      const transformedPrograms: StudyProgram[] = studyProgramsData.map(
+        (program) => ({
+          id: program.id,
+          name: program.curriculum || program.name || "Unknown Program",
+          degree: program.degree,
+          fieldOfStudy:
+            program.fieldOfStudies || program.fieldOfStudy || "Unknown Field",
+          credits: program.ectsCredits || program.credits || 0,
+          semesters: program.semester || program.semesters || 0,
+          description:
+            program.description ||
+            `${program.degree} program in ${
+              program.fieldOfStudies || "various fields"
+            }`,
+          language: program.language || "English",
+          location: program.location || "Munich",
+          // Keep backend fields
+          curriculum: program.curriculum,
+          fieldOfStudies: program.fieldOfStudies,
+          ectsCredits: program.ectsCredits,
+          semester: program.semester,
+          curriculumLink: program.curriculumLink,
+        })
+      );
+
+      setPrograms(transformedPrograms);
+      setFilteredPrograms(transformedPrograms);
+
+      // Update unique degrees
+      const degrees = Array.from(
+        new Set(transformedPrograms.map((program) => program.degree))
+      );
+      setUniqueDegrees(degrees);
     } catch (error) {
       console.error("Error fetching study programs:", error);
+      // Fallback to empty array on error
+      setPrograms([]);
+      setFilteredPrograms([]);
+      setUniqueDegrees([]);
     } finally {
       setLoading(false);
     }
@@ -285,7 +203,7 @@ const StudyProgramSelectionDialog: React.FC<
     if (target.closest('[role="checkbox"]')) {
       return; // Don't handle row click if checkbox was clicked
     }
-    
+
     handleProgramSelect(program);
   };
 
@@ -530,8 +448,14 @@ const StudyProgramSelectionDialog: React.FC<
                       "&:hover": { backgroundColor: "#333" },
                       borderBottom: "1px solid #444",
                       cursor: "pointer",
-                      backgroundColor: selectedProgram?.id === program.id ? "#404040" : "transparent",
-                      border: selectedProgram?.id === program.id ? "2px solid #646cff" : "none",
+                      backgroundColor:
+                        selectedProgram?.id === program.id
+                          ? "#404040"
+                          : "transparent",
+                      border:
+                        selectedProgram?.id === program.id
+                          ? "2px solid #646cff"
+                          : "none",
                     }}
                     onClick={(event) => handleRowClick(program, event)}
                   >
@@ -541,7 +465,7 @@ const StudyProgramSelectionDialog: React.FC<
                         onChange={() => handleProgramSelect(program)}
                         sx={{
                           color: "#646cff",
-                          '&.Mui-checked': {
+                          "&.Mui-checked": {
                             color: "#646cff",
                           },
                         }}
@@ -627,11 +551,13 @@ const StudyProgramSelectionDialog: React.FC<
           onClick={handleCreateStudyPlan}
           disabled={!studyPlanName.trim() || !selectedProgram}
           sx={{
-            backgroundColor: studyPlanName.trim() && selectedProgram ? "#646cff" : "#555",
+            backgroundColor:
+              studyPlanName.trim() && selectedProgram ? "#646cff" : "#555",
             color: "white",
             textTransform: "none",
             "&:hover": {
-              backgroundColor: studyPlanName.trim() && selectedProgram ? "#5a5acf" : "#555",
+              backgroundColor:
+                studyPlanName.trim() && selectedProgram ? "#5a5acf" : "#555",
             },
             "&:disabled": {
               backgroundColor: "#555",

@@ -455,6 +455,41 @@ public class StudyPlanController {
         }
     }
 
+    // GET /api/v1/study-programs - Get all available study programs
+    @GetMapping("/api/v1/study-programs")
+    public ResponseEntity<?> getAllStudyPrograms() {
+        try {
+            logger.info("Fetching all study programs");
+            List<StudyProgramDto> studyPrograms = programCatalogClient.getAllStudyPrograms();
+            return ResponseEntity.ok(studyPrograms);
+        } catch (Exception e) {
+            logger.error("Error fetching study programs: {}", e.getMessage(), e);
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "FETCH_ERROR");
+            error.put("message", "Error fetching study programs: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    // GET /api/v1/study-programs/search - Search study programs
+    @GetMapping("/api/v1/study-programs/search")
+    public ResponseEntity<?> searchStudyPrograms(
+            @RequestParam(required = false) String degree,
+            @RequestParam(required = false) String curriculum,
+            @RequestParam(required = false) String fieldOfStudies) {
+        try {
+            logger.info("Searching study programs with degree: {}, curriculum: {}, fieldOfStudies: {}", degree, curriculum, fieldOfStudies);
+            List<StudyProgramDto> studyPrograms = programCatalogClient.searchStudyPrograms(degree, curriculum, fieldOfStudies);
+            return ResponseEntity.ok(studyPrograms);
+        } catch (Exception e) {
+            logger.error("Error searching study programs: {}", e.getMessage(), e);
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "SEARCH_ERROR");
+            error.put("message", "Error searching study programs: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
     // Exception handlers
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(

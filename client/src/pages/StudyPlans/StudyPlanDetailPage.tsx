@@ -443,7 +443,7 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
     );
   }
 
-  const totalCredits = studyProgram?.totalCredits || 120;
+  const totalCredits = studyProgram?.ectsCredits || 120;
 
   return (
     <Box
@@ -524,14 +524,14 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
                   Degree Type
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2 }}>
-                  {studyProgram.degreeType}
+                  {studyProgram.degree}
                 </Typography>
 
                 <Typography variant="body2" sx={{ color: "#aaa", mb: 1 }}>
                   Total Credits Required
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2 }}>
-                  {studyProgram.totalCredits} ECTS
+                  {studyProgram.ectsCredits} ECTS
                 </Typography>
               </Grid>
               <Grid size={{ xs: 12, md: 6 }}>
@@ -539,7 +539,7 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
                   Duration
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2 }}>
-                  {studyProgram.semesterDuration} Semesters
+                  {studyProgram.semester} Semesters
                 </Typography>
 
                 <Typography variant="body2" sx={{ color: "#aaa", mb: 1 }}>

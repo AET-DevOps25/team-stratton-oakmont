@@ -16,10 +16,19 @@ export interface StudyPlanDto {
 }
 export interface StudyProgramDto {
   id: number;
-  name: string;
-  degreeType: string;
-  totalCredits: number;
-  semesterDuration: number;
+  degree: string;
+  curriculum: string;
+  fieldOfStudies: string;
+  ectsCredits: number;
+  semester: number;
+  curriculumLink?: string;
+  // Convenience properties for frontend compatibility
+  name?: string; // Maps to curriculum
+  fieldOfStudy?: string; // Maps to fieldOfStudies
+  credits?: number; // Maps to ectsCredits
+  semesters?: number; // Maps to semester
+  language?: string;
+  location?: string;
   description?: string;
 }
 
@@ -82,6 +91,7 @@ export const getMyStudyPlans = async (): Promise<StudyPlanDto[]> => {
 
 // API service function to get all study programs
 export const getStudyPrograms = async (): Promise<StudyProgramDto[]> => {
+  // Temporarily use program-catalog-service directly for testing
   const response = await fetch(`${PROGRAM_CATALOG_API_URL}/study-programs`, {
     method: "GET",
     headers: {
@@ -99,7 +109,60 @@ export const getStudyPrograms = async (): Promise<StudyProgramDto[]> => {
     );
   }
 
-  return data;
+  // Transform the data to add compatibility properties
+  return data.map((program: StudyProgramDto) => ({
+    ...program,
+    name: program.curriculum,
+    fieldOfStudy: program.fieldOfStudies,
+    credits: program.ectsCredits,
+    semesters: program.semester,
+    language: "English", // Default value - could be enhanced later
+    location: "Munich", // Default value - could be enhanced later
+  }));
+};
+
+// API service function to search study programs
+export const searchStudyPrograms = async (
+  degree?: string,
+  curriculum?: string,
+  fieldOfStudies?: string
+): Promise<StudyProgramDto[]> => {
+  const params = new URLSearchParams();
+  if (degree) params.append("degree", degree);
+  if (curriculum) params.append("curriculum", curriculum);
+  if (fieldOfStudies) params.append("fieldOfStudies", fieldOfStudies);
+
+  const url = `${STUDY_PLAN_API_URL}/study-programs/search${
+    params.toString() ? `?${params.toString()}` : ""
+  }`;
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new StudyPlanApiError(
+      response.status,
+      data.error || "SEARCH_FAILED",
+      data.message || "Failed to search study programs"
+    );
+  }
+
+  // Transform the data to add compatibility properties
+  return data.map((program: StudyProgramDto) => ({
+    ...program,
+    name: program.curriculum,
+    fieldOfStudy: program.fieldOfStudies,
+    credits: program.ectsCredits,
+    semesters: program.semester,
+    language: "English", // Default value - could be enhanced later
+    location: "Munich", // Default value - could be enhanced later
+  }));
 };
 
 // API service function to create a new study plan

@@ -54,27 +54,12 @@ const LandingPage: React.FC = () => {
   // Create new study plan from our dialog
   const handleCreateStudyPlan = async (
     studyPlanName: string,
-    program: { id: string; name: string; degree: string }
+    program: { id: number; name: string; degree: string }
   ) => {
     try {
-      // Map from our dialog's string id to API's expected format
-      // For now, we'll use a mapping based on the program name until we integrate with real API
-      const programIdMapping: { [key: string]: number } = {
-        "is-master": 1,
-        "cs-master": 2,
-        "ds-master": 3,
-        "ai-master": 4,
-        "se-master": 5,
-        "cs-bachelor": 6,
-        "is-bachelor": 7,
-        "ee-master": 8,
-        "me-master": 9,
-        "bwl-bachelor": 10,
-      };
-
       const request: CreateStudyPlanRequest = {
         name: studyPlanName,
-        studyProgramId: programIdMapping[program.id] || 1, // fallback to 1
+        studyProgramId: program.id, // Now using the real numeric ID from the backend
       };
 
       const newPlan = await createStudyPlan(request);

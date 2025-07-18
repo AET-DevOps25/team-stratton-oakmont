@@ -58,6 +58,36 @@ public class StudyProgramController {
         }
     }
     
+    // GET /api/v1/study-programs/search - Search study programs with optional filters
+    @GetMapping("/search")
+    public ResponseEntity<List<StudyProgramDto>> searchStudyPrograms(
+            @RequestParam(required = false) String degree,
+            @RequestParam(required = false) String curriculum,
+            @RequestParam(required = false) String fieldOfStudies) {
+        try {
+            List<StudyProgram> programs;
+            
+            // Apply search filters based on available parameters
+            if (degree != null && !degree.trim().isEmpty()) {
+                programs = studyProgramService.searchStudyProgramsByDegree(degree);
+            } else if (curriculum != null && !curriculum.trim().isEmpty()) {
+                programs = studyProgramService.searchStudyProgramsByCurriculum(curriculum);
+            } else if (fieldOfStudies != null && !fieldOfStudies.trim().isEmpty()) {
+                programs = studyProgramService.getStudyProgramsByFieldOfStudies(fieldOfStudies);
+            } else {
+                // If no filters, return all programs
+                programs = studyProgramService.getAllStudyPrograms();
+            }
+            
+            List<StudyProgramDto> dtos = programs.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+            return ResponseEntity.ok(dtos);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    
     private StudyProgramDto convertToDto(StudyProgram program) {
         StudyProgramDto dto = new StudyProgramDto();
         dto.setId(program.getId());
