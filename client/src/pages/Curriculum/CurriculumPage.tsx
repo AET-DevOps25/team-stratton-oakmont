@@ -30,7 +30,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Pagination
+  Pagination,
 } from "@mui/material";
 import {
   MenuBook,
@@ -54,12 +54,12 @@ import {
 } from "@mui/icons-material";
 
 // Import our API
-import { 
-  moduleDetailsAPI, 
-  type Course, 
-  type CurriculumOverviewDto, 
+import {
+  moduleDetailsAPI,
+  type Course,
+  type CurriculumOverviewDto,
   type CategoryStatisticsDto,
-  type ModuleDetails
+  type ModuleDetails,
 } from "../../api/moduleDetails";
 
 interface CurriculumPageProps {}
@@ -68,9 +68,12 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
   // Data states
   const [courses, setCourses] = useState<Course[]>([]);
   const [filteredCourses, setFilteredCourses] = useState<Course[]>([]);
-  const [curriculumOverview, setCurriculumOverview] = useState<CurriculumOverviewDto | null>(null);
-  const [categoryStats, setCategoryStats] = useState<CategoryStatisticsDto[]>([]);
-  
+  const [curriculumOverview, setCurriculumOverview] =
+    useState<CurriculumOverviewDto | null>(null);
+  const [categoryStats, setCategoryStats] = useState<CategoryStatisticsDto[]>(
+    []
+  );
+
   // UI states
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -79,20 +82,32 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
 
   // Filter states
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
-  const [availableSubcategories, setAvailableSubcategories] = useState<string[]>([]);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(
+    null
+  );
+  const [availableSubcategories, setAvailableSubcategories] = useState<
+    string[]
+  >([]);
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
-  const [selectedOccurrence, setSelectedOccurrence] = useState<string | null>(null);
-  const [selectedCreditsRange, setSelectedCreditsRange] = useState<string | null>(null);
-  
+  const [selectedOccurrence, setSelectedOccurrence] = useState<string | null>(
+    null
+  );
+  const [selectedCreditsRange, setSelectedCreditsRange] = useState<
+    string | null
+  >(null);
+
   // Advanced UI states
   const [filtersExpanded, setFiltersExpanded] = useState<boolean>(false);
-  const [selectedCourse, setSelectedCourse] = useState<ModuleDetails | null>(null);
+  const [selectedCourse, setSelectedCourse] = useState<ModuleDetails | null>(
+    null
+  );
   const [courseDetailsOpen, setCourseDetailsOpen] = useState<boolean>(false);
-  
+
   // Available filter options
   const [availableLanguages, setAvailableLanguages] = useState<string[]>([]);
-  const [availableOccurrences, setAvailableOccurrences] = useState<string[]>([]);
+  const [availableOccurrences, setAvailableOccurrences] = useState<string[]>(
+    []
+  );
 
   // Configuration
   const STUDY_PROGRAM_ID = 121; // M.Sc. Information Systems
@@ -130,18 +145,21 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
 
       // Convert all modules from categories to courses
       const allCourses: Course[] = [];
-      stats.forEach(categoryData => {
-        categoryData.modules.forEach(module => {
-          allCourses.push(moduleDetailsAPI.convertModuleSummaryToCourse(module));
+      stats.forEach((categoryData) => {
+        categoryData.modules.forEach((module) => {
+          allCourses.push(
+            moduleDetailsAPI.convertModuleSummaryToCourse(module)
+          );
         });
       });
 
       setCourses(allCourses);
       setFilteredCourses(allCourses);
-
     } catch (err) {
       console.error("Error fetching curriculum data:", err);
-      setError(err instanceof Error ? err.message : "Failed to load curriculum data");
+      setError(
+        err instanceof Error ? err.message : "Failed to load curriculum data"
+      );
     } finally {
       setLoading(false);
     }
@@ -150,7 +168,10 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
   // Fetch subcategories when category changes
   const fetchSubcategories = async (category: string) => {
     try {
-      const subcategories = await moduleDetailsAPI.getDistinctSubcategories(STUDY_PROGRAM_ID, category);
+      const subcategories = await moduleDetailsAPI.getDistinctSubcategories(
+        STUDY_PROGRAM_ID,
+        category
+      );
       setAvailableSubcategories(subcategories);
     } catch (err) {
       console.error("Error fetching subcategories:", err);
@@ -181,19 +202,24 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
         let filteredCourses: Course[] = [];
 
         // Check if we have any active filters
-        const hasFilters = selectedCategory || selectedSubcategory || selectedLanguage || 
-                          selectedOccurrence || selectedCreditsRange || debouncedSearchQuery;
+        const hasFilters =
+          selectedCategory ||
+          selectedSubcategory ||
+          selectedLanguage ||
+          selectedOccurrence ||
+          selectedCreditsRange ||
+          debouncedSearchQuery;
 
         if (hasFilters) {
           // Parse credits range
           let minCredits: number | undefined;
           let maxCredits: number | undefined;
           if (selectedCreditsRange) {
-            const [min, max] = selectedCreditsRange.split('-').map(Number);
+            const [min, max] = selectedCreditsRange.split("-").map(Number);
             minCredits = min;
             maxCredits = max;
           }
-          
+
           const filters = {
             category: selectedCategory || undefined,
             subcategory: selectedSubcategory || undefined,
@@ -204,8 +230,13 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
             searchTerm: debouncedSearchQuery || undefined,
           };
 
-          const modules = await moduleDetailsAPI.advancedSearch(STUDY_PROGRAM_ID, filters);
-          filteredCourses = modules.map(module => moduleDetailsAPI.convertModuleDetailsToCourse(module));
+          const modules = await moduleDetailsAPI.advancedSearch(
+            STUDY_PROGRAM_ID,
+            filters
+          );
+          filteredCourses = modules.map((module) =>
+            moduleDetailsAPI.convertModuleDetailsToCourse(module)
+          );
         } else {
           // No filters, show all courses
           filteredCourses = courses;
@@ -243,19 +274,36 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
         "&:hover": {
           backgroundColor: "#333",
           transform: "translateY(-2px)",
-          boxShadow: `0 8px 24px rgba(${getCategoryColor(course.category).slice(1).match(/.{2}/g)?.map(hex => parseInt(hex, 16)).join(', ')}, 0.2)`,
+          boxShadow: `0 8px 24px rgba(${getCategoryColor(course.category)
+            .slice(1)
+            .match(/.{2}/g)
+            ?.map((hex) => parseInt(hex, 16))
+            .join(", ")}, 0.2)`,
         },
       }}
       onClick={() => handleCourseClick(course)}
     >
       <CardContent sx={{ p: 3 }}>
         {/* Course Header */}
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 2 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            mb: 2,
+          }}
+        >
           <Box sx={{ flex: 1 }}>
-            <Typography variant="h6" sx={{ color: "white", mb: 1, fontWeight: 600 }}>
+            <Typography
+              variant="h6"
+              sx={{ color: "white", mb: 1, fontWeight: 600 }}
+            >
               {course.name}
             </Typography>
-            <Typography variant="body2" sx={{ color: "#646cff", mb: 1, fontWeight: 500 }}>
+            <Typography
+              variant="body2"
+              sx={{ color: "#646cff", mb: 1, fontWeight: 500 }}
+            >
               {course.code}
             </Typography>
           </Box>
@@ -269,14 +317,17 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
             }}
           />
         </Box>
-        
+
         {/* Course Tags */}
         <Box sx={{ display: "flex", gap: 1, mb: 2, flexWrap: "wrap" }}>
           <Chip
-            label={course.category.replace("Required Modules Information Systems", "Required IS")}
+            label={course.category.replace(
+              "Required Modules Information Systems",
+              "Required IS"
+            )}
             size="small"
-            sx={{ 
-              backgroundColor: getCategoryColor(course.category), 
+            sx={{
+              backgroundColor: getCategoryColor(course.category),
               color: "white",
               fontWeight: 500,
             }}
@@ -288,28 +339,28 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
               sx={{ backgroundColor: "#666", color: "white" }}
             />
           )}
-          
+
           {/* Semester availability badge */}
           <Chip
             icon={getSemesterIcon(course.occurrence)}
             label={course.occurrence}
             size="small"
-            sx={{ 
-              backgroundColor: getSemesterColor(course.occurrence), 
+            sx={{
+              backgroundColor: getSemesterColor(course.occurrence),
               color: "white",
-              "& .MuiChip-icon": { color: "white" }
+              "& .MuiChip-icon": { color: "white" },
             }}
           />
-          
+
           {/* Language badge */}
           <Chip
             icon={<Language />}
             label={course.language}
             size="small"
-            sx={{ 
-              backgroundColor: "#4caf50", 
+            sx={{
+              backgroundColor: "#4caf50",
               color: "white",
-              "& .MuiChip-icon": { color: "white" }
+              "& .MuiChip-icon": { color: "white" },
             }}
           />
         </Box>
@@ -324,9 +375,12 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
 
         {/* Description */}
         {course.description && (
-          <Typography variant="body2" sx={{ color: "#ccc", lineHeight: 1.5, mb: 2 }}>
-            {course.description.length > 180 
-              ? `${course.description.substring(0, 180)}...` 
+          <Typography
+            variant="body2"
+            sx={{ color: "#ccc", lineHeight: 1.5, mb: 2 }}
+          >
+            {course.description.length > 180
+              ? `${course.description.substring(0, 180)}...`
               : course.description}
           </Typography>
         )}
@@ -334,7 +388,15 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
         {/* Prerequisites */}
         {course.prerequisites && course.prerequisites.length > 0 && (
           <Box sx={{ mt: 2 }}>
-            <Typography variant="caption" sx={{ color: "#ff9800", fontWeight: 600, display: "block", mb: 1 }}>
+            <Typography
+              variant="caption"
+              sx={{
+                color: "#ff9800",
+                fontWeight: 600,
+                display: "block",
+                mb: 1,
+              }}
+            >
               Prerequisites:
             </Typography>
             <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
@@ -343,10 +405,10 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                   key={index}
                   label={prereq}
                   size="small"
-                  sx={{ 
-                    backgroundColor: "rgba(255, 152, 0, 0.2)", 
+                  sx={{
+                    backgroundColor: "rgba(255, 152, 0, 0.2)",
                     color: "#ff9800",
-                    border: "1px solid #ff9800"
+                    border: "1px solid #ff9800",
                   }}
                 />
               ))}
@@ -354,8 +416,8 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                 <Chip
                   label={`+${course.prerequisites.length - 3} more`}
                   size="small"
-                  sx={{ 
-                    backgroundColor: "rgba(255, 152, 0, 0.1)", 
+                  sx={{
+                    backgroundColor: "rgba(255, 152, 0, 0.1)",
                     color: "#ff9800",
                   }}
                 />
@@ -365,15 +427,17 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
         )}
 
         {/* Click to view more indicator */}
-        <Box sx={{ 
-          display: "flex", 
-          justifyContent: "flex-end", 
-          alignItems: "center", 
-          mt: 2, 
-          gap: 1,
-          color: "#646cff",
-          opacity: 0.7
-        }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "center",
+            mt: 2,
+            gap: 1,
+            color: "#646cff",
+            opacity: 0.7,
+          }}
+        >
           <Info sx={{ fontSize: "1rem" }} />
           <Typography variant="caption">
             Click for detailed information
@@ -423,22 +487,29 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
   };
 
   const getCategoryCredits = (category: string) => {
-    const categoryData = categoryStats.find(stat => stat.category === category);
+    const categoryData = categoryStats.find(
+      (stat) => stat.category === category
+    );
     return categoryData ? categoryData.totalCredits : 0;
   };
 
   const getCategoryModuleCount = (category: string) => {
-    const categoryData = categoryStats.find(stat => stat.category === category);
+    const categoryData = categoryStats.find(
+      (stat) => stat.category === category
+    );
     return categoryData ? categoryData.moduleCount : 0;
   };
 
   const getSemesterIcon = (occurrence: string) => {
     const lowerOccurrence = occurrence.toLowerCase();
-    if (lowerOccurrence.includes('winter') && lowerOccurrence.includes('summer')) {
+    if (
+      lowerOccurrence.includes("winter") &&
+      lowerOccurrence.includes("summer")
+    ) {
       return <CalendarToday sx={{ fontSize: "1rem" }} />;
-    } else if (lowerOccurrence.includes('winter')) {
+    } else if (lowerOccurrence.includes("winter")) {
       return <AcUnit sx={{ fontSize: "1rem" }} />;
-    } else if (lowerOccurrence.includes('summer')) {
+    } else if (lowerOccurrence.includes("summer")) {
       return <WbSunny sx={{ fontSize: "1rem" }} />;
     }
     return <Schedule sx={{ fontSize: "1rem" }} />;
@@ -446,24 +517,21 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
 
   const getSemesterColor = (occurrence: string) => {
     const lowerOccurrence = occurrence.toLowerCase();
-    if (lowerOccurrence.includes('winter') && lowerOccurrence.includes('summer')) {
+    if (
+      lowerOccurrence.includes("winter") &&
+      lowerOccurrence.includes("summer")
+    ) {
       return "#4caf50"; // Green for both semesters
-    } else if (lowerOccurrence.includes('winter')) {
+    } else if (lowerOccurrence.includes("winter")) {
       return "#2196f3"; // Blue for winter
-    } else if (lowerOccurrence.includes('summer')) {
+    } else if (lowerOccurrence.includes("summer")) {
       return "#ff9800"; // Orange for summer
     }
     return "#757575"; // Gray for unclear
   };
 
   const getCreditsRangeOptions = () => {
-    return [
-      "1-3",
-      "4-6", 
-      "7-9",
-      "10-15",
-      "16-30"
-    ];
+    return ["1-3", "4-6", "7-9", "10-15", "16-30"];
   };
 
   // Event handlers
@@ -479,7 +547,9 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
 
   const handleCourseClick = async (course: Course) => {
     try {
-      const moduleDetails = await moduleDetailsAPI.getModuleDetailsByModuleId(course.code);
+      const moduleDetails = await moduleDetailsAPI.getModuleDetailsByModuleId(
+        course.code
+      );
       if (moduleDetails) {
         setSelectedCourse(moduleDetails);
         setCourseDetailsOpen(true);
@@ -510,27 +580,36 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
     return count;
   };
 
-  const categories = categoryStats.map(stat => stat.category);
+  const categories = categoryStats.map((stat) => stat.category);
 
   // pagination helper functions
   const totalPages = Math.ceil(filteredCourses.length / itemsPerPage);
 
-  const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
+  const handlePageChange = (
+    event: React.ChangeEvent<unknown>,
+    page: number
+  ) => {
     setCurrentPage(page);
     // Smooth scroll to top of course list
-    const courseListElement = document.getElementById('course-list-section');
+    const courseListElement = document.getElementById("course-list-section");
     if (courseListElement) {
-      courseListElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      courseListElement.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
 
   // Memoized calculations for performance
   const programStatistics = useMemo(() => {
     if (!curriculumOverview) return null;
-    
-    const totalAvailableCredits = categoryStats.reduce((sum, cat) => sum + cat.totalCredits, 0);
-    const totalAvailableModules = categoryStats.reduce((sum, cat) => sum + cat.moduleCount, 0);
-    
+
+    const totalAvailableCredits = categoryStats.reduce(
+      (sum, cat) => sum + cat.totalCredits,
+      0
+    );
+    const totalAvailableModules = categoryStats.reduce(
+      (sum, cat) => sum + cat.moduleCount,
+      0
+    );
+
     return {
       totalAvailableCredits,
       totalAvailableModules,
@@ -575,13 +654,13 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
         }}
       >
         <Container maxWidth="lg">
-          <Alert 
-            severity="error" 
-            sx={{ 
+          <Alert
+            severity="error"
+            sx={{
               mb: 2,
               backgroundColor: "#2a1a1a",
               color: "white",
-              "& .MuiAlert-icon": { color: "#f44336" }
+              "& .MuiAlert-icon": { color: "#f44336" },
             }}
             action={
               <Button color="inherit" onClick={fetchCurriculumData}>
@@ -626,7 +705,9 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
               <Grid size={{ xs: 6, md: 3 }}>
                 <Card sx={{ backgroundColor: "#2a2a2a", color: "white" }}>
                   <CardContent sx={{ textAlign: "center", p: 2 }}>
-                    <School sx={{ fontSize: "2rem", color: "#646cff", mb: 1 }} />
+                    <School
+                      sx={{ fontSize: "2rem", color: "#646cff", mb: 1 }}
+                    />
                     <Typography variant="h4" sx={{ fontWeight: "bold" }}>
                       {programStatistics.totalAvailableModules}
                     </Typography>
@@ -639,7 +720,9 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
               <Grid size={{ xs: 6, md: 3 }}>
                 <Card sx={{ backgroundColor: "#2a2a2a", color: "white" }}>
                   <CardContent sx={{ textAlign: "center", p: 2 }}>
-                    <Assignment sx={{ fontSize: "2rem", color: "#4caf50", mb: 1 }} />
+                    <Assignment
+                      sx={{ fontSize: "2rem", color: "#4caf50", mb: 1 }}
+                    />
                     <Typography variant="h4" sx={{ fontWeight: "bold" }}>
                       {programStatistics.totalAvailableCredits}
                     </Typography>
@@ -652,7 +735,9 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
               <Grid size={{ xs: 6, md: 3 }}>
                 <Card sx={{ backgroundColor: "#2a2a2a", color: "white" }}>
                   <CardContent sx={{ textAlign: "center", p: 2 }}>
-                    <CheckCircle sx={{ fontSize: "2rem", color: "#ff9800", mb: 1 }} />
+                    <CheckCircle
+                      sx={{ fontSize: "2rem", color: "#ff9800", mb: 1 }}
+                    />
                     <Typography variant="h4" sx={{ fontWeight: "bold" }}>
                       120
                     </Typography>
@@ -665,7 +750,9 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
               <Grid size={{ xs: 6, md: 3 }}>
                 <Card sx={{ backgroundColor: "#2a2a2a", color: "white" }}>
                   <CardContent sx={{ textAlign: "center", p: 2 }}>
-                    <AccessTime sx={{ fontSize: "2rem", color: "#9c27b0", mb: 1 }} />
+                    <AccessTime
+                      sx={{ fontSize: "2rem", color: "#9c27b0", mb: 1 }}
+                    />
                     <Typography variant="h4" sx={{ fontWeight: "bold" }}>
                       4-6
                     </Typography>
@@ -697,32 +784,55 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
               const categoryCredits = getCategoryCredits(category);
               const moduleCount = getCategoryModuleCount(category);
               const isSelected = selectedCategory === category;
-              
+
               return (
                 <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }} key={category}>
                   <Card
                     sx={{
                       borderRadius: 3,
-                      backgroundColor: isSelected ? getCategoryColor(category) : "#333",
+                      backgroundColor: isSelected
+                        ? getCategoryColor(category)
+                        : "#333",
                       color: "white",
                       cursor: "pointer",
                       transition: "all 0.3s ease",
-                      border: isSelected ? `3px solid ${getCategoryColor(category)}` : "3px solid transparent",
+                      border: isSelected
+                        ? `3px solid ${getCategoryColor(category)}`
+                        : "3px solid transparent",
                       "&:hover": {
-                        backgroundColor: isSelected ? getCategoryColor(category) : "#404040",
+                        backgroundColor: isSelected
+                          ? getCategoryColor(category)
+                          : "#404040",
                         transform: "translateY(-4px)",
-                        boxShadow: `0 8px 24px rgba(${getCategoryColor(category).slice(1).match(/.{2}/g)?.map(hex => parseInt(hex, 16)).join(', ')}, 0.3)`,
+                        boxShadow: `0 8px 24px rgba(${getCategoryColor(category)
+                          .slice(1)
+                          .match(/.{2}/g)
+                          ?.map((hex) => parseInt(hex, 16))
+                          .join(", ")}, 0.3)`,
                       },
                     }}
                     onClick={() => handleCategoryFilter(category)}
                   >
                     <CardContent sx={{ p: 3 }}>
-                      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 2 }}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "flex-start",
+                          mb: 2,
+                        }}
+                      >
                         <Box>
-                          <Typography variant="h4" sx={{ fontWeight: "bold", mb: 1 }}>
+                          <Typography
+                            variant="h4"
+                            sx={{ fontWeight: "bold", mb: 1 }}
+                          >
                             {categoryCredits}
                           </Typography>
-                          <Typography variant="caption" sx={{ display: "block", mb: 1, opacity: 0.8 }}>
+                          <Typography
+                            variant="caption"
+                            sx={{ display: "block", mb: 1, opacity: 0.8 }}
+                          >
                             ECTS Credits
                           </Typography>
                         </Box>
@@ -736,42 +846,85 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                           }}
                         />
                       </Box>
-                      
+
                       <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-                        {category.length > 30 ? 
-                          category.replace("Required Modules Information Systems", "Required IS Modules")
-                                  .replace("Elective Modules in Interdisciplinary Fundamentals", "Interdisciplinary Electives") 
+                        {category.length > 30
+                          ? category
+                              .replace(
+                                "Required Modules Information Systems",
+                                "Required IS Modules"
+                              )
+                              .replace(
+                                "Elective Modules in Interdisciplinary Fundamentals",
+                                "Interdisciplinary Electives"
+                              )
                           : category}
                       </Typography>
-                      
+
                       {/* Category-specific info */}
                       {category.includes("Required") && (
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-                          <CheckCircle sx={{ fontSize: "1rem", color: "rgba(255,255,255,0.8)" }} />
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                            mb: 1,
+                          }}
+                        >
+                          <CheckCircle
+                            sx={{
+                              fontSize: "1rem",
+                              color: "rgba(255,255,255,0.8)",
+                            }}
+                          />
                           <Typography variant="caption" sx={{ opacity: 0.8 }}>
                             Mandatory for graduation
                           </Typography>
                         </Box>
                       )}
-                      
+
                       {category.includes("Elective") && (
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-                          <School sx={{ fontSize: "1rem", color: "rgba(255,255,255,0.8)" }} />
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                            mb: 1,
+                          }}
+                        >
+                          <School
+                            sx={{
+                              fontSize: "1rem",
+                              color: "rgba(255,255,255,0.8)",
+                            }}
+                          />
                           <Typography variant="caption" sx={{ opacity: 0.8 }}>
                             Choose based on your interests
                           </Typography>
                         </Box>
                       )}
-                      
+
                       {category.includes("Practical") && (
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-                          <Assignment sx={{ fontSize: "1rem", color: "rgba(255,255,255,0.8)" }} />
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                            mb: 1,
+                          }}
+                        >
+                          <Assignment
+                            sx={{
+                              fontSize: "1rem",
+                              color: "rgba(255,255,255,0.8)",
+                            }}
+                          />
                           <Typography variant="caption" sx={{ opacity: 0.8 }}>
                             Hands-on experience
                           </Typography>
                         </Box>
                       )}
-                      
+
                       {/* Progress bar for category completion */}
                       <Box sx={{ mt: 2 }}>
                         <LinearProgress
@@ -786,8 +939,12 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                             },
                           }}
                         />
-                        <Typography variant="caption" sx={{ opacity: 0.7, mt: 1, display: "block" }}>
-                          {((categoryCredits / 120) * 100).toFixed(1)}% of total program
+                        <Typography
+                          variant="caption"
+                          sx={{ opacity: 0.7, mt: 1, display: "block" }}
+                        >
+                          {((categoryCredits / 120) * 100).toFixed(1)}% of total
+                          program
                         </Typography>
                       </Box>
                     </CardContent>
@@ -817,7 +974,8 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                 <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={subcat}>
                   <Card
                     sx={{
-                      backgroundColor: selectedSubcategory === subcat ? "#646cff" : "#444",
+                      backgroundColor:
+                        selectedSubcategory === subcat ? "#646cff" : "#444",
                       color: "white",
                       cursor: "pointer",
                       transition: "all 0.2s ease",
@@ -825,17 +983,24 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                       display: "flex",
                       alignItems: "center",
                       "&:hover": {
-                        backgroundColor: selectedSubcategory === subcat ? "#646cff" : "#555",
+                        backgroundColor:
+                          selectedSubcategory === subcat ? "#646cff" : "#555",
                         transform: "translateY(-2px)",
                       },
                       borderRadius: 3,
                     }}
                     onClick={() => {
-                      setSelectedSubcategory(selectedSubcategory === subcat ? null : subcat);
+                      setSelectedSubcategory(
+                        selectedSubcategory === subcat ? null : subcat
+                      );
                     }}
                   >
-                    <CardContent sx={{ textAlign: "center", p: 2, width: "100%" }}>
-                      <School sx={{ fontSize: "1.5rem", color: "#646cff", mb: 1 }} />
+                    <CardContent
+                      sx={{ textAlign: "center", p: 2, width: "100%" }}
+                    >
+                      <School
+                        sx={{ fontSize: "1.5rem", color: "#646cff", mb: 1 }}
+                      />
                       <Typography variant="body2" sx={{ fontWeight: 500 }}>
                         {subcat}
                       </Typography>
@@ -882,7 +1047,7 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                   "& .MuiInputBase-input": { color: "white" },
                 }}
               />
-              
+
               <Button
                 variant="outlined"
                 startIcon={<FilterList />}
@@ -890,7 +1055,10 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                 sx={{
                   borderColor: "#646cff",
                   color: "#646cff",
-                  "&:hover": { borderColor: "#646cff", backgroundColor: "rgba(100, 108, 255, 0.1)" },
+                  "&:hover": {
+                    borderColor: "#646cff",
+                    backgroundColor: "rgba(100, 108, 255, 0.1)",
+                  },
                 }}
               >
                 Filters ({getActiveFilterCount()})
@@ -904,7 +1072,10 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                   sx={{
                     borderColor: "#f44336",
                     color: "#f44336",
-                    "&:hover": { borderColor: "#f44336", backgroundColor: "rgba(244, 67, 54, 0.1)" },
+                    "&:hover": {
+                      borderColor: "#f44336",
+                      backgroundColor: "rgba(244, 67, 54, 0.1)",
+                    },
                   }}
                 >
                   Clear
@@ -918,25 +1089,39 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                 <Typography variant="h6" sx={{ mb: 2, color: "#646cff" }}>
                   Advanced Filters
                 </Typography>
-                
+
                 <Grid container spacing={3}>
                   <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                     <FormControl fullWidth size="small">
                       <InputLabel sx={{ color: "#aaa" }}>Language</InputLabel>
                       <Select
                         value={selectedLanguage || ""}
-                        onChange={(e) => setSelectedLanguage(e.target.value || null)}
+                        onChange={(e) =>
+                          setSelectedLanguage(e.target.value || null)
+                        }
                         sx={{
                           color: "white",
-                          "& .MuiOutlinedInput-notchedOutline": { borderColor: "#555" },
-                          "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#646cff" },
-                          "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#646cff" },
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            borderColor: "#555",
+                          },
+                          "&:hover .MuiOutlinedInput-notchedOutline": {
+                            borderColor: "#646cff",
+                          },
+                          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                            borderColor: "#646cff",
+                          },
                         }}
                       >
                         <MenuItem value="">All Languages</MenuItem>
                         {availableLanguages.map((language) => (
                           <MenuItem key={language} value={language}>
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                              }}
+                            >
                               <Language sx={{ fontSize: "1rem" }} />
                               {language}
                             </Box>
@@ -951,18 +1136,32 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                       <InputLabel sx={{ color: "#aaa" }}>Semester</InputLabel>
                       <Select
                         value={selectedOccurrence || ""}
-                        onChange={(e) => setSelectedOccurrence(e.target.value || null)}
+                        onChange={(e) =>
+                          setSelectedOccurrence(e.target.value || null)
+                        }
                         sx={{
                           color: "white",
-                          "& .MuiOutlinedInput-notchedOutline": { borderColor: "#555" },
-                          "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#646cff" },
-                          "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#646cff" },
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            borderColor: "#555",
+                          },
+                          "&:hover .MuiOutlinedInput-notchedOutline": {
+                            borderColor: "#646cff",
+                          },
+                          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                            borderColor: "#646cff",
+                          },
                         }}
                       >
                         <MenuItem value="">All Semesters</MenuItem>
                         {availableOccurrences.map((occurrence) => (
                           <MenuItem key={occurrence} value={occurrence}>
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                              }}
+                            >
                               {getSemesterIcon(occurrence)}
                               {occurrence}
                             </Box>
@@ -974,21 +1173,37 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
 
                   <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                     <FormControl fullWidth size="small">
-                      <InputLabel sx={{ color: "#aaa" }}>Credits Range</InputLabel>
+                      <InputLabel sx={{ color: "#aaa" }}>
+                        Credits Range
+                      </InputLabel>
                       <Select
                         value={selectedCreditsRange || ""}
-                        onChange={(e) => setSelectedCreditsRange(e.target.value || null)}
+                        onChange={(e) =>
+                          setSelectedCreditsRange(e.target.value || null)
+                        }
                         sx={{
                           color: "white",
-                          "& .MuiOutlinedInput-notchedOutline": { borderColor: "#555" },
-                          "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#646cff" },
-                          "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#646cff" },
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            borderColor: "#555",
+                          },
+                          "&:hover .MuiOutlinedInput-notchedOutline": {
+                            borderColor: "#646cff",
+                          },
+                          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                            borderColor: "#646cff",
+                          },
                         }}
                       >
                         <MenuItem value="">All Credits</MenuItem>
                         {getCreditsRangeOptions().map((range) => (
                           <MenuItem key={range} value={range}>
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                              }}
+                            >
                               <Assignment sx={{ fontSize: "1rem" }} />
                               {range} ECTS
                             </Box>
@@ -1005,9 +1220,15 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
             <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 2 }}>
               {selectedCategory && (
                 <Chip
-                  label={`Category: ${selectedCategory.replace("Required Modules Information Systems", "Required IS")}`}
+                  label={`Category: ${selectedCategory.replace(
+                    "Required Modules Information Systems",
+                    "Required IS"
+                  )}`}
                   onDelete={() => setSelectedCategory(null)}
-                  sx={{ backgroundColor: getCategoryColor(selectedCategory), color: "white" }}
+                  sx={{
+                    backgroundColor: getCategoryColor(selectedCategory),
+                    color: "white",
+                  }}
                 />
               )}
               {selectedSubcategory && (
@@ -1030,7 +1251,10 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                   icon={getSemesterIcon(selectedOccurrence)}
                   label={selectedOccurrence}
                   onDelete={() => setSelectedOccurrence(null)}
-                  sx={{ backgroundColor: getSemesterColor(selectedOccurrence), color: "white" }}
+                  sx={{
+                    backgroundColor: getSemesterColor(selectedOccurrence),
+                    color: "white",
+                  }}
                 />
               )}
               {selectedCreditsRange && (
@@ -1055,32 +1279,68 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
           }}
           id="course-list-section" // Add this ID for smooth scrolling
         >
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
             <Box>
               <Typography variant="h6" sx={{ color: "white", mb: 1 }}>
                 Search Results
               </Typography>
               <Typography variant="body1" sx={{ color: "#aaa" }}>
-                Showing <strong style={{ color: "#646cff" }}>{(currentPage - 1) * itemsPerPage + 1}</strong>-
-                <strong style={{ color: "#646cff" }}>{Math.min(currentPage * itemsPerPage, filteredCourses.length)}</strong> of{" "}
-                <strong style={{ color: "#646cff" }}>{filteredCourses.length}</strong> modules
+                Showing{" "}
+                <strong style={{ color: "#646cff" }}>
+                  {(currentPage - 1) * itemsPerPage + 1}
+                </strong>
+                -
+                <strong style={{ color: "#646cff" }}>
+                  {Math.min(currentPage * itemsPerPage, filteredCourses.length)}
+                </strong>{" "}
+                of{" "}
+                <strong style={{ color: "#646cff" }}>
+                  {filteredCourses.length}
+                </strong>{" "}
+                modules
                 {filteredCourses.length !== courses.length && (
                   <span> (filtered from {courses.length} total)</span>
                 )}
                 {selectedCategory && (
-                  <span> in <strong style={{ color: getCategoryColor(selectedCategory) }}>
-                    {selectedCategory.replace("Required Modules Information Systems", "Required IS Modules")}
-                  </strong></span>
+                  <span>
+                    {" "}
+                    in{" "}
+                    <strong
+                      style={{ color: getCategoryColor(selectedCategory) }}
+                    >
+                      {selectedCategory.replace(
+                        "Required Modules Information Systems",
+                        "Required IS Modules"
+                      )}
+                    </strong>
+                  </span>
                 )}
                 {searchQuery && (
-                  <span> matching "<strong style={{ color: "#646cff" }}>{searchQuery}</strong>"</span>
+                  <span>
+                    {" "}
+                    matching "
+                    <strong style={{ color: "#646cff" }}>{searchQuery}</strong>"
+                  </span>
                 )}
               </Typography>
             </Box>
-            
+
             {/* Search indicator */}
             {searchQuery !== debouncedSearchQuery && (
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1, color: "#646cff" }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  color: "#646cff",
+                }}
+              >
                 <CircularProgress size={16} sx={{ color: "#646cff" }} />
                 <Typography variant="caption">Searching...</Typography>
               </Box>
@@ -1089,8 +1349,11 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
 
           {/* Page info for mobile */}
           {totalPages > 1 && (
-            <Box sx={{ mt: 2, display: { xs: 'block', sm: 'none' } }}>
-              <Typography variant="body2" sx={{ color: "#646cff", textAlign: "center" }}>
+            <Box sx={{ mt: 2, display: { xs: "block", sm: "none" } }}>
+              <Typography
+                variant="body2"
+                sx={{ color: "#646cff", textAlign: "center" }}
+              >
                 Page {currentPage} of {totalPages}
               </Typography>
             </Box>
@@ -1113,7 +1376,8 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                 No modules found
               </Typography>
               <Typography variant="body1" sx={{ color: "#666", mb: 3 }}>
-                Try adjusting your search criteria or filters to find more courses
+                Try adjusting your search criteria or filters to find more
+                courses
               </Typography>
               <Button
                 variant="outlined"
@@ -1121,7 +1385,10 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                 sx={{
                   borderColor: "#646cff",
                   color: "#646cff",
-                  "&:hover": { borderColor: "#646cff", backgroundColor: "rgba(100, 108, 255, 0.1)" },
+                  "&:hover": {
+                    borderColor: "#646cff",
+                    backgroundColor: "rgba(100, 108, 255, 0.1)",
+                  },
                 }}
               >
                 Clear All Filters
@@ -1139,14 +1406,16 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
 
           {/* Pagination Controls */}
           {filteredCourses.length > 0 && totalPages > 1 && (
-            <Box sx={{ 
-              display: "flex", 
-              justifyContent: "center", 
-              alignItems: "center", 
-              mt: 4,
-              gap: 2,
-              flexWrap: "wrap"
-            }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                mt: 4,
+                gap: 2,
+                flexWrap: "wrap",
+              }}
+            >
               <Pagination
                 count={totalPages}
                 page={currentPage}
@@ -1173,21 +1442,22 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                   },
                 }}
               />
-              
+
               {/* Results info for larger screens */}
-              <Typography 
-                variant="body2" 
-                sx={{ 
+              <Typography
+                variant="body2"
+                sx={{
                   color: "#aaa",
-                  display: { xs: 'none', sm: 'block' },
-                  ml: 2
+                  display: { xs: "none", sm: "block" },
+                  ml: 2,
                 }}
               >
-                {(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, filteredCourses.length)} of {filteredCourses.length}
+                {(currentPage - 1) * itemsPerPage + 1}-
+                {Math.min(currentPage * itemsPerPage, filteredCourses.length)}{" "}
+                of {filteredCourses.length}
               </Typography>
             </Box>
           )}
-
         </Box>
 
         {/* Course Details Modal */}
@@ -1204,12 +1474,14 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
             },
           }}
         >
-          <DialogTitle sx={{ 
-            borderBottom: "1px solid #444",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center"
-          }}>
+          <DialogTitle
+            sx={{
+              borderBottom: "1px solid #444",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
             <Box>
               <Typography variant="h5" sx={{ fontWeight: 600, mb: 1 }}>
                 {selectedCourse?.name}
@@ -1225,19 +1497,27 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                 />
               </Box>
             </Box>
-            <IconButton onClick={() => setCourseDetailsOpen(false)} sx={{ color: "#aaa" }}>
+            <IconButton
+              onClick={() => setCourseDetailsOpen(false)}
+              sx={{ color: "#aaa" }}
+            >
               <Close />
             </IconButton>
           </DialogTitle>
-          
+
           <DialogContent sx={{ p: 0 }}>
             {selectedCourse && (
               <Box sx={{ p: 3 }}>
                 {/* Quick Info Grid */}
                 <Grid container spacing={3} sx={{ mb: 3 }}>
                   <Grid size={{ xs: 12, sm: 6 }}>
-                    <Box sx={{ p: 2, backgroundColor: "#2a2a2a", borderRadius: 2 }}>
-                      <Typography variant="subtitle2" sx={{ color: "#aaa", mb: 1 }}>
+                    <Box
+                      sx={{ p: 2, backgroundColor: "#2a2a2a", borderRadius: 2 }}
+                    >
+                      <Typography
+                        variant="subtitle2"
+                        sx={{ color: "#aaa", mb: 1 }}
+                      >
                         Responsible
                       </Typography>
                       <Typography variant="body1" sx={{ fontWeight: 600 }}>
@@ -1246,8 +1526,13 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                     </Box>
                   </Grid>
                   <Grid size={{ xs: 12, sm: 6 }}>
-                    <Box sx={{ p: 2, backgroundColor: "#2a2a2a", borderRadius: 2 }}>
-                      <Typography variant="subtitle2" sx={{ color: "#aaa", mb: 1 }}>
+                    <Box
+                      sx={{ p: 2, backgroundColor: "#2a2a2a", borderRadius: 2 }}
+                    >
+                      <Typography
+                        variant="subtitle2"
+                        sx={{ color: "#aaa", mb: 1 }}
+                      >
                         Organisation
                       </Typography>
                       <Typography variant="body1" sx={{ fontWeight: 600 }}>
@@ -1256,8 +1541,13 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                     </Box>
                   </Grid>
                   <Grid size={{ xs: 12, sm: 6 }}>
-                    <Box sx={{ p: 2, backgroundColor: "#2a2a2a", borderRadius: 2 }}>
-                      <Typography variant="subtitle2" sx={{ color: "#aaa", mb: 1 }}>
+                    <Box
+                      sx={{ p: 2, backgroundColor: "#2a2a2a", borderRadius: 2 }}
+                    >
+                      <Typography
+                        variant="subtitle2"
+                        sx={{ color: "#aaa", mb: 1 }}
+                      >
                         Level
                       </Typography>
                       <Typography variant="body1" sx={{ fontWeight: 600 }}>
@@ -1266,8 +1556,13 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                     </Box>
                   </Grid>
                   <Grid size={{ xs: 12, sm: 6 }}>
-                    <Box sx={{ p: 2, backgroundColor: "#2a2a2a", borderRadius: 2 }}>
-                      <Typography variant="subtitle2" sx={{ color: "#aaa", mb: 1 }}>
+                    <Box
+                      sx={{ p: 2, backgroundColor: "#2a2a2a", borderRadius: 2 }}
+                    >
+                      <Typography
+                        variant="subtitle2"
+                        sx={{ color: "#aaa", mb: 1 }}
+                      >
                         Language
                       </Typography>
                       <Typography variant="body1" sx={{ fontWeight: 600 }}>
@@ -1278,7 +1573,9 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                 </Grid>
 
                 {/* Workload Information */}
-                {(selectedCourse.totalHours || selectedCourse.contactHours || selectedCourse.selfStudyHours) && (
+                {(selectedCourse.totalHours ||
+                  selectedCourse.contactHours ||
+                  selectedCourse.selfStudyHours) && (
                   <Box sx={{ mb: 3 }}>
                     <Typography variant="h6" sx={{ mb: 2, color: "#646cff" }}>
                       Workload
@@ -1286,11 +1583,24 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                     <Grid container spacing={2}>
                       {selectedCourse.totalHours && (
                         <Grid size={{ xs: 4 }}>
-                          <Box sx={{ textAlign: "center", p: 2, backgroundColor: "#2a2a2a", borderRadius: 2 }}>
-                            <Typography variant="h5" sx={{ fontWeight: "bold", color: "#646cff" }}>
+                          <Box
+                            sx={{
+                              textAlign: "center",
+                              p: 2,
+                              backgroundColor: "#2a2a2a",
+                              borderRadius: 2,
+                            }}
+                          >
+                            <Typography
+                              variant="h5"
+                              sx={{ fontWeight: "bold", color: "#646cff" }}
+                            >
                               {selectedCourse.totalHours}h
                             </Typography>
-                            <Typography variant="caption" sx={{ color: "#aaa" }}>
+                            <Typography
+                              variant="caption"
+                              sx={{ color: "#aaa" }}
+                            >
                               Total Hours
                             </Typography>
                           </Box>
@@ -1298,11 +1608,24 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                       )}
                       {selectedCourse.contactHours && (
                         <Grid size={{ xs: 4 }}>
-                          <Box sx={{ textAlign: "center", p: 2, backgroundColor: "#2a2a2a", borderRadius: 2 }}>
-                            <Typography variant="h5" sx={{ fontWeight: "bold", color: "#4caf50" }}>
+                          <Box
+                            sx={{
+                              textAlign: "center",
+                              p: 2,
+                              backgroundColor: "#2a2a2a",
+                              borderRadius: 2,
+                            }}
+                          >
+                            <Typography
+                              variant="h5"
+                              sx={{ fontWeight: "bold", color: "#4caf50" }}
+                            >
                               {selectedCourse.contactHours}h
                             </Typography>
-                            <Typography variant="caption" sx={{ color: "#aaa" }}>
+                            <Typography
+                              variant="caption"
+                              sx={{ color: "#aaa" }}
+                            >
                               Contact Hours
                             </Typography>
                           </Box>
@@ -1310,11 +1633,24 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                       )}
                       {selectedCourse.selfStudyHours && (
                         <Grid size={{ xs: 4 }}>
-                          <Box sx={{ textAlign: "center", p: 2, backgroundColor: "#2a2a2a", borderRadius: 2 }}>
-                            <Typography variant="h5" sx={{ fontWeight: "bold", color: "#ff9800" }}>
+                          <Box
+                            sx={{
+                              textAlign: "center",
+                              p: 2,
+                              backgroundColor: "#2a2a2a",
+                              borderRadius: 2,
+                            }}
+                          >
+                            <Typography
+                              variant="h5"
+                              sx={{ fontWeight: "bold", color: "#ff9800" }}
+                            >
                               {selectedCourse.selfStudyHours}h
                             </Typography>
-                            <Typography variant="caption" sx={{ color: "#aaa" }}>
+                            <Typography
+                              variant="caption"
+                              sx={{ color: "#aaa" }}
+                            >
                               Self Study
                             </Typography>
                           </Box>
@@ -1325,10 +1661,20 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                 )}
 
                 {/* Detailed Information Sections */}
-                <Box sx={{ "& .MuiAccordion-root": { backgroundColor: "#2a2a2a", color: "white", mb: 1 } }}>
+                <Box
+                  sx={{
+                    "& .MuiAccordion-root": {
+                      backgroundColor: "#2a2a2a",
+                      color: "white",
+                      mb: 1,
+                    },
+                  }}
+                >
                   {selectedCourse.intendedLearningOutcomes && (
                     <Accordion defaultExpanded>
-                      <AccordionSummary expandIcon={<ExpandMore sx={{ color: "white" }} />}>
+                      <AccordionSummary
+                        expandIcon={<ExpandMore sx={{ color: "white" }} />}
+                      >
                         <Typography variant="h6">Learning Outcomes</Typography>
                       </AccordionSummary>
                       <AccordionDetails>
@@ -1341,7 +1687,9 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
 
                   {selectedCourse.content && (
                     <Accordion>
-                      <AccordionSummary expandIcon={<ExpandMore sx={{ color: "white" }} />}>
+                      <AccordionSummary
+                        expandIcon={<ExpandMore sx={{ color: "white" }} />}
+                      >
                         <Typography variant="h6">Course Content</Typography>
                       </AccordionSummary>
                       <AccordionDetails>
@@ -1354,7 +1702,9 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
 
                   {selectedCourse.teachingAndLearningMethods && (
                     <Accordion>
-                      <AccordionSummary expandIcon={<ExpandMore sx={{ color: "white" }} />}>
+                      <AccordionSummary
+                        expandIcon={<ExpandMore sx={{ color: "white" }} />}
+                      >
                         <Typography variant="h6">Teaching Methods</Typography>
                       </AccordionSummary>
                       <AccordionDetails>
@@ -1367,12 +1717,16 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
 
                   {selectedCourse.descriptionOfAchievementAndAssessmentMethods && (
                     <Accordion>
-                      <AccordionSummary expandIcon={<ExpandMore sx={{ color: "white" }} />}>
+                      <AccordionSummary
+                        expandIcon={<ExpandMore sx={{ color: "white" }} />}
+                      >
                         <Typography variant="h6">Assessment Methods</Typography>
                       </AccordionSummary>
                       <AccordionDetails>
                         <Typography variant="body2" sx={{ lineHeight: 1.6 }}>
-                          {selectedCourse.descriptionOfAchievementAndAssessmentMethods}
+                          {
+                            selectedCourse.descriptionOfAchievementAndAssessmentMethods
+                          }
                         </Typography>
                       </AccordionDetails>
                     </Accordion>
@@ -1380,7 +1734,9 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
 
                   {selectedCourse.prerequisitesRecommended && (
                     <Accordion>
-                      <AccordionSummary expandIcon={<ExpandMore sx={{ color: "white" }} />}>
+                      <AccordionSummary
+                        expandIcon={<ExpandMore sx={{ color: "white" }} />}
+                      >
                         <Typography variant="h6">Prerequisites</Typography>
                       </AccordionSummary>
                       <AccordionDetails>
@@ -1393,7 +1749,9 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
 
                   {selectedCourse.readingList && (
                     <Accordion>
-                      <AccordionSummary expandIcon={<ExpandMore sx={{ color: "white" }} />}>
+                      <AccordionSummary
+                        expandIcon={<ExpandMore sx={{ color: "white" }} />}
+                      >
                         <Typography variant="h6">Reading List</Typography>
                       </AccordionSummary>
                       <AccordionDetails>
@@ -1406,7 +1764,9 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
 
                   {selectedCourse.media && (
                     <Accordion>
-                      <AccordionSummary expandIcon={<ExpandMore sx={{ color: "white" }} />}>
+                      <AccordionSummary
+                        expandIcon={<ExpandMore sx={{ color: "white" }} />}
+                      >
                         <Typography variant="h6">Media & Resources</Typography>
                       </AccordionSummary>
                       <AccordionDetails>

@@ -79,16 +79,22 @@ class ModuleDetailsAPI {
 
   constructor() {
     // Use environment variable or fallback to localhost
-    this.baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+    this.baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
   }
 
   /**
    * Get curriculum overview with statistics
    */
-  async getCurriculumOverview(studyProgramId: number): Promise<CurriculumOverviewDto> {
-    const response = await fetch(`${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/overview`);
+  async getCurriculumOverview(
+    studyProgramId: number
+  ): Promise<CurriculumOverviewDto> {
+    const response = await fetch(
+      `${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/overview`
+    );
     if (!response.ok) {
-      throw new Error(`Failed to fetch curriculum overview: ${response.statusText}`);
+      throw new Error(
+        `Failed to fetch curriculum overview: ${response.statusText}`
+      );
     }
     return response.json();
   }
@@ -96,10 +102,16 @@ class ModuleDetailsAPI {
   /**
    * Get category statistics
    */
-  async getCategoryStatistics(studyProgramId: number): Promise<CategoryStatisticsDto[]> {
-    const response = await fetch(`${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/category-stats`);
+  async getCategoryStatistics(
+    studyProgramId: number
+  ): Promise<CategoryStatisticsDto[]> {
+    const response = await fetch(
+      `${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/category-stats`
+    );
     if (!response.ok) {
-      throw new Error(`Failed to fetch category statistics: ${response.statusText}`);
+      throw new Error(
+        `Failed to fetch category statistics: ${response.statusText}`
+      );
     }
     return response.json();
   }
@@ -107,8 +119,12 @@ class ModuleDetailsAPI {
   /**
    * Get all modules for a study program
    */
-  async getModulesByStudyProgram(studyProgramId: number): Promise<ModuleDetails[]> {
-    const response = await fetch(`${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}`);
+  async getModulesByStudyProgram(
+    studyProgramId: number
+  ): Promise<ModuleDetails[]> {
+    const response = await fetch(
+      `${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}`
+    );
     if (!response.ok) {
       throw new Error(`Failed to fetch modules: ${response.statusText}`);
     }
@@ -118,11 +134,18 @@ class ModuleDetailsAPI {
   /**
    * Get modules by category
    */
-  async getModulesByCategory(studyProgramId: number, category: string): Promise<ModuleDetails[]> {
+  async getModulesByCategory(
+    studyProgramId: number,
+    category: string
+  ): Promise<ModuleDetails[]> {
     const encodedCategory = encodeURIComponent(category);
-    const response = await fetch(`${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/category/${encodedCategory}`);
+    const response = await fetch(
+      `${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/category/${encodedCategory}`
+    );
     if (!response.ok) {
-      throw new Error(`Failed to fetch modules by category: ${response.statusText}`);
+      throw new Error(
+        `Failed to fetch modules by category: ${response.statusText}`
+      );
     }
     return response.json();
   }
@@ -130,11 +153,18 @@ class ModuleDetailsAPI {
   /**
    * Get module summaries by category
    */
-  async getModuleSummariesByCategory(studyProgramId: number, category: string): Promise<ModuleSummaryDto[]> {
+  async getModuleSummariesByCategory(
+    studyProgramId: number,
+    category: string
+  ): Promise<ModuleSummaryDto[]> {
     const encodedCategory = encodeURIComponent(category);
-    const response = await fetch(`${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/category/${encodedCategory}/summaries`);
+    const response = await fetch(
+      `${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/category/${encodedCategory}/summaries`
+    );
     if (!response.ok) {
-      throw new Error(`Failed to fetch module summaries: ${response.statusText}`);
+      throw new Error(
+        `Failed to fetch module summaries: ${response.statusText}`
+      );
     }
     return response.json();
   }
@@ -155,15 +185,19 @@ class ModuleDetailsAPI {
     }
   ): Promise<ModuleDetails[]> {
     const params = new URLSearchParams();
-    if (filters.category) params.append('category', filters.category);
-    if (filters.subcategory) params.append('subcategory', filters.subcategory);
-    if (filters.language) params.append('language', filters.language);
-    if (filters.occurrence) params.append('occurrence', filters.occurrence);
-    if (filters.minCredits) params.append('minCredits', filters.minCredits.toString());
-    if (filters.maxCredits) params.append('maxCredits', filters.maxCredits.toString());
-    if (filters.searchTerm) params.append('searchTerm', filters.searchTerm);
+    if (filters.category) params.append("category", filters.category);
+    if (filters.subcategory) params.append("subcategory", filters.subcategory);
+    if (filters.language) params.append("language", filters.language);
+    if (filters.occurrence) params.append("occurrence", filters.occurrence);
+    if (filters.minCredits)
+      params.append("minCredits", filters.minCredits.toString());
+    if (filters.maxCredits)
+      params.append("maxCredits", filters.maxCredits.toString());
+    if (filters.searchTerm) params.append("searchTerm", filters.searchTerm);
 
-    const response = await fetch(`${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/advanced-search?${params}`);
+    const response = await fetch(
+      `${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/advanced-search?${params}`
+    );
     if (!response.ok) {
       throw new Error(`Failed to search modules: ${response.statusText}`);
     }
@@ -173,10 +207,17 @@ class ModuleDetailsAPI {
   /**
    * Get modules by semester availability
    */
-  async getModulesBySemester(studyProgramId: number, semester: string): Promise<ModuleDetails[]> {
-    const response = await fetch(`${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/semester/${semester}`);
+  async getModulesBySemester(
+    studyProgramId: number,
+    semester: string
+  ): Promise<ModuleDetails[]> {
+    const response = await fetch(
+      `${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/semester/${semester}`
+    );
     if (!response.ok) {
-      throw new Error(`Failed to fetch modules by semester: ${response.statusText}`);
+      throw new Error(
+        `Failed to fetch modules by semester: ${response.statusText}`
+      );
     }
     return response.json();
   }
@@ -185,7 +226,9 @@ class ModuleDetailsAPI {
    * Get distinct categories
    */
   async getDistinctCategories(studyProgramId: number): Promise<string[]> {
-    const response = await fetch(`${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/categories`);
+    const response = await fetch(
+      `${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/categories`
+    );
     if (!response.ok) {
       throw new Error(`Failed to fetch categories: ${response.statusText}`);
     }
@@ -195,9 +238,14 @@ class ModuleDetailsAPI {
   /**
    * Get distinct subcategories for a category
    */
-  async getDistinctSubcategories(studyProgramId: number, category: string): Promise<string[]> {
+  async getDistinctSubcategories(
+    studyProgramId: number,
+    category: string
+  ): Promise<string[]> {
     const encodedCategory = encodeURIComponent(category);
-    const response = await fetch(`${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/categories/${encodedCategory}/subcategories`);
+    const response = await fetch(
+      `${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/categories/${encodedCategory}/subcategories`
+    );
     if (!response.ok) {
       throw new Error(`Failed to fetch subcategories: ${response.statusText}`);
     }
@@ -208,7 +256,9 @@ class ModuleDetailsAPI {
    * Get distinct languages
    */
   async getDistinctLanguages(studyProgramId: number): Promise<string[]> {
-    const response = await fetch(`${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/languages`);
+    const response = await fetch(
+      `${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/languages`
+    );
     if (!response.ok) {
       throw new Error(`Failed to fetch languages: ${response.statusText}`);
     }
@@ -219,7 +269,9 @@ class ModuleDetailsAPI {
    * Get distinct occurrences
    */
   async getDistinctOccurrences(studyProgramId: number): Promise<string[]> {
-    const response = await fetch(`${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/occurrences`);
+    const response = await fetch(
+      `${this.baseUrl}/api/v1/modules/study-program/${studyProgramId}/occurrences`
+    );
     if (!response.ok) {
       throw new Error(`Failed to fetch occurrences: ${response.statusText}`);
     }
@@ -229,8 +281,12 @@ class ModuleDetailsAPI {
   /**
    * Get module details by module ID
    */
-  async getModuleDetailsByModuleId(moduleId: string): Promise<ModuleDetails | null> {
-    const response = await fetch(`${this.baseUrl}/api/v1/modules/module/${moduleId}`);
+  async getModuleDetailsByModuleId(
+    moduleId: string
+  ): Promise<ModuleDetails | null> {
+    const response = await fetch(
+      `${this.baseUrl}/api/v1/modules/module/${moduleId}`
+    );
     if (response.status === 404) {
       return null;
     }
@@ -253,7 +309,10 @@ class ModuleDetailsAPI {
       language: module.language,
       professor: module.responsible,
       occurrence: module.occurrence,
-      description: module.intendedLearningOutcomes || module.content || 'No description available',
+      description:
+        module.intendedLearningOutcomes ||
+        module.content ||
+        "No description available",
       prerequisites: this.parsePrerequisites(module.prerequisitesRecommended),
       category: module.category,
       subcategory: module.subcategory,
@@ -273,7 +332,7 @@ class ModuleDetailsAPI {
       language: summary.language,
       professor: summary.responsible,
       occurrence: summary.occurrence,
-      description: summary.description || 'No description available',
+      description: summary.description || "No description available",
       category: summary.category,
       subcategory: summary.subcategory,
     };
@@ -284,28 +343,35 @@ class ModuleDetailsAPI {
    */
   private extractSemesterFromOccurrence(occurrence: string): string {
     const lowerOccurrence = occurrence.toLowerCase();
-    if (lowerOccurrence.includes('winter') && lowerOccurrence.includes('summer')) {
-      return 'Any';
-    } else if (lowerOccurrence.includes('winter')) {
-      return 'Winter';
-    } else if (lowerOccurrence.includes('summer')) {
-      return 'Summer';
+    if (
+      lowerOccurrence.includes("winter") &&
+      lowerOccurrence.includes("summer")
+    ) {
+      return "Any";
+    } else if (lowerOccurrence.includes("winter")) {
+      return "Winter";
+    } else if (lowerOccurrence.includes("summer")) {
+      return "Summer";
     }
-    return 'Any';
+    return "Any";
   }
 
   /**
    * Parse prerequisites string into array
    */
   private parsePrerequisites(prerequisites?: string): string[] {
-    if (!prerequisites || prerequisites.trim() === '' || prerequisites.toLowerCase().includes('none')) {
+    if (
+      !prerequisites ||
+      prerequisites.trim() === "" ||
+      prerequisites.toLowerCase().includes("none")
+    ) {
       return [];
     }
     // Simple parsing - split by common delimiters and clean up
     return prerequisites
       .split(/[,;]/)
-      .map(req => req.trim())
-      .filter(req => req.length > 0 && !req.toLowerCase().includes('none'));
+      .map((req) => req.trim())
+      .filter((req) => req.length > 0 && !req.toLowerCase().includes("none"));
   }
 }
 
