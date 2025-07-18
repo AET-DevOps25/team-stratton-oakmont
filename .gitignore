@@ -40,6 +40,7 @@ e2e/*.map
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+*.todo
 
 # AWS User-specific
 .idea/**/aws.xml
