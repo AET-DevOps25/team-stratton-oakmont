@@ -11,6 +11,7 @@ python-dotenv
 pydantic
 psycopg2-binary
 sqlalchemy
+langchain-google-genai
 
 prometheus-client
 
