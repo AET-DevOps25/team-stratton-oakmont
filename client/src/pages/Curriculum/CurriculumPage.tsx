@@ -683,14 +683,324 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
-        <Box sx={{ textAlign: "center" }}>
-          <CircularProgress sx={{ color: "#646cff", mb: 2 }} />
-          <Typography variant="h6">Loading curriculum data...</Typography>
-          <Typography variant="body2" sx={{ color: "#aaa", mt: 1 }}>
-            Fetching the latest course information
+        {/* Animated Background Elements */}
+        <Box
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background:
+              "radial-gradient(ellipse at center, rgba(100, 108, 255, 0.1) 0%, transparent 50%)",
+            animation: "pulse 4s ease-in-out infinite",
+            "@keyframes pulse": {
+              "0%, 100%": { opacity: 0.3 },
+              "50%": { opacity: 0.8 },
+            },
+          }}
+        />
+
+        {/* Floating Elements */}
+        {Array.from({ length: 12 }, (_, i) => (
+          <Box
+            key={i}
+            sx={{
+              position: "absolute",
+              width: "4px",
+              height: "4px",
+              backgroundColor: "#646cff",
+              borderRadius: "50%",
+              opacity: 0.7,
+              left: `${10 + i * 7}%`,
+              top: `${20 + i * 5}%`,
+              animation: `float${i % 3} ${3 + (i % 3)}s ease-in-out infinite`,
+              "@keyframes float0": {
+                "0%, 100%": { transform: "translateY(0px) rotate(0deg)" },
+                "50%": { transform: "translateY(-20px) rotate(180deg)" },
+              },
+              "@keyframes float1": {
+                "0%, 100%": { transform: "translateY(0px) rotate(0deg)" },
+                "50%": { transform: "translateY(-30px) rotate(270deg)" },
+              },
+              "@keyframes float2": {
+                "0%, 100%": { transform: "translateY(0px) rotate(0deg)" },
+                "50%": { transform: "translateY(-25px) rotate(90deg)" },
+              },
+            }}
+          />
+        ))}
+
+        <Box
+          sx={{
+            textAlign: "center",
+            zIndex: 10,
+            position: "relative",
+          }}
+        >
+          {/* Main Loading Icon with Pulsing Effect */}
+          <Box
+            sx={{
+              position: "relative",
+              display: "inline-block",
+              mb: 4,
+            }}
+          >
+            <MenuBook
+              sx={{
+                fontSize: "4rem",
+                color: "#646cff",
+                animation: "bookFlip 2s ease-in-out infinite",
+                "@keyframes bookFlip": {
+                  "0%, 100%": {
+                    transform: "rotateY(0deg) scale(1)",
+                    filter: "drop-shadow(0 0 20px rgba(100, 108, 255, 0.5))",
+                  },
+                  "50%": {
+                    transform: "rotateY(180deg) scale(1.1)",
+                    filter: "drop-shadow(0 0 30px rgba(100, 108, 255, 0.8))",
+                  },
+                },
+              }}
+            />
+
+            {/* Orbiting Elements */}
+            {Array.from({ length: 3 }, (_, i) => (
+              <Box
+                key={i}
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  width: "8px",
+                  height: "8px",
+                  backgroundColor: ["#4caf50", "#ff9800", "#f44336"][i],
+                  borderRadius: "50%",
+                  transformOrigin: "0 0",
+                  animation: `orbit${i} ${2 + i * 0.5}s linear infinite`,
+                  "@keyframes orbit0": {
+                    "0%": {
+                      transform:
+                        "translate(-50%, -50%) rotate(0deg) translateX(60px) rotate(0deg)",
+                    },
+                    "100%": {
+                      transform:
+                        "translate(-50%, -50%) rotate(360deg) translateX(60px) rotate(-360deg)",
+                    },
+                  },
+                  "@keyframes orbit1": {
+                    "0%": {
+                      transform:
+                        "translate(-50%, -50%) rotate(120deg) translateX(45px) rotate(-120deg)",
+                    },
+                    "100%": {
+                      transform:
+                        "translate(-50%, -50%) rotate(480deg) translateX(45px) rotate(-480deg)",
+                    },
+                  },
+                  "@keyframes orbit2": {
+                    "0%": {
+                      transform:
+                        "translate(-50%, -50%) rotate(240deg) translateX(75px) rotate(-240deg)",
+                    },
+                    "100%": {
+                      transform:
+                        "translate(-50%, -50%) rotate(600deg) translateX(75px) rotate(-600deg)",
+                    },
+                  },
+                }}
+              />
+            ))}
+          </Box>
+
+          {/* Enhanced Progress Indicator */}
+          <Box sx={{ mb: 3, width: "300px", mx: "auto" }}>
+            <Box
+              sx={{
+                position: "relative",
+                height: "8px",
+                backgroundColor: "#333",
+                borderRadius: "4px",
+                overflow: "hidden",
+              }}
+            >
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  height: "100%",
+                  background:
+                    "linear-gradient(90deg, #646cff, #535bf2, #4c4bef)",
+                  borderRadius: "4px",
+                  animation: "progressBar 3s ease-in-out infinite",
+                  "@keyframes progressBar": {
+                    "0%": { width: "0%", opacity: 0.7 },
+                    "50%": { width: "70%", opacity: 1 },
+                    "100%": { width: "100%", opacity: 0.7 },
+                  },
+                }}
+              />
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  background:
+                    "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)",
+                  animation: "shimmer 2s ease-in-out infinite",
+                  "@keyframes shimmer": {
+                    "0%": { transform: "translateX(-100%)" },
+                    "100%": { transform: "translateX(100%)" },
+                  },
+                }}
+              />
+            </Box>
+          </Box>
+
+          {/* Animated Text with Typewriter Effect */}
+          <Typography
+            variant="h5"
+            sx={{
+              fontWeight: "bold",
+              mb: 2,
+              background: "linear-gradient(45deg, #646cff, #4caf50, #ff9800)",
+              backgroundSize: "200% 200%",
+              backgroundClip: "text",
+              WebkitBackgroundClip: "text",
+              color: "transparent",
+              animation:
+                "gradientShift 3s ease-in-out infinite, fadeInUp 0.8s ease-out",
+              "@keyframes gradientShift": {
+                "0%, 100%": { backgroundPosition: "0% 50%" },
+                "50%": { backgroundPosition: "100% 50%" },
+              },
+              "@keyframes fadeInUp": {
+                "0%": { opacity: 0, transform: "translateY(20px)" },
+                "100%": { opacity: 1, transform: "translateY(0)" },
+              },
+            }}
+          >
+            Loading Curriculum Data...
           </Typography>
+
+          {/* Detailed Status Messages */}
+          <Box
+            sx={{
+              minHeight: "60px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Typography
+              variant="body1"
+              sx={{
+                color: "#aaa",
+                animation: "statusFade 4s ease-in-out infinite",
+                "@keyframes statusFade": {
+                  "0%, 20%": {
+                    opacity: 1,
+                    content: '"Connecting to TUM database..."',
+                  },
+                  "25%, 45%": {
+                    opacity: 1,
+                    content: '"Fetching course information..."',
+                  },
+                  "50%, 70%": {
+                    opacity: 1,
+                    content: '"Processing module data..."',
+                  },
+                  "75%, 95%": {
+                    opacity: 1,
+                    content: '"Preparing your curriculum..."',
+                  },
+                  "21%, 24%, 46%, 49%, 71%, 74%, 96%, 99%": { opacity: 0 },
+                },
+              }}
+            >
+              Fetching the latest course information from TUM systems
+            </Typography>
+          </Box>
+
+          {/* Loading Steps Indicator */}
+          <Box
+            sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 4 }}
+          >
+            {["Database", "Courses", "Categories", "Processing"].map(
+              (step, index) => (
+                <Box
+                  key={step}
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 1,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: "12px",
+                      height: "12px",
+                      borderRadius: "50%",
+                      backgroundColor: "#333",
+                      border: "2px solid #555",
+                      animation: `stepPulse${index} 4s ease-in-out infinite`,
+                      [`@keyframes stepPulse${index}`]: {
+                        [`${index * 25}%, ${(index + 1) * 25}%`]: {
+                          backgroundColor: "#646cff",
+                          borderColor: "#646cff",
+                          boxShadow: "0 0 15px rgba(100, 108, 255, 0.5)",
+                        },
+                      },
+                    }}
+                  />
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: "#666",
+                      fontSize: "0.7rem",
+                      animation: `textHighlight${index} 4s ease-in-out infinite`,
+                      [`@keyframes textHighlight${index}`]: {
+                        [`${index * 25}%, ${(index + 1) * 25}%`]: {
+                          color: "#646cff",
+                          fontWeight: "bold",
+                        },
+                      },
+                    }}
+                  >
+                    {step}
+                  </Typography>
+                </Box>
+              )
+            )}
+          </Box>
+
+          {/* Fun Facts or Tips */}
+          <Box
+            sx={{
+              mt: 6,
+              p: 3,
+              backgroundColor: "rgba(100, 108, 255, 0.05)",
+              borderRadius: 3,
+              maxWidth: "400px",
+              mx: "auto",
+            }}
+          >
+            <Typography
+              variant="body2"
+              sx={{ color: "#aaa", fontStyle: "italic", textAlign: "center" }}
+            >
+              💡 Did you know? TUM offers over 170 degree programs across 15
+              different schools!
+            </Typography>
+          </Box>
         </Box>
       </Box>
     );
