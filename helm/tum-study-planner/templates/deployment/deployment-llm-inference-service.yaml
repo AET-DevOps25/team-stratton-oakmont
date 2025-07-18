@@ -26,7 +26,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                 name: tum-study-planner-secrets
-                  key: GOOGLE_API_KEY
+                key: GOOGLE_API_KEY
             - name: WEAVIATE_URL
               value: {{ .Values.llmInferenceService.env.WEAVIATE_URL | quote }}
             - name: STUDY_DATA_DB_HOST
