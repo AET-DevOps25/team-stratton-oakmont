@@ -9,7 +9,6 @@ export interface ChatMessage {
 export interface ChatResponse {
   response: string;
   course_codes: string[];
-  confidence: number;
   sources: string[];
 }
 

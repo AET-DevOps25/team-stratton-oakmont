@@ -83,7 +83,6 @@ const AiChatSidebar: React.FC<AiChatSidebarProps> = ({ isOpen }) => {
   ): Promise<{
     content: string;
     courseCodes: string[];
-    confidence: number;
     sources: string[];
   }> => {
     try {
@@ -92,7 +91,6 @@ const AiChatSidebar: React.FC<AiChatSidebarProps> = ({ isOpen }) => {
       return {
         content: response.response,
         courseCodes: response.course_codes || [],
-        confidence: response.confidence || 0,
         sources: response.sources || [],
       };
     } catch (error) {
@@ -108,7 +106,6 @@ const AiChatSidebar: React.FC<AiChatSidebarProps> = ({ isOpen }) => {
           content:
             "I can help you create and optimize your study plan! I can suggest courses, check prerequisites, and ensure you meet all requirements for your degree program. What specific aspect of your study plan would you like assistance with?",
           courseCodes: [],
-          confidence: 0.7,
           sources: [],
         };
       } else if (userMessage.toLowerCase().includes("course")) {
@@ -116,7 +113,6 @@ const AiChatSidebar: React.FC<AiChatSidebarProps> = ({ isOpen }) => {
           content:
             "I have access to the complete TUM course catalog. I can help you find courses that match your interests, check ECTS credits, prerequisites, and scheduling information. What courses are you interested in?",
           courseCodes: [],
-          confidence: 0.7,
           sources: [],
         };
       } else if (userMessage.toLowerCase().includes("prerequisite")) {
@@ -124,7 +120,6 @@ const AiChatSidebar: React.FC<AiChatSidebarProps> = ({ isOpen }) => {
           content:
             "Prerequisites are important for course planning! I can help you check which courses you need to complete before taking advanced modules. Would you like me to check prerequisites for a specific course?",
           courseCodes: [],
-          confidence: 0.7,
           sources: [],
         };
       } else {
@@ -132,7 +127,6 @@ const AiChatSidebar: React.FC<AiChatSidebarProps> = ({ isOpen }) => {
           content:
             "Hello! I'm your AI study advisor for TUM. I can help you with course selection, study planning, prerequisite checking, and academic guidance. How can I assist you today?",
           courseCodes: [],
-          confidence: 0.7,
           sources: [],
         };
       }
@@ -168,7 +162,6 @@ const AiChatSidebar: React.FC<AiChatSidebarProps> = ({ isOpen }) => {
         isUser: false,
         timestamp: new Date(),
         courseCodes: aiResponseData.courseCodes,
-        confidence: aiResponseData.confidence,
         sources: aiResponseData.sources,
       };
 

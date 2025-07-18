@@ -13,6 +13,8 @@ from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 from dotenv import load_dotenv
 from database_connector import db_connector
+from langchain_google_genai import ChatGoogleGenerativeAI
+
 
 from fastapi import FastAPI
 from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
@@ -109,7 +111,6 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     response: str
     course_codes: List[str] = []
-    confidence: float = 0.0
     sources: List[str] = []
 
 class CourseInfo(BaseModel):
@@ -267,16 +268,17 @@ def setup_qa_chain():
             input_variables=["context", "question"]
         )
         
-        # Initialize LLM
-        # llm = ChatOpenAI(
-        #     model_name="gpt-3.5-turbo",
-        #     temperature=0.1,
-        #     openai_api_key=os.getenv("OPENAI_API_KEY")
-        # )
+        # Initialize Gemini LLM
+        llm = ChatGoogleGenerativeAI(
+            model="gemini-2.5-pro",
+            temperature=0,
+            max_tokens=None,
+            max_retries=2
+        )
         
         # Create QA chain
         qa_chain = RetrievalQA.from_chain_type(
-            llm=None,  # Replace with Gemini LLM if available
+            llm=llm,
             chain_type="stuff",
             retriever=vector_store.as_retriever(
                 search_type="similarity",
