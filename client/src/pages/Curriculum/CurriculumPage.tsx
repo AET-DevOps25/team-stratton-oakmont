@@ -188,7 +188,17 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
 
   // Update subcategories when category changes
   useEffect(() => {
-    if (selectedCategory) {
+    // Define categories that should not show subcategories
+    const categoriesWithoutSubcategories = [
+      "Master's Thesis",
+      "Practical Lab",
+      "Required Modules",
+    ];
+
+    if (
+      selectedCategory &&
+      !categoriesWithoutSubcategories.includes(selectedCategory)
+    ) {
       fetchSubcategories(selectedCategory);
     } else {
       setAvailableSubcategories([]);
@@ -920,61 +930,65 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
         </Paper>
 
         {/* Subcategory Selection */}
-        {selectedCategory && availableSubcategories.length > 0 && (
-          <Paper
-            sx={{
-              p: 3,
-              mb: 4,
-              backgroundColor: "#2a2a2a",
-              color: "white",
-              borderRadius: 3,
-            }}
-          >
-            <Typography variant="h6" sx={{ mb: 3 }}>
-              {selectedCategory} - Subcategories
-            </Typography>
-            <Grid container spacing={2}>
-              {availableSubcategories.map((subcat) => (
-                <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={subcat}>
-                  <Card
-                    sx={{
-                      backgroundColor:
-                        selectedSubcategory === subcat ? "#646cff" : "#444",
-                      color: "white",
-                      cursor: "pointer",
-                      transition: "all 0.2s ease",
-                      height: 100,
-                      display: "flex",
-                      alignItems: "center",
-                      "&:hover": {
+        {selectedCategory &&
+          availableSubcategories.length > 0 &&
+          !["Master's Thesis", "Practical Lab", "Required Modules"].includes(
+            selectedCategory
+          ) && (
+            <Paper
+              sx={{
+                p: 3,
+                mb: 4,
+                backgroundColor: "#2a2a2a",
+                color: "white",
+                borderRadius: 3,
+              }}
+            >
+              <Typography variant="h6" sx={{ mb: 3 }}>
+                {selectedCategory} - Subcategories
+              </Typography>
+              <Grid container spacing={2}>
+                {availableSubcategories.map((subcat) => (
+                  <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={subcat}>
+                    <Card
+                      sx={{
                         backgroundColor:
-                          selectedSubcategory === subcat ? "#646cff" : "#555",
-                        transform: "translateY(-2px)",
-                      },
-                      borderRadius: 3,
-                    }}
-                    onClick={() => {
-                      setSelectedSubcategory(
-                        selectedSubcategory === subcat ? null : subcat
-                      );
-                    }}
-                  >
-                    <CardContent
-                      sx={{ textAlign: "center", p: 2, width: "100%" }}
+                          selectedSubcategory === subcat ? "#646cff" : "#444",
+                        color: "white",
+                        cursor: "pointer",
+                        transition: "all 0.2s ease",
+                        height: 100,
+                        display: "flex",
+                        alignItems: "center",
+                        "&:hover": {
+                          backgroundColor:
+                            selectedSubcategory === subcat ? "#646cff" : "#555",
+                          transform: "translateY(-2px)",
+                        },
+                        borderRadius: 3,
+                      }}
+                      onClick={() => {
+                        setSelectedSubcategory(
+                          selectedSubcategory === subcat ? null : subcat
+                        );
+                      }}
                     >
-                      <School
-                        sx={{ fontSize: "1.5rem", color: "#646cff", mb: 1 }}
-                      />
-                      <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                        {subcat}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-          </Paper>
-        )}
+                      <CardContent
+                        sx={{ textAlign: "center", p: 2, width: "100%" }}
+                      >
+                        <School
+                          sx={{ fontSize: "1.5rem", color: "#646cff", mb: 1 }}
+                        />
+                        <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                          {subcat}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            </Paper>
+          )}
 
         {/* Enhanced Search and Filter Section */}
         <Paper
