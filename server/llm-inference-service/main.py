@@ -91,7 +91,27 @@ class WeaviateCourseStore:
         
         return Retriever(self, search_kwargs)
 
-app = FastAPI(title="LLM Inference Service with RAG")
+
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("Initializing RAG system...")
+    rag_ready = False
+    if setup_weaviate():
+        print("Weaviate connected successfully")
+        if setup_qa_chain():
+            print("QA chain setup successful")
+            print("✅ RAG system ready! Using pre-populated Weaviate database.")
+            rag_ready = True
+        else:
+            print("Failed to setup QA chain")
+    else:
+        print("Failed to setup Weaviate")
+        print("💡 Tip: Make sure Weaviate is running and populated with: python populate_weaviate.py")
+    yield
+
+app = FastAPI(title="LLM Inference Service with RAG", lifespan=lifespan)
 
 # Add CORS middleware
 app.add_middleware(
@@ -300,22 +320,6 @@ def setup_qa_chain():
         print(f"Error setting up QA chain: {e}")
         return False
 
-@app.on_event("startup")
-async def startup_event():
-    """Initialize RAG components on startup"""
-    print("Initializing RAG system...")
-    
-    if setup_weaviate():
-        print("Weaviate connected successfully")
-        
-        if setup_qa_chain():
-            print("QA chain setup successful")
-            print("✅ RAG system ready! Using pre-populated Weaviate database.")
-        else:
-            print("Failed to setup QA chain")
-    else:
-        print("Failed to setup Weaviate")
-        print("💡 Tip: Make sure Weaviate is running and populated with: python populate_weaviate.py")
 
 @app.post("/chat/", response_model=ChatResponse)
 async def chat_with_ai(request: ChatRequest):
