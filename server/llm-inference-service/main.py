@@ -109,7 +109,6 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     response: str
     course_codes: List[str] = []
-    confidence: float = 0.0
     sources: List[str] = []
 
 class CourseInfo(BaseModel):
