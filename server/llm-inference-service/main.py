@@ -150,30 +150,31 @@ def setup_weaviate():
     global weaviate_client, vector_store, embeddings
     
     try:
-        # Initialize Weaviate client
-        weaviate_client = weaviate.Client(
-            url=os.getenv("WEAVIATE_URL", "http://localhost:8080"),
-            timeout_config=(5, 15),
+        # Initialize Weaviate v4 client
+        weaviate_url = os.getenv("WEAVIATE_URL", "http://localhost:8080")
+        weaviate_client = weaviate.WeaviateClient(
+            connection_params=weaviate.ConnectionParams.from_url(weaviate_url)
         )
-        
+
         # Use Gemini embeddings
         embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
-        
+
         # Check if TUMCourse schema exists
-        if not weaviate_client.schema.exists("TUMCourse"):
+        schema = weaviate_client.collections.list_all()
+        if "TUMCourse" not in [col.name for col in schema]:
             print("⚠️  TUMCourse schema not found in Weaviate!")
             print("Please run the population script first: python populate_weaviate.py")
             return False
-        
+
         # Create a custom Weaviate wrapper for our schema
         vector_store = WeaviateCourseStore(
             client=weaviate_client,
             embedding=embeddings,
         )
-        
+
         print("✅ Connected to populated Weaviate database")
         return True
-        
+
     except Exception as e:
         print(f"Error setting up Weaviate: {e}")
         return False
