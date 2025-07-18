@@ -707,7 +707,11 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
               "& .MuiAlert-icon": { color: "#f44336" },
             }}
             action={
-              <Button color="inherit" onClick={fetchCurriculumData}>
+              <Button
+                color="inherit"
+                onClick={fetchCurriculumData}
+                disableRipple
+              >
                 Retry
               </Button>
             }
@@ -1012,6 +1016,7 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                 variant="outlined"
                 startIcon={<FilterList />}
                 onClick={() => setFiltersExpanded(!filtersExpanded)}
+                disableRipple
                 sx={{
                   borderColor: "#646cff",
                   color: "#646cff",
@@ -1029,6 +1034,7 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                   variant="outlined"
                   startIcon={<Clear />}
                   onClick={clearAllFilters}
+                  disableRipple
                   sx={{
                     borderColor: "#f44336",
                     color: "#f44336",
@@ -1100,9 +1106,48 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                               py: 1.5,
                             },
                           }}
+                          MenuProps={{
+                            PaperProps: {
+                              sx: {
+                                backgroundColor: "rgba(42, 42, 42, 0.95)",
+                                backdropFilter: "blur(10px)",
+                                borderRadius: "12px",
+                                boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
+                                mt: 1,
+                                "& .MuiMenuItem-root": {
+                                  borderRadius: 2,
+                                  mx: 1,
+                                  my: 0.5,
+                                  color: "white",
+                                  "&:hover": {
+                                    backgroundColor: "rgba(100, 108, 255, 0.1)",
+                                    borderRadius: 2,
+                                  },
+                                  "&.Mui-selected": {
+                                    backgroundColor: "rgba(100, 108, 255, 0.2)",
+                                    "&:hover": {
+                                      backgroundColor:
+                                        "rgba(100, 108, 255, 0.3)",
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          }}
                         >
                           <MenuItem value="" sx={{ color: "#666" }}>
-                            All Languages
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                              }}
+                            >
+                              <AccessTime
+                                sx={{ fontSize: "1rem", color: "#666" }}
+                              />
+                              All Languages
+                            </Box>
                           </MenuItem>
                           {availableLanguages.map((language) => (
                             <MenuItem key={language} value={language}>
@@ -1171,9 +1216,48 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
                               py: 1.5,
                             },
                           }}
+                          MenuProps={{
+                            PaperProps: {
+                              sx: {
+                                backgroundColor: "rgba(42, 42, 42, 0.95)",
+                                backdropFilter: "blur(10px)",
+                                borderRadius: "12px",
+                                boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
+                                mt: 1,
+                                "& .MuiMenuItem-root": {
+                                  borderRadius: 2,
+                                  mx: 1,
+                                  my: 0.5,
+                                  color: "white",
+                                  "&:hover": {
+                                    backgroundColor: "rgba(100, 108, 255, 0.1)",
+                                    borderRadius: 2,
+                                  },
+                                  "&.Mui-selected": {
+                                    backgroundColor: "rgba(100, 108, 255, 0.2)",
+                                    "&:hover": {
+                                      backgroundColor:
+                                        "rgba(100, 108, 255, 0.3)",
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          }}
                         >
                           <MenuItem value="" sx={{ color: "#666" }}>
-                            All Semesters
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                              }}
+                            >
+                              <AccessTime
+                                sx={{ fontSize: "1rem", color: "#666" }}
+                              />
+                              All Semesters
+                            </Box>
                           </MenuItem>
                           {availableOccurrences.map((occurrence) => (
                             <MenuItem key={occurrence} value={occurrence}>
@@ -1457,6 +1541,7 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
               <Button
                 variant="outlined"
                 onClick={clearAllFilters}
+                disableRipple
                 sx={{
                   borderColor: "#646cff",
                   color: "#646cff",
@@ -1575,6 +1660,7 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
             <IconButton
               onClick={() => setCourseDetailsOpen(false)}
               sx={{ color: "#aaa" }}
+              disableRipple
             >
               <Close />
             </IconButton>
