@@ -8,7 +8,6 @@ metadata:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /api/v1/$2
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/cors-allow-origin: "*"
     nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, PATCH, OPTIONS"
@@ -39,8 +38,34 @@ spec:
                 name: unified-swagger-ui-service
                 port:
                   number: 80
-          
-          # Study Plan Service Documentation
+---
+# Separate ingress for API services with rewrite
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tum-study-planner-docs-api-ingress
+  namespace: {{ .Values.namespace }}
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /api/v1/$2
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, PATCH, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - {{ .Values.ingress.host }}
+      secretName: tum-study-planner-tls
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          # Study Plan Service Documentation (with rewrite)
           - path: /docs/study-plan(/|$)(.*)
             pathType: ImplementationSpecific
             backend:
@@ -49,7 +74,7 @@ spec:
                 port:
                   number: 8081
           
-          # User Auth Service Documentation
+          # User Auth Service Documentation (with rewrite)
           - path: /docs/user-auth(/|$)(.*)
             pathType: ImplementationSpecific
             backend:
@@ -58,20 +83,20 @@ spec:
                 port:
                   number: 8083
           
-          # Program Catalog Service Documentation
+          # Program Catalog Service Documentation (with rewrite)
           - path: /docs/program-catalog(/|$)(.*)
             pathType: ImplementationSpecific
             backend:
               service:
                 name: program-catalog-service
                 port:
-                  number: 8082
+                  number: 8080
           
-          # AI Advisor Service Documentation
+          # AI Advisor Service Documentation (with rewrite)
           - path: /docs/ai-advisor(/|$)(.*)
             pathType: ImplementationSpecific
             backend:
               service:
                 name: ai-advisor-service
                 port:
-                  number: 8084
+                  number: 8082
