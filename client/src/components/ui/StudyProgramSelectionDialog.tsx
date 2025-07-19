@@ -22,19 +22,11 @@ import {
   Checkbox,
 } from "@mui/material";
 import { Search, Close } from "@mui/icons-material";
-
-// Study Program interface
-interface StudyProgram {
-  id: string;
-  name: string;
-  degree: string; // Bachelor, Master, etc.
-  fieldOfStudy: string;
-  credits: number;
-  semesters: number;
-  description?: string;
-  language: string;
-  location: string;
-}
+import {
+  getAllStudyPrograms,
+  StudyProgramApiError,
+} from "../../api/studyPrograms";
+import type { StudyProgram } from "../../api/studyPrograms";
 
 interface StudyProgramSelectionDialogProps {
   open: boolean;
@@ -54,146 +46,37 @@ const StudyProgramSelectionDialog: React.FC<
   const [order, setOrder] = useState<"asc" | "desc">("asc");
   const [selectedDegrees, setSelectedDegrees] = useState<string[]>([]);
   const [studyPlanName, setStudyPlanName] = useState<string>("");
-  const [selectedProgram, setSelectedProgram] = useState<StudyProgram | null>(null);
-
-  // Mock study programs data
-  const mockPrograms: StudyProgram[] = [
-    {
-      id: "is-master",
-      name: "Information Systems",
-      degree: "Master",
-      fieldOfStudy: "Computer Science",
-      credits: 120,
-      semesters: 4,
-      description:
-        "Master's program focusing on information systems, business processes, and IT management",
-      language: "English",
-      location: "Munich",
-    },
-    {
-      id: "cs-master",
-      name: "Computer Science",
-      degree: "Master",
-      fieldOfStudy: "Computer Science",
-      credits: 120,
-      semesters: 4,
-      description:
-        "Advanced computer science program covering algorithms, software engineering, and AI",
-      language: "English",
-      location: "Munich",
-    },
-    {
-      id: "ds-master",
-      name: "Data Science",
-      degree: "Master",
-      fieldOfStudy: "Data Science",
-      credits: 120,
-      semesters: 4,
-      description:
-        "Interdisciplinary program combining statistics, machine learning, and domain expertise",
-      language: "English",
-      location: "Munich",
-    },
-    {
-      id: "ai-master",
-      name: "Artificial Intelligence",
-      degree: "Master",
-      fieldOfStudy: "Computer Science",
-      credits: 120,
-      semesters: 4,
-      description:
-        "Specialized program in artificial intelligence, machine learning, and cognitive systems",
-      language: "English",
-      location: "Munich",
-    },
-    {
-      id: "se-master",
-      name: "Software Engineering",
-      degree: "Master",
-      fieldOfStudy: "Computer Science",
-      credits: 120,
-      semesters: 4,
-      description:
-        "Focus on large-scale software development, architecture, and project management",
-      language: "English",
-      location: "Munich",
-    },
-    {
-      id: "cs-bachelor",
-      name: "Computer Science",
-      degree: "Bachelor",
-      fieldOfStudy: "Computer Science",
-      credits: 180,
-      semesters: 6,
-      description:
-        "Comprehensive undergraduate program in computer science fundamentals",
-      language: "German",
-      location: "Munich",
-    },
-    {
-      id: "is-bachelor",
-      name: "Information Systems",
-      degree: "Bachelor",
-      fieldOfStudy: "Business Informatics",
-      credits: 180,
-      semesters: 6,
-      description:
-        "Undergraduate program combining business knowledge with IT skills",
-      language: "German",
-      location: "Munich",
-    },
-    {
-      id: "ee-master",
-      name: "Electrical Engineering",
-      degree: "Master",
-      fieldOfStudy: "Engineering",
-      credits: 120,
-      semesters: 4,
-      description:
-        "Advanced electrical engineering with focus on embedded systems and electronics",
-      language: "English",
-      location: "Munich",
-    },
-    {
-      id: "me-master",
-      name: "Mechanical Engineering",
-      degree: "Master",
-      fieldOfStudy: "Engineering",
-      credits: 120,
-      semesters: 4,
-      description:
-        "Mechanical engineering program with robotics and automation specialization",
-      language: "English",
-      location: "Munich",
-    },
-    {
-      id: "bwl-bachelor",
-      name: "Business Administration",
-      degree: "Bachelor",
-      fieldOfStudy: "Business",
-      credits: 180,
-      semesters: 6,
-      description:
-        "Comprehensive business administration program with management focus",
-      language: "German",
-      location: "Munich",
-    },
-  ];
-
-  // Get unique degrees from mock programs
-  const uniqueDegrees = Array.from(
-    new Set(mockPrograms.map((program) => program.degree))
+  const [selectedProgram, setSelectedProgram] = useState<StudyProgram | null>(
+    null
   );
+  const [error, setError] = useState<string>("");
+  const [showError, setShowError] = useState<boolean>(false);
+
+  // Get unique degrees from programs
+  const uniqueDegrees = Array.from(
+    new Set(programs.map((program) => program.degree))
+  );
+
+  // Function to clean degree text by removing leading numbers
+  const cleanDegreeText = (degree: string): string => {
+    return degree.replace(/^\d+\s*/, "").trim();
+  };
 
   const fetchPrograms = async () => {
     try {
       setLoading(true);
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      setPrograms(mockPrograms);
-      setFilteredPrograms(mockPrograms);
+      setError("");
+      const studyPrograms = await getAllStudyPrograms();
+      setPrograms(studyPrograms);
+      setFilteredPrograms(studyPrograms);
     } catch (error) {
       console.error("Error fetching study programs:", error);
+      if (error instanceof StudyProgramApiError) {
+        setError(`Failed to fetch study programs: ${error.message}`);
+      } else {
+        setError("An unexpected error occurred while fetching study programs");
+      }
+      setShowError(true);
     } finally {
       setLoading(false);
     }
@@ -214,10 +97,7 @@ const StudyProgramSelectionDialog: React.FC<
         (program) =>
           program.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           program.degree.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          program.fieldOfStudy
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          program.description?.toLowerCase().includes(searchQuery.toLowerCase())
+          program.fieldOfStudy.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
@@ -254,19 +134,6 @@ const StudyProgramSelectionDialog: React.FC<
     return 0;
   });
 
-  const getDegreeColor = (degree: string) => {
-    switch (degree) {
-      case "Bachelor":
-        return "#4caf50";
-      case "Master":
-        return "#646cff";
-      case "PhD":
-        return "#9c27b0";
-      default:
-        return "#757575";
-    }
-  };
-
   const handleDegreeToggle = (degree: string) => {
     setSelectedDegrees((prev) =>
       prev.includes(degree)
@@ -285,7 +152,7 @@ const StudyProgramSelectionDialog: React.FC<
     if (target.closest('[role="checkbox"]')) {
       return; // Don't handle row click if checkbox was clicked
     }
-    
+
     handleProgramSelect(program);
   };
 
@@ -353,10 +220,42 @@ const StudyProgramSelectionDialog: React.FC<
           />
         </Box>
 
+        {/* Error Alert */}
+        {showError && error && (
+          <Box
+            sx={{
+              p: 2,
+              backgroundColor: "#4a1f1f",
+              borderBottom: "1px solid #444",
+            }}
+          >
+            <Typography variant="body2" sx={{ color: "#ff6b6b", mb: 1 }}>
+              ⚠️ {error}
+            </Typography>
+            <Box sx={{ display: "flex", gap: 1 }}>
+              <Button
+                size="small"
+                onClick={fetchPrograms}
+                disabled={loading}
+                sx={{ color: "#646cff", textTransform: "none" }}
+              >
+                Retry
+              </Button>
+              <Button
+                size="small"
+                onClick={() => setShowError(false)}
+                sx={{ color: "#ff6b6b", textTransform: "none" }}
+              >
+                Dismiss
+              </Button>
+            </Box>
+          </Box>
+        )}
+
         {/* Search Bar */}
         <Box sx={{ p: 3, borderBottom: "1px solid #444" }}>
           <TextField
-            placeholder="Search study programs by name, degree, field of study, or description..."
+            placeholder="Search study programs by name, degree, or field of study..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             InputProps={{
@@ -381,35 +280,57 @@ const StudyProgramSelectionDialog: React.FC<
           />
 
           {/* Degree Filter Chips */}
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-            <Typography
-              variant="body2"
-              sx={{ color: "#aaa", mr: 1, alignSelf: "center" }}
-            >
+          <Box>
+            <Typography variant="body2" sx={{ color: "#aaa", mb: 1 }}>
               Filter by degree:
             </Typography>
-            {uniqueDegrees.map((degree) => (
-              <Chip
-                key={degree}
-                label={degree}
-                onClick={() => handleDegreeToggle(degree)}
-                sx={{
-                  backgroundColor: selectedDegrees.includes(degree)
-                    ? getDegreeColor(degree)
-                    : "#555",
-                  color: "white",
-                  border: selectedDegrees.includes(degree)
-                    ? `2px solid ${getDegreeColor(degree)}`
-                    : "2px solid transparent",
+            <Box
+              sx={{
+                display: "flex",
+                gap: 1,
+                overflowX: "auto",
+                paddingBottom: 1,
+                "&::-webkit-scrollbar": {
+                  height: "6px",
+                },
+                "&::-webkit-scrollbar-track": {
+                  backgroundColor: "#333",
+                  borderRadius: "3px",
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  backgroundColor: "#666",
+                  borderRadius: "3px",
                   "&:hover": {
-                    backgroundColor: selectedDegrees.includes(degree)
-                      ? getDegreeColor(degree)
-                      : "#666",
+                    backgroundColor: "#777",
                   },
-                  transition: "all 0.2s ease",
-                }}
-              />
-            ))}
+                },
+              }}
+            >
+              {uniqueDegrees.map((degree) => (
+                <Chip
+                  key={degree}
+                  label={cleanDegreeText(degree)}
+                  onClick={() => handleDegreeToggle(degree)}
+                  sx={{
+                    backgroundColor: selectedDegrees.includes(degree)
+                      ? "#646cff"
+                      : "#555",
+                    color: "white",
+                    border: selectedDegrees.includes(degree)
+                      ? "2px solid #646cff"
+                      : "2px solid transparent",
+                    "&:hover": {
+                      backgroundColor: selectedDegrees.includes(degree)
+                        ? "#5a5acf"
+                        : "#666",
+                    },
+                    transition: "all 0.2s ease",
+                    whiteSpace: "nowrap",
+                    flexShrink: 0,
+                  }}
+                />
+              ))}
+            </Box>
           </Box>
         </Box>
 
@@ -530,8 +451,14 @@ const StudyProgramSelectionDialog: React.FC<
                       "&:hover": { backgroundColor: "#333" },
                       borderBottom: "1px solid #444",
                       cursor: "pointer",
-                      backgroundColor: selectedProgram?.id === program.id ? "#404040" : "transparent",
-                      border: selectedProgram?.id === program.id ? "2px solid #646cff" : "none",
+                      backgroundColor:
+                        selectedProgram?.id === program.id
+                          ? "#404040"
+                          : "transparent",
+                      border:
+                        selectedProgram?.id === program.id
+                          ? "2px solid #646cff"
+                          : "none",
                     }}
                     onClick={(event) => handleRowClick(program, event)}
                   >
@@ -541,7 +468,7 @@ const StudyProgramSelectionDialog: React.FC<
                         onChange={() => handleProgramSelect(program)}
                         sx={{
                           color: "#646cff",
-                          '&.Mui-checked': {
+                          "&.Mui-checked": {
                             color: "#646cff",
                           },
                         }}
@@ -549,10 +476,10 @@ const StudyProgramSelectionDialog: React.FC<
                     </TableCell>
                     <TableCell sx={{ color: "white" }}>
                       <Chip
-                        label={program.degree}
+                        label={cleanDegreeText(program.degree)}
                         size="small"
                         sx={{
-                          backgroundColor: getDegreeColor(program.degree),
+                          backgroundColor: "#646cff",
                           color: "white",
                           fontSize: "0.75rem",
                         }}
@@ -567,14 +494,6 @@ const StudyProgramSelectionDialog: React.FC<
                       >
                         {program.name}
                       </Typography>
-                      {program.description && (
-                        <Typography
-                          variant="caption"
-                          sx={{ color: "#aaa", display: "block", mt: 0.5 }}
-                        >
-                          {program.description}
-                        </Typography>
-                      )}
                     </TableCell>
                     <TableCell sx={{ color: "white" }}>
                       {program.fieldOfStudy}
@@ -627,11 +546,13 @@ const StudyProgramSelectionDialog: React.FC<
           onClick={handleCreateStudyPlan}
           disabled={!studyPlanName.trim() || !selectedProgram}
           sx={{
-            backgroundColor: studyPlanName.trim() && selectedProgram ? "#646cff" : "#555",
+            backgroundColor:
+              studyPlanName.trim() && selectedProgram ? "#646cff" : "#555",
             color: "white",
             textTransform: "none",
             "&:hover": {
-              backgroundColor: studyPlanName.trim() && selectedProgram ? "#5a5acf" : "#555",
+              backgroundColor:
+                studyPlanName.trim() && selectedProgram ? "#5a5acf" : "#555",
             },
             "&:disabled": {
               backgroundColor: "#555",
