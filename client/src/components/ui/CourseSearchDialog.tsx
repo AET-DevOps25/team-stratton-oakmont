@@ -346,34 +346,21 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
                 onClick={() => handleCategoryToggle(category)}
                 sx={{
                   backgroundColor: selectedCategories.includes(category)
-                    ? getCategoryColor(category)
+                    ? "#646cff"
                     : "#555",
                   color: "white",
                   border: selectedCategories.includes(category)
-                    ? `2px solid ${getCategoryColor(category)}`
+                    ? "2px solid #646cff"
                     : "2px solid transparent",
                   "&:hover": {
                     backgroundColor: selectedCategories.includes(category)
-                      ? getCategoryColor(category)
+                      ? "#5a5acf"
                       : "#666",
                   },
                   transition: "all 0.2s ease",
                 }}
               />
             ))}
-            {selectedCategories.length > 0 && (
-              <Chip
-                label="Clear Filters"
-                onClick={() => setSelectedCategories([])}
-                sx={{
-                  backgroundColor: "#f44336",
-                  color: "white",
-                  "&:hover": {
-                    backgroundColor: "#d32f2f",
-                  },
-                }}
-              />
-            )}
           </Box>
         </Box>
 
