@@ -72,3 +72,10 @@ spec:
             # Program Catalog Service URL
             - name: PROGRAM_CATALOG_SERVICE_URL
               value: http://program-catalog-service:8080
+          resources:
+            requests:
+              cpu: {{ .Values.resources.studyPlanService.requests.cpu }}
+              memory: {{ .Values.resources.studyPlanService.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.studyPlanService.limits.cpu }}
+              memory: {{ .Values.resources.studyPlanService.limits.memory }}

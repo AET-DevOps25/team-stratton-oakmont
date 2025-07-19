@@ -63,6 +63,13 @@ spec:
                 secretKeyRef:
                   name: tum-study-planner-secrets
                   key: STUDY_PLAN_DB_PASSWORD
+          resources:
+            requests:
+              cpu: {{ .Values.resources.llmInferenceService.requests.cpu }}
+              memory: {{ .Values.resources.llmInferenceService.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.llmInferenceService.limits.cpu }}
+              memory: {{ .Values.resources.llmInferenceService.limits.memory }}
           volumeMounts:
             - name: course-data
               mountPath: /app/data

@@ -56,3 +56,10 @@ spec:
                 secretKeyRef:
                   name: tum-study-planner-secrets
                   key: JWT_EXPIRATION
+          resources:
+            requests:
+              cpu: {{ .Values.resources.userAuthService.requests.cpu }}
+              memory: {{ .Values.resources.userAuthService.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.userAuthService.limits.cpu }}
+              memory: {{ .Values.resources.userAuthService.limits.memory }}
