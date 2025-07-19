@@ -165,8 +165,6 @@ public class SemesterController {
         dto.setName(semester.getName());
         dto.setStudyPlanId(semester.getStudyPlan().getId());
         dto.setSemesterOrder(semester.getSemesterOrder());
-        dto.setCreatedDate(semester.getCreatedDate());
-        dto.setLastModified(semester.getLastModified());
         
         // TODO: Add courses conversion when needed
         // dto.setCourses(semester.getCourses().stream()

@@ -33,13 +33,13 @@ public class StudyPlanService {
 
     public StudyPlan createStudyPlanForUser(Long userId, Long studyProgramId, String name) {
         if (userId == null) {
-            throw new StudyPlanValidationException("User ID cannot be null");
+            throw new IllegalArgumentException("User ID cannot be null");
         }
         if (studyProgramId == null) {
-            throw new StudyPlanValidationException("Study program ID cannot be null");
+            throw new IllegalArgumentException("Study program ID cannot be null");
         }
         if (name == null || name.trim().isEmpty()) {
-            throw new StudyPlanValidationException("Study plan name cannot be empty");
+            throw new IllegalArgumentException("Study plan name cannot be empty");
         }
 
         StudyPlan studyPlan = new StudyPlan();
@@ -58,7 +58,7 @@ public class StudyPlanService {
 
     public StudyPlan getStudyPlanById(Long id) {
         return studyPlanRepository.findById(id)
-            .orElseThrow(() -> new StudyPlanNotFoundException("Study plan not found with id: " + id));
+            .orElseThrow(() -> new RuntimeException("Study plan not found with id: " + id));
     }
 
     public List<StudyPlan> getStudyPlansByUserId(Long userId) {
@@ -139,23 +139,23 @@ public class StudyPlanService {
     // VALIDATION
     private void validateStudyPlan(StudyPlan studyPlan) {
         if (studyPlan == null) {
-            throw new StudyPlanValidationException("Study plan cannot be null");
+            throw new IllegalArgumentException("Study plan cannot be null");
         }
         
         if (studyPlan.getName() == null || studyPlan.getName().trim().isEmpty()) {
-            throw new StudyPlanValidationException("Study plan name is required");
+            throw new IllegalArgumentException("Study plan name is required");
         }
         
         if (studyPlan.getName().length() > 200) {
-            throw new StudyPlanValidationException("Study plan name cannot exceed 200 characters");
+            throw new IllegalArgumentException("Study plan name cannot exceed 200 characters");
         }
         
         if (studyPlan.getUserId() == null) {
-            throw new StudyPlanValidationException("User ID is required");
+            throw new IllegalArgumentException("User ID is required");
         }
         
         if (studyPlan.getStudyProgramId() == null) {
-            throw new StudyPlanValidationException("Study program ID is required");
+            throw new IllegalArgumentException("Study program ID is required");
         }
     }
 

@@ -188,8 +188,6 @@ public class SemesterCourseController {
         dto.setIsCompleted(semesterCourse.getIsCompleted());
         dto.setCompletionDate(semesterCourse.getCompletionDate());
         dto.setCourseOrder(semesterCourse.getCourseOrder());
-        dto.setCreatedDate(semesterCourse.getCreatedDate());
-        dto.setLastModified(semesterCourse.getLastModified());
         
         // TODO: Fetch course details from other service and populate:
         // dto.setCourseName(...)
