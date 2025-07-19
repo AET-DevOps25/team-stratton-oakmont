@@ -22,3 +22,10 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 80
+          resources:
+            requests:
+              cpu: {{ .Values.resources.client.requests.cpu }}
+              memory: {{ .Values.resources.client.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.client.limits.cpu }}
+              memory: {{ .Values.resources.client.limits.memory }}
