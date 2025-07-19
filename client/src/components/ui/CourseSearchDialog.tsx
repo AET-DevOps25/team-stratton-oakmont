@@ -25,16 +25,18 @@ import { Search, Close, Info } from "@mui/icons-material";
 import { CourseDetailsDialog } from "./CourseDetailsDialog";
 import { moduleDetailsAPI } from "../../api/moduleDetails";
 
-// Course interface matching CurriculumPage
+// Course interface that can handle both simple Course and ModuleDetails
 interface Course {
   id: string;
   name: string;
-  code: string;
+  code?: string;
+  moduleId?: string; // For ModuleDetails
   credits: number;
-  semester: string;
+  semester?: string;
   language: string;
-  professor: string;
-  occurrence: string;
+  professor?: string;
+  responsible?: string; // For ModuleDetails
+  occurrence?: string;
   description?: string;
   prerequisites?: string[];
   category: string;
@@ -43,6 +45,21 @@ interface Course {
   completed?: boolean;
   learningMethods?: string;
   assessment?: string;
+  // ModuleDetails specific fields
+  organisation?: string;
+  moduleLevel?: string;
+  totalHours?: number;
+  contactHours?: number;
+  selfStudyHours?: number;
+  descriptionOfAchievementAndAssessmentMethods?: string;
+  examRetakeNextSemester?: string;
+  examRetakeAtTheEndOfSemester?: string;
+  prerequisitesRecommended?: string;
+  intendedLearningOutcomes?: string;
+  content?: string;
+  teachingAndLearningMethods?: string;
+  media?: string;
+  readingList?: string;
 }
 
 interface CourseSearchDialogProps {
@@ -121,11 +138,19 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
       filtered = filtered.filter(
         (course) =>
           course.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          course.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (course.code &&
+            course.code.toLowerCase().includes(searchQuery.toLowerCase())) ||
           course.description
             ?.toLowerCase()
             .includes(searchQuery.toLowerCase()) ||
-          course.professor.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (course.professor &&
+            course.professor
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())) ||
+          (course.responsible &&
+            course.responsible
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())) ||
           course.category.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
@@ -251,9 +276,62 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
     handleAddCourse(course);
   };
 
-  const handleCourseClick = (course: Course) => {
-    setSelectedCourse(course);
-    setCourseDetailsOpen(true);
+  const handleCourseClick = async (course: Course) => {
+    try {
+      // Fetch full module details using the moduleId or code
+      const moduleId = course.code || course.id;
+      const moduleDetails = await moduleDetailsAPI.getModuleDetailsByModuleId(
+        moduleId
+      );
+
+      if (moduleDetails) {
+        // Create a rich Course object with all ModuleDetails data preserved
+        const enrichedCourse: Course = {
+          id: moduleDetails.id.toString(),
+          name: moduleDetails.name,
+          code: moduleDetails.moduleId,
+          moduleId: moduleDetails.moduleId,
+          credits: moduleDetails.credits,
+          semester: course.semester, // Keep the extracted semester
+          language: moduleDetails.language,
+          professor: moduleDetails.responsible,
+          responsible: moduleDetails.responsible,
+          occurrence: moduleDetails.occurrence,
+          description:
+            moduleDetails.intendedLearningOutcomes || moduleDetails.content,
+          category: moduleDetails.category,
+          subcategory: moduleDetails.subcategory,
+          // Add all the rich ModuleDetails fields
+          organisation: moduleDetails.organisation,
+          moduleLevel: moduleDetails.moduleLevel,
+          totalHours: moduleDetails.totalHours,
+          contactHours: moduleDetails.contactHours,
+          selfStudyHours: moduleDetails.selfStudyHours,
+          descriptionOfAchievementAndAssessmentMethods:
+            moduleDetails.descriptionOfAchievementAndAssessmentMethods,
+          examRetakeNextSemester: moduleDetails.examRetakeNextSemester,
+          examRetakeAtTheEndOfSemester:
+            moduleDetails.examRetakeAtTheEndOfSemester,
+          prerequisitesRecommended: moduleDetails.prerequisitesRecommended,
+          intendedLearningOutcomes: moduleDetails.intendedLearningOutcomes,
+          content: moduleDetails.content,
+          teachingAndLearningMethods: moduleDetails.teachingAndLearningMethods,
+          media: moduleDetails.media,
+          readingList: moduleDetails.readingList,
+        };
+        setSelectedCourse(enrichedCourse);
+      } else {
+        // Fallback to the existing course data if module details not found
+        setSelectedCourse(course);
+      }
+
+      setCourseDetailsOpen(true);
+    } catch (error) {
+      console.error("Error fetching module details:", error);
+      // Fallback to existing course data on error
+      setSelectedCourse(course);
+      setCourseDetailsOpen(true);
+    }
   };
 
   const handleCloseDetails = () => {
@@ -502,12 +580,14 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
                         {course.name}
                       </Typography>
                     </TableCell>
-                    <TableCell sx={{ color: "white" }}>{course.code}</TableCell>
+                    <TableCell sx={{ color: "white" }}>
+                      {course.code || course.moduleId || course.id}
+                    </TableCell>
                     <TableCell sx={{ color: "white" }}>
                       {course.credits}
                     </TableCell>
                     <TableCell sx={{ color: "white" }}>
-                      {course.professor}
+                      {course.professor || course.responsible || "N/A"}
                     </TableCell>
                     <TableCell sx={{ color: "white" }}>
                       <Chip
