@@ -39,6 +39,7 @@ llmInferenceService:
     tag: latest
   env:
     WEAVIATE_URL: "http://weaviate-vector-service.tum-study-planner:8080"
+    WEAVIATE_GRPC_URL: "http://weaviate-vector-service.tum-study-planner:50051"
     STUDY_DATA_DB_HOST: "postgres-study-data-service"
     STUDY_DATA_DB_PORT: "5432"
     STUDY_DATA_DB_NAME: "study_data_db"

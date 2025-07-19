@@ -9,6 +9,8 @@ from typing import List, Dict
 from weaviate.collections.classes.config import DataType
 from weaviate.collections.classes.data import DataObject 
 
+from sqlalchemy import create_engine
+
 # Load environment variables
 load_dotenv()
 
@@ -43,10 +45,8 @@ class WeaviatePopulator:
             # Delete existing class if it exists
             if "TUMCourse" in self.client.collections.list_all():                print("🗑️  Deleting existing TUMCourse schema...")
             self.client.collections.delete("TUMCourse")
-            # All columns from modules.csv
+            # All columns from curriculums_x_module_details table (id renamed to csv_id)
             properties = [
-                # 'id' is reserved in Weaviate, so we use 'csv_id' instead
-                {"name": "csv_id", "data_type": DataType.INT},
                 {"name": "study_program_id", "data_type": DataType.INT},
                 {"name": "category", "data_type": DataType.TEXT},
                 {"name": "subcategory", "data_type": DataType.TEXT},
@@ -81,7 +81,8 @@ class WeaviatePopulator:
                 {"name": "reading_list", "data_type": DataType.TEXT},
                 {"name": "curriculum_id", "data_type": DataType.INT},
                 {"name": "transformed_link", "data_type": DataType.TEXT},
-                {"name": "extraction_method", "data_type": DataType.TEXT}
+                {"name": "extraction_method", "data_type": DataType.TEXT},
+                {"name": "csv_id", "data_type": DataType.INT}
             ]
             self.client.collections.create(
                 name="TUMCourse",
@@ -94,33 +95,25 @@ class WeaviatePopulator:
             sys.exit(1)
     
     def load_course_data(self) -> pd.DataFrame:
-        """Load course data from CSV files (no required columns)"""
+        """Load course data from the curriculums_x_module_details table in study_data_db (PostgreSQL)"""
         try:
-            # Try multiple possible paths
-            csv_paths = [
-                "../data-collection/csv_tables/modules.csv",
-                "../../data-collection/csv_tables/modules.csv",
-                "/app/data/modules.csv",
-                "data/modules.csv"
-            ]
-            
-            df = None
-            for path in csv_paths:
-                if os.path.exists(path):
-                    print(f"📚 Loading course data from {path}")
-                    df = pd.read_csv(path)
-                    break
-            
-            if df is None:
-                raise FileNotFoundError("Could not find modules.csv file")
-            
-            print(f"📊 Loaded {len(df)} total records")
+            db_host = os.getenv("STUDY_DATA_DB_HOST", "localhost")
+            db_port = os.getenv("STUDY_DATA_DB_PORT", "5432")
+            db_name = os.getenv("STUDY_DATA_DB_NAME", "study_data_db")
+            db_user = os.getenv("STUDY_DATA_DB_USER", "study_data_user")
+            db_pass = os.getenv("STUDY_DATA_DB_PASSWORD", "password")
+
+            db_url = f"postgresql+psycopg2://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
+            print(f"📚 Connecting to PostgreSQL at {db_host}:{db_port}, DB: {db_name}, User: {db_user}")
+            engine = create_engine(db_url)
+            query = "SELECT * FROM curriculums_x_module_details"
+            df = pd.read_sql(query, engine)
+            print(f"📊 Loaded {len(df)} records from curriculums_x_module_details table")
             df = df.fillna('')
             print(f"📊 {len(df)} records after cleaning")
             return df
-            
         except Exception as e:
-            print(f"❌ Error loading course data: {e}")
+            print(f"❌ Error loading course data from DB: {e}")
             sys.exit(1)
     
     def prepare_course_data(self, df: pd.DataFrame) -> List[Dict]:

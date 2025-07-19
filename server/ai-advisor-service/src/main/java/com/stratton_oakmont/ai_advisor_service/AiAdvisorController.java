@@ -15,16 +15,22 @@ import jakarta.validation.Valid;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1")
-@CrossOrigin(origins = "*") // Configure this properly for production
+@RequestMapping("")
+@CrossOrigin(origins = {
+    "https://tum-study-planner.student.k8s.aet.cit.tum.de",
+    "http://localhost:5173", 
+    "http://localhost:3000"
+})
 public class AiAdvisorController {
 
     @Autowired
     private AiAdvisorService aiAdvisorService;
 
-    @PostMapping("/chat")
-    public Mono<ResponseEntity<ChatResponse>> chat(@Valid @RequestBody ChatRequest request) {
-        return aiAdvisorService.processChat(request)
+    @PostMapping("/chat/")
+    public Mono<ResponseEntity<ChatResponse>> chat(
+            @Valid @RequestBody ChatRequest request,
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
+        return aiAdvisorService.processChat(request, authorizationHeader)
                 .map(response -> ResponseEntity.ok(response))
                 .onErrorReturn(ResponseEntity.status(500).build());
     }

@@ -30,7 +30,7 @@ docker-compose -f docker-compose.monitoring.yml down
 - Study Plan Service: http://localhost:8081
 - AI Advisor Service: http://localhost:8082
 - User Auth Service: http://localhost:8083
-- LLM Service: http://localhost:8000
+- LLM Service: http://localhost:8084
 
 ### 🤖 AI Chat Feature Setup
 
@@ -46,9 +46,9 @@ docker-compose -f docker-compose.monitoring.yml down
 
 **AI Service URLs:**
 
-- Weaviate Vector DB: http://localhost:8080
-- LLM Inference Service: http://localhost:8082
-- AI Advisor Gateway: http://localhost:8084
+- Weaviate Vector DB: http://localhost:8000
+- LLM Inference Service: http://localhost:8084
+- AI Advisor Gateway: http://localhost:8082
 
 > **Note:** You'll need an OpenAI API key for the AI chat feature. See `AI_CHAT_IMPLEMENTATION.md` for detailed setup instructions.
 
@@ -219,7 +219,7 @@ cd server
 New terminal window:
 
 ```bash
-# start llm-service (localhost:8000)
+# start llm-service (localhost:8084)
 cd llm-service
 pip install -r requirements.txt
 python app.py
