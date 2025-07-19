@@ -34,7 +34,10 @@ import {
 import type { StudyPlanDto, StudyProgramDto } from "../../api/studyPlans";
 import AnalyticsDashboard from "../../components/ui/AnalyticsDashboard";
 import SemesterCard from "../../components/ui/SemesterCard";
-import type { SemesterData, SemesterCourse } from "../../components/ui/SemesterCard";
+import type {
+  SemesterData,
+  SemesterCourse,
+} from "../../components/ui/SemesterCard";
 import CourseSearchDialog from "../../components/ui/CourseSearchDialog";
 
 interface StudyPlanDetailPageProps {}
@@ -329,7 +332,7 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
         subSubcategory: course.subSubcategory,
         completed: false,
       };
-      
+
       setSemesters(
         semesters.map((semester) =>
           semester.id === activeSemesterId
@@ -359,7 +362,7 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
         subSubcategory: course.subSubcategory,
         completed: false,
       }));
-      
+
       setSemesters(
         semesters.map((semester) =>
           semester.id === activeSemesterId
