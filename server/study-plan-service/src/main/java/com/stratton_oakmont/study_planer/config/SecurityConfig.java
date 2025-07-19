@@ -35,7 +35,8 @@ public class SecurityConfig {
             "https://tum-study-planner.student.k8s.aet.cit.tum.de",
             "http://localhost:5173",  // Vite dev server
             "http://localhost:3000",  // Alternative React port
-            "http://localhost:80"     // Docker/nginx port
+            "http://localhost:80",     // Docker/nginx port
+            "http://localhost"         // Swagger UI
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));

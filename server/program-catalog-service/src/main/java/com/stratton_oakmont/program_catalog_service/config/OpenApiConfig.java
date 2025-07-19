@@ -20,10 +20,6 @@ public class OpenApiConfig {
                 .url("http://localhost:8080/api/v1")
                 .description("Local Development Server");
 
-        Server prodServer = new Server()
-                .url("/api/v1")
-                .description("Program Catalog Service");
-
         Contact contact = new Contact();
         contact.setEmail("nikolas.lethaus@gmail.com");
         contact.setName("Team Stratton Oakmont");
@@ -41,6 +37,6 @@ public class OpenApiConfig {
 
         return new OpenAPI()
                 .info(info)
-                .servers(List.of(localServer, prodServer));
+                .servers(List.of(localServer));
     }
 }

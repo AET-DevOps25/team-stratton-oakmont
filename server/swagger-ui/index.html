@@ -113,27 +113,46 @@
           name: "Study Plan Service",
           description:
             "Manage study plans, track progress, and organize academic schedules for students.",
-          url: "/docs/study-plan/api/v1/api-docs",
+          url: getServiceUrl("study-plan", 8081),
         },
         "user-auth": {
           name: "User Authentication Service",
           description:
             "Handle user registration, authentication, authorization, and user management.",
-          url: "/docs/user-auth/api/v1/api-docs",
+          url: getServiceUrl("user-auth", 8083),
         },
         "program-catalog": {
           name: "Program Catalog Service",
           description:
             "Browse and manage academic programs, courses, and curriculum information.",
-          url: "/docs/program-catalog/api/v1/api-docs",
+          url: getServiceUrl("program-catalog", 8080),
         },
         "ai-advisor": {
           name: "AI Advisor Service",
           description:
             "Get AI-powered academic recommendations and intelligent study plan suggestions.",
-          url: "/docs/ai-advisor/api/v1/api-docs",
+          url: getServiceUrl("ai-advisor", 8082),
         },
       };
+
+      // Improved URL detection function
+      function getServiceUrl(serviceName, port) {
+        const hostname = window.location.hostname;
+        const protocol = window.location.protocol;
+
+        // Check for production Kubernetes deployment
+        if (hostname.includes("tum-study-planner.student.k8s.aet.cit.tum.de")) {
+          return `/docs/${serviceName}/api/v1/api-docs`;
+        }
+
+        // Check for local development
+        if (hostname === "localhost" || hostname === "127.0.0.1") {
+          return `http://localhost:${port}/api/v1/api-docs`;
+        }
+
+        // Fallback for other environments (Docker, Rancher, etc.)
+        return `/docs/${serviceName}/api/v1/api-docs`;
+      }
 
       let ui;
 
@@ -142,19 +161,49 @@
 
         // Update service info
         document.getElementById("service-info").innerHTML = `
-                    <h3>${service.name}</h3>
-                    <p>${service.description}</p>
-                `;
+          <h3>${service.name}</h3>
+          <p>${service.description}</p>
+        `;
 
-        // Initialize/update Swagger UI
-        ui = SwaggerUIBundle({
-          url: service.url,
-          dom_id: "#swagger-ui",
-          deepLinking: true,
-          presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
-          plugins: [SwaggerUIBundle.plugins.DownloadUrl],
-          layout: "StandaloneLayout",
-        });
+        // Initialize/update Swagger UI with better error handling
+        try {
+          ui = SwaggerUIBundle({
+            url: service.url,
+            dom_id: "#swagger-ui",
+            deepLinking: true,
+            presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+            plugins: [SwaggerUIBundle.plugins.DownloadUrl],
+            layout: "StandaloneLayout",
+            requestInterceptor: (req) => {
+              // Only add CORS headers for cross-origin requests
+              if (
+                req.url.includes("localhost") &&
+                window.location.hostname !== "localhost"
+              ) {
+                // CORS headers must be set by the server, not the client.
+              }
+              return req;
+            },
+            onComplete: () => {
+              console.log(`Successfully loaded ${service.name} documentation`);
+            },
+            onFailure: (err) => {
+              console.error(
+                `Failed to load ${service.name} documentation:`,
+                err
+              );
+              document.getElementById("swagger-ui").innerHTML = `
+                <div style="padding: 20px; text-align: center; color: #d32f2f;">
+                  <h3>Failed to load API documentation</h3>
+                  <p>Could not connect to ${service.name}</p>
+                  <p><small>URL: ${service.url}</small></p>
+                </div>
+              `;
+            },
+          });
+        } catch (error) {
+          console.error("Error initializing Swagger UI:", error);
+        }
       }
 
       // Initialize with default service
