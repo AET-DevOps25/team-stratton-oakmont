@@ -1,0 +1,77 @@
+{{- range $serviceName, $config := .Values.services }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $serviceName }}
+  namespace: {{ $.Values.namespace }}
+  labels:
+    app: {{ $serviceName }}
+    chart: {{ include "tum-study-planner.chart" $ }}
+    release: {{ $.Release.Name }}
+    heritage: {{ $.Release.Service }}
+spec:
+  {{- if not (index $.Values.autoscaling.services $serviceName).enabled }}
+  replicas: {{ $.Values.replicaCount | default 1 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: {{ $serviceName }}
+      release: {{ $.Release.Name }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: {{ $.Values.deploymentStrategy.maxUnavailable | default "25%" }}
+      maxSurge: {{ $.Values.deploymentStrategy.maxSurge | default "25%" }}
+  template:
+    metadata:
+      labels:
+        app: {{ $serviceName }}
+        release: {{ $.Release.Name }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") $ | sha256sum }}
+    spec:
+      restartPolicy: Always
+      terminationGracePeriodSeconds: {{ $.Values.terminationGracePeriodSeconds | default 30 }}
+      {{- if $.Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml $.Values.podSecurityContext | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ $serviceName }}
+        image: "{{ (index $.Values.images $serviceName).repository }}:{{ (index $.Values.images $serviceName).tag }}"
+        imagePullPolicy: {{ (index $.Values.images $serviceName).pullPolicy | default "IfNotPresent" }}
+        ports:
+        - containerPort: {{ $config.targetPort | default 8080 }}
+          protocol: TCP
+        {{- if $.Values.healthChecks.enabled }}
+        {{- include "tum-study-planner.healthChecks" (dict "Values" $.Values "service" $serviceName "port" ($config.targetPort | default 8080)) | nindent 8 }}
+        {{- end }}
+        {{- if index $.Values.resources $serviceName }}
+        resources:
+          {{- toYaml (index $.Values.resources $serviceName) | nindent 10 }}
+        {{- end }}
+        {{- if $.Values.securityContext }}
+        securityContext:
+          {{- toYaml $.Values.securityContext | nindent 10 }}
+        {{- end }}
+        {{- if and (eq $serviceName "llmInferenceService") $.Values.llmInferenceService.env }}
+        env:
+        {{- range $key, $value := $.Values.llmInferenceService.env }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
+        {{- end }}
+      {{- if $.Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml $.Values.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if $.Values.affinity }}
+      affinity:
+        {{- toYaml $.Values.affinity | nindent 8 }}
+      {{- end }}
+      {{- if $.Values.tolerations }}
+      tolerations:
+        {{- toYaml $.Values.tolerations | nindent 8 }}
+      {{- end }}
+{{- end }}
