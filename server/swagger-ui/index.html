@@ -113,25 +113,37 @@
           name: "Study Plan Service",
           description:
             "Manage study plans, track progress, and organize academic schedules for students.",
-          url: "/docs/study-plan/api/v1/api-docs",
+          url:
+            window.location.hostname === "localhost"
+              ? "http://localhost:8081/api/v1/api-docs" // Direct service URL for local development
+              : "/docs/study-plan/api/v1/api-docs", // Proxied URL for production
         },
         "user-auth": {
           name: "User Authentication Service",
           description:
             "Handle user registration, authentication, authorization, and user management.",
-          url: "/docs/user-auth/api/v1/api-docs",
+          url:
+            window.location.hostname === "localhost"
+              ? "http://localhost:8083/api/v1/api-docs" // Direct service URL for local development
+              : "/docs/user-auth/api/v1/api-docs", // Proxied URL for production
         },
         "program-catalog": {
           name: "Program Catalog Service",
           description:
             "Browse and manage academic programs, courses, and curriculum information.",
-          url: "/docs/program-catalog/api/v1/api-docs",
+          url:
+            window.location.hostname === "localhost"
+              ? "http://localhost:8080/api/v1/api-docs" // Direct service URL for local development
+              : "/docs/program-catalog/api/v1/api-docs", // Proxied URL for production
         },
         "ai-advisor": {
           name: "AI Advisor Service",
           description:
             "Get AI-powered academic recommendations and intelligent study plan suggestions.",
-          url: "/docs/ai-advisor/api/v1/api-docs",
+          url:
+            window.location.hostname === "localhost"
+              ? "http://localhost:8082/api/v1/api-docs" // Direct service URL for local development
+              : "/docs/ai-advisor/api/v1/api-docs", // Proxied URL for production
         },
       };
 
@@ -154,6 +166,11 @@
           presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
           plugins: [SwaggerUIBundle.plugins.DownloadUrl],
           layout: "StandaloneLayout",
+          requestInterceptor: (req) => {
+            // Add CORS headers if needed
+            req.headers["Access-Control-Allow-Origin"] = "*";
+            return req;
+          },
         });
       }
 

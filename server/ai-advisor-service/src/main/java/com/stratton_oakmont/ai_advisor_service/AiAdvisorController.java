@@ -16,7 +16,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1")
-@CrossOrigin(origins = "*") // Configure this properly for production
+@CrossOrigin(origins = {
+    "https://tum-study-planner.student.k8s.aet.cit.tum.de",
+    "http://localhost:5173", 
+    "http://localhost:3000",
+    "http://localhost:80",
+    "http://localhost",
+})
 public class AiAdvisorController {
 
     @Autowired
