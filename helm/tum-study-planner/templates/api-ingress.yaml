@@ -39,11 +39,11 @@ spec:
               service:
                 name: program-catalog-service
                 port:
-                  number: 8082
+                  number: 8080
           - path: /api/ai-advisor(/|$)(.*)
             pathType: ImplementationSpecific
             backend:
               service:
                 name: ai-advisor-service
                 port:
-                  number: 8084
+                  number: 8082
