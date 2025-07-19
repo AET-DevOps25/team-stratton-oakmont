@@ -46,21 +46,21 @@ jobs:
       - name: Deploy application with Helm
         run: |
           helm upgrade --install tum-study-planner ./helm/tum-study-planner \
-            --namespace tum-study-planner \
-            --set images.client.repository=${{ env.REGISTRY }}/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')/client \
-            --set images.client.tag=latest \
-            --set images.studyPlanService.repository=${{ env.REGISTRY }}/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')/study-plan-service \
-            --set images.studyPlanService.tag=latest \
-            --set images.userAuthService.repository=${{ env.REGISTRY }}/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')/user-auth-service \
-            --set images.userAuthService.tag=latest \
-            --set images.programCatalogService.repository=${{ env.REGISTRY }}/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')/program-catalog-service \
-            --set images.programCatalogService.tag=latest \
-            --set images.aiAdvisorService.repository=${{ env.REGISTRY }}/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')/ai-advisor-service \
-            --set images.aiAdvisorService.tag=latest \
-            --set images.llmInferenceService.repository=${{ env.REGISTRY }}/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')/llm-inference-service \
-            --set images.llmInferenceService.tag=latest \
-            --set images.swaggerUi.repository=${{ env.REGISTRY }}/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')/swagger-ui \
-            --set images.swaggerUi.tag=latest \
+            --namespace tum-study-planner --create-namespace \
+            --set client.image.repository=${{ env.REGISTRY }}/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')/client \
+            --set client.image.tag=latest \
+            --set studyPlanService.image.repository=${{ env.REGISTRY }}/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')/study-plan-service \
+            --set studyPlanService.image.tag=latest \
+            --set userAuthService.image.repository=${{ env.REGISTRY }}/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')/user-auth-service \
+            --set userAuthService.image.tag=latest \
+            --set programCatalogService.image.repository=${{ env.REGISTRY }}/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')/program-catalog-service \
+            --set programCatalogService.image.tag=latest \
+            --set aiAdvisorService.image.repository=${{ env.REGISTRY }}/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')/ai-advisor-service \
+            --set aiAdvisorService.image.tag=latest \
+            --set llmInferenceService.image.repository=${{ env.REGISTRY }}/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')/llm-inference-service \
+            --set llmInferenceService.image.tag=latest \
+            --set swaggerUi.image.repository=${{ env.REGISTRY }}/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')/swagger-ui \
+            --set swaggerUi.image.tag=latest \
             --wait --timeout=10m
 
       - name: Verify deployment
