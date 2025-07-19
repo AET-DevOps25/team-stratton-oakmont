@@ -15,6 +15,7 @@ import jakarta.validation.Valid;
 import java.util.Map;
 
 @RestController
+@RequestMapping("")
 @CrossOrigin(origins = {
     "https://tum-study-planner.student.k8s.aet.cit.tum.de",
     "http://localhost:5173", 
