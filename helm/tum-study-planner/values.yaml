@@ -115,19 +115,6 @@ llmInferenceService:
     repository: ghcr.io/AET-DevOps25/team-stratton-oakmont/llm-inference-service
     tag: latest
     pullPolicy: Always
-
-swaggerUi:
-  image:
-    repository: ghcr.io/AET-DevOps25/team-stratton-oakmont/swagger-ui
-    tag: latest
-    pullPolicy: Always
-
-# Database configurations (using existing k8s manifests)
-postgresql:
-  enabled: false # We're using separate manifests in k8s/base/
-
-# LLM Inference Service environment variables
-llmInferenceService:
   env:
     WEAVIATE_URL: "http://weaviate-vector-service.tum-study-planner:8080"
     WEAVIATE_GRPC_URL: "http://weaviate-vector-service.tum-study-planner:50051"
@@ -138,6 +125,16 @@ llmInferenceService:
     STUDY_PLAN_DB_PORT: "5432"
     STUDY_PLAN_DB_NAME: "study_plan_db"
     # GOOGLE_API_KEY: "your_google_api_key_here"
+
+swaggerUi:
+  image:
+    repository: ghcr.io/AET-DevOps25/team-stratton-oakmont/swagger-ui
+    tag: latest
+    pullPolicy: Always
+
+# Database configurations (using existing k8s manifests)
+postgresql:
+  enabled: false # We're using separate manifests in k8s/base/
 
 # Auto-scaling configuration
 autoscaling:
