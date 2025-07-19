@@ -34,7 +34,7 @@ import {
 import type { StudyPlanDto, StudyProgramDto } from "../../api/studyPlans";
 import AnalyticsDashboard from "../../components/ui/AnalyticsDashboard";
 import SemesterCard from "../../components/ui/SemesterCard";
-import type { SemesterData, Course } from "../../components/ui/SemesterCard";
+import type { SemesterData, SemesterCourse } from "../../components/ui/SemesterCard";
 import CourseSearchDialog from "../../components/ui/CourseSearchDialog";
 
 interface StudyPlanDetailPageProps {}
@@ -313,14 +313,29 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
     setCourseSearchOpen(true);
   };
 
-  const handleAddCourseToSemester = (course: Course) => {
+  const handleAddCourseToSemester = (course: any) => {
     if (activeSemesterId) {
+      // Convert to SemesterCourse format
+      const semesterCourse = {
+        id: course.id,
+        name: course.name,
+        code: course.code || course.moduleId || "",
+        credits: course.credits,
+        semester: course.semester || "",
+        professor: course.professor || course.responsible || "",
+        occurrence: course.occurrence || "",
+        category: course.category,
+        subcategory: course.subcategory,
+        subSubcategory: course.subSubcategory,
+        completed: false,
+      };
+      
       setSemesters(
         semesters.map((semester) =>
           semester.id === activeSemesterId
             ? {
                 ...semester,
-                courses: [...semester.courses, { ...course, completed: false }],
+                courses: [...semester.courses, semesterCourse],
               }
             : semester
         )
@@ -328,17 +343,29 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
     }
   };
 
-  const handleAddCoursesToSemester = (courses: Course[]) => {
+  const handleAddCoursesToSemester = (courses: any[]) => {
     if (activeSemesterId) {
+      // Convert each course to SemesterCourse format
+      const semesterCourses = courses.map((course) => ({
+        id: course.id,
+        name: course.name,
+        code: course.code || course.moduleId || "",
+        credits: course.credits,
+        semester: course.semester || "",
+        professor: course.professor || course.responsible || "",
+        occurrence: course.occurrence || "",
+        category: course.category,
+        subcategory: course.subcategory,
+        subSubcategory: course.subSubcategory,
+        completed: false,
+      }));
+      
       setSemesters(
         semesters.map((semester) =>
           semester.id === activeSemesterId
             ? {
                 ...semester,
-                courses: [
-                  ...semester.courses,
-                  ...courses.map((course) => ({ ...course, completed: false })),
-                ],
+                courses: [...semester.courses, ...semesterCourses],
               }
             : semester
         )

@@ -28,19 +28,17 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { CourseDetailsDialog } from "./CourseDetailsDialog";
+import { moduleDetailsAPI } from "../../api/moduleDetails";
 
-// Course interface
-interface Course {
+// Minimal course interface for semester management (without language, description, prerequisites)
+interface SemesterCourse {
   id: string;
   name: string;
   code: string;
   credits: number;
   semester: string;
-  language: string;
   professor: string;
   occurrence: string;
-  description?: string;
-  prerequisites?: string[];
   category: string;
   subcategory?: string;
   subSubcategory?: string;
@@ -50,15 +48,15 @@ interface Course {
 interface SemesterData {
   id: string;
   name: string;
-  courses: Course[];
+  courses: SemesterCourse[];
   expanded?: boolean;
 }
 
 interface CourseItemProps {
-  course: Course;
+  course: SemesterCourse;
   onToggleCompleted: (courseId: string) => void;
   onRemoveCourse: (courseId: string) => void;
-  onCourseClick?: (course: Course) => void;
+  onCourseClick?: (course: SemesterCourse) => void;
   semesterId: string;
 }
 
@@ -266,7 +264,7 @@ const SemesterCard: React.FC<SemesterCardProps> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(semester.name);
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [selectedCourse, setSelectedCourse] = useState<any>(null);
   const [courseDetailsOpen, setCourseDetailsOpen] = useState(false);
 
   const totalCredits = semester.courses.reduce((sum, course) => sum + course.credits, 0);
@@ -288,9 +286,66 @@ const SemesterCard: React.FC<SemesterCardProps> = ({
     setEditName(semester.name);
   };
 
-  const handleCourseClick = (course: Course) => {
-    setSelectedCourse(course);
-    setCourseDetailsOpen(true);
+  const handleCourseClick = async (course: SemesterCourse) => {
+    try {
+      // Fetch full module details using the moduleId or code
+      const moduleId = course.code || course.id;
+      const moduleDetails = await moduleDetailsAPI.getModuleDetailsByModuleId(
+        moduleId
+      );
+
+      if (moduleDetails) {
+        // Create a rich Course object with all ModuleDetails data preserved
+        const enrichedCourse = {
+          id: moduleDetails.id.toString(),
+          name: moduleDetails.name,
+          code: moduleDetails.moduleId,
+          moduleId: moduleDetails.moduleId,
+          credits: moduleDetails.credits,
+          semester: course.semester, // Keep the extracted semester
+          language: moduleDetails.language,
+          professor: course.professor, // Keep the existing professor
+          responsible: moduleDetails.responsible,
+          occurrence: moduleDetails.occurrence,
+          category: moduleDetails.category,
+          subcategory: moduleDetails.subcategory,
+          completed: course.completed,
+          // ModuleDetails specific fields
+          organisation: moduleDetails.organisation,
+          moduleLevel: moduleDetails.moduleLevel,
+          totalHours: moduleDetails.totalHours,
+          contactHours: moduleDetails.contactHours,
+          selfStudyHours: moduleDetails.selfStudyHours,
+          descriptionOfAchievementAndAssessmentMethods:
+            moduleDetails.descriptionOfAchievementAndAssessmentMethods,
+          examRetakeNextSemester: moduleDetails.examRetakeNextSemester,
+          examRetakeAtTheEndOfSemester: moduleDetails.examRetakeAtTheEndOfSemester,
+          prerequisitesRecommended: moduleDetails.prerequisitesRecommended,
+          intendedLearningOutcomes: moduleDetails.intendedLearningOutcomes,
+          content: moduleDetails.content,
+          teachingAndLearningMethods: moduleDetails.teachingAndLearningMethods,
+          media: moduleDetails.media,
+          readingList: moduleDetails.readingList,
+        };
+
+        setSelectedCourse(enrichedCourse);
+      } else {
+        // Fallback to basic course data if module details not found
+        setSelectedCourse({
+          ...course,
+          language: "N/A", // Add missing language field for compatibility
+        });
+      }
+      setCourseDetailsOpen(true);
+    } catch (error) {
+      console.error("Error fetching module details:", error);
+      // Fallback to basic course data on error
+      setSelectedCourse({
+        ...course,
+        language: "N/A", // Add missing language field for compatibility
+      });
+      setCourseDetailsOpen(true);
+    }
   };
 
   const handleCloseDialog = () => {
@@ -569,4 +624,4 @@ const SemesterCard: React.FC<SemesterCardProps> = ({
 };
 
 export default SemesterCard;
-export type { SemesterData, Course };
+export type { SemesterData, SemesterCourse };
