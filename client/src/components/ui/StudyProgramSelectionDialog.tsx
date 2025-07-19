@@ -21,7 +21,7 @@ import {
   CircularProgress,
   Checkbox,
 } from "@mui/material";
-import { Search, Close } from "@mui/icons-material";
+import { Search, Close, Info } from "@mui/icons-material";
 import {
   getAllStudyPrograms,
   StudyProgramApiError,
@@ -147,13 +147,18 @@ const StudyProgramSelectionDialog: React.FC<
   };
 
   const handleRowClick = (program: StudyProgram, event: React.MouseEvent) => {
-    // Check if the click was on the checkbox
+    // Check if the click was on the checkbox or info button
     const target = event.target as HTMLElement;
-    if (target.closest('[role="checkbox"]')) {
-      return; // Don't handle row click if checkbox was clicked
+    if (target.closest('[role="checkbox"]') || target.closest("button")) {
+      return; // Don't handle row click if checkbox or button was clicked
     }
 
     handleProgramSelect(program);
+  };
+
+  const handleOpenCurriculum = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    window.open("/curriculum", "_blank");
   };
 
   const handleCreateStudyPlan = () => {
@@ -441,6 +446,16 @@ const StudyProgramSelectionDialog: React.FC<
                       Semesters
                     </TableSortLabel>
                   </TableCell>
+                  <TableCell
+                    sx={{
+                      color: "white",
+                      fontWeight: "bold",
+                      backgroundColor: "#333",
+                      width: "50px",
+                    }}
+                  >
+                    Info
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -503,6 +518,19 @@ const StudyProgramSelectionDialog: React.FC<
                     </TableCell>
                     <TableCell sx={{ color: "white" }}>
                       {program.semesters}
+                    </TableCell>
+                    <TableCell sx={{ color: "white", width: "50px" }}>
+                      <IconButton
+                        onClick={handleOpenCurriculum}
+                        sx={{
+                          color: "#646cff",
+                          "&:hover": {
+                            backgroundColor: "rgba(100, 108, 255, 0.1)",
+                          },
+                        }}
+                      >
+                        <Info />
+                      </IconButton>
                     </TableCell>
                   </TableRow>
                 ))}
