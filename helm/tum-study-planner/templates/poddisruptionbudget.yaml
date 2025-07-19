@@ -1,0 +1,24 @@
+{{- if .Values.podDisruptionBudget.enabled }}
+{{- range $serviceName, $config := .Values.autoscaling.services }}
+{{- if $config.enabled }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ $serviceName }}-pdb
+  namespace: {{ $.Values.namespace }}
+  labels:
+    app: {{ $serviceName }}
+    component: {{ $config.component | default "backend" }}
+    chart: {{ include "tum-study-planner.chart" $ }}
+    release: {{ $.Release.Name }}
+    heritage: {{ $.Release.Service }}
+spec:
+  minAvailable: {{ $.Values.podDisruptionBudget.minAvailable | default 1 }}
+  selector:
+    matchLabels:
+      app: {{ $serviceName }}
+      release: {{ $.Release.Name }}
+{{- end }}
+{{- end }}
+{{- end }}
