@@ -12,8 +12,6 @@ public class CreateStudyPlanRequest {
     
     @NotNull(message = "Study program ID is required")
     private Long studyProgramId;
-    
-    private String planData;
 
     // Constructors
     public CreateStudyPlanRequest() {}
@@ -24,7 +22,4 @@ public class CreateStudyPlanRequest {
 
     public Long getStudyProgramId() { return studyProgramId; }
     public void setStudyProgramId(Long studyProgramId) { this.studyProgramId = studyProgramId; }
-
-    public String getPlanData() { return planData; }
-    public void setPlanData(String planData) { this.planData = planData; }
 }

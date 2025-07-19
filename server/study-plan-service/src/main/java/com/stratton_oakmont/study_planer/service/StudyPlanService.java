@@ -1,33 +1,33 @@
 package com.stratton_oakmont.study_planer.service;
 
 import com.stratton_oakmont.study_planer.model.StudyPlan;
-import com.stratton_oakmont.study_planer.exception.StudyPlanNotFoundException;
-import com.stratton_oakmont.study_planer.exception.StudyPlanValidationException;
 import com.stratton_oakmont.study_planer.repository.StudyPlanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
 public class StudyPlanService {
 
     private final StudyPlanRepository studyPlanRepository;
+    private final SemesterService semesterService;
+    private final SemesterCourseService semesterCourseService;
 
     @Autowired
-    public StudyPlanService(StudyPlanRepository studyPlanRepository) {
+    public StudyPlanService(StudyPlanRepository studyPlanRepository, 
+                           SemesterService semesterService,
+                           SemesterCourseService semesterCourseService) {
         this.studyPlanRepository = studyPlanRepository;
+        this.semesterService = semesterService;
+        this.semesterCourseService = semesterCourseService;
     }
 
     // CREATE operations
     public StudyPlan createStudyPlan(StudyPlan studyPlan) {
         validateStudyPlan(studyPlan);
-        studyPlan.setCreatedDate(LocalDateTime.now());
-        studyPlan.setLastModified(LocalDateTime.now());
         return studyPlanRepository.save(studyPlan);
     }
 
@@ -85,9 +85,6 @@ public class StudyPlanService {
         if (updatedPlan.getName() != null) {
             existingPlan.setName(updatedPlan.getName());
         }
-        if (updatedPlan.getPlanData() != null) {
-            existingPlan.setPlanData(updatedPlan.getPlanData());
-        }
         if (updatedPlan.getStudyProgramId() != null) {
             existingPlan.setStudyProgramId(updatedPlan.getStudyProgramId());
         }
@@ -95,7 +92,6 @@ public class StudyPlanService {
             existingPlan.setIsActive(updatedPlan.getIsActive());
         }
         
-        existingPlan.setLastModified(LocalDateTime.now());
         validateStudyPlan(existingPlan);
         
         return studyPlanRepository.save(existingPlan);
@@ -108,7 +104,6 @@ public class StudyPlanService {
     public StudyPlan renameStudyPlan(Long id, String newName) {
         StudyPlan studyPlan = getStudyPlanById(id);
         studyPlan.setName(newName);
-        studyPlan.setLastModified(LocalDateTime.now());
         return studyPlanRepository.save(studyPlan);
     }
 
@@ -118,11 +113,15 @@ public class StudyPlanService {
         StudyPlan duplicatedPlan = new StudyPlan();
         duplicatedPlan.setName(newName);
         duplicatedPlan.setUserId(userId);
-        duplicatedPlan.setPlanData(originalPlan.getPlanData());
         duplicatedPlan.setStudyProgramId(originalPlan.getStudyProgramId());
         duplicatedPlan.setIsActive(true);
         
-        return createStudyPlan(duplicatedPlan);
+        StudyPlan savedPlan = createStudyPlan(duplicatedPlan);
+        
+        // TODO: Duplicate semesters and courses using the new services
+        // This will be implemented as part of the migration
+        
+        return savedPlan;
     }
 
     // DELETE operations
@@ -134,7 +133,6 @@ public class StudyPlanService {
     public void softDeleteStudyPlan(Long id) {
         StudyPlan studyPlan = getStudyPlanById(id);
         studyPlan.setIsActive(false);
-        studyPlan.setLastModified(LocalDateTime.now());
         studyPlanRepository.save(studyPlan);
     }
 
@@ -172,13 +170,5 @@ public class StudyPlanService {
 
     public boolean userHasActiveStudyPlans(Long userId) {
         return studyPlanRepository.existsByUserIdAndIsActiveTrue(userId);
-    }
-
-    public List<StudyPlan> getRecentStudyPlans(Long userId, LocalDateTime since) {
-        return studyPlanRepository.findByUserIdAndCreatedDateAfter(userId, since);
-    }
-
-    public List<StudyPlan> getStudyPlansByUserOrderByModified(Long userId) {
-        return studyPlanRepository.findByUserIdOrderByLastModifiedDesc(userId);
     }
 }

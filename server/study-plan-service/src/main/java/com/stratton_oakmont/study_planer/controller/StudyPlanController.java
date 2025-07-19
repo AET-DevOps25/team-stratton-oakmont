@@ -77,12 +77,6 @@ public class StudyPlanController {
                 request.getName()
             );
             
-            // Set plan data if provided
-            if (request.getPlanData() != null) {
-                newPlan.setPlanData(request.getPlanData());
-                newPlan = studyPlanService.updateStudyPlan(newPlan.getId(), newPlan);
-            }
-            
             StudyPlanDto responseDto = convertToDto(newPlan);
             return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
 
@@ -119,7 +113,7 @@ public class StudyPlanController {
             }
 
             // Get study plans for authenticated user
-            List<StudyPlan> studyPlans = studyPlanService.getStudyPlansByUserOrderByModified(userId);
+            List<StudyPlan> studyPlans = studyPlanService.getStudyPlansByUserId(userId);
             List<StudyPlanDto> studyPlanDtos = studyPlans.stream()
                     .map(this::convertToDto)
                     .collect(Collectors.toList());
@@ -196,10 +190,7 @@ public class StudyPlanController {
         dto.setId(studyPlan.getId());
         dto.setName(studyPlan.getName());
         dto.setUserId(studyPlan.getUserId());
-        dto.setPlanData(studyPlan.getPlanData());
         dto.setIsActive(studyPlan.getIsActive());
-        dto.setCreatedDate(studyPlan.getCreatedDate());
-        dto.setLastModified(studyPlan.getLastModified());
         
         // Set study program info
         dto.setStudyProgramId(studyPlan.getStudyProgramId());
@@ -253,9 +244,6 @@ public class StudyPlanController {
 
             // Update the study plan
             existingPlan.setName(request.getName());
-            if (request.getPlanData() != null) {
-                existingPlan.setPlanData(request.getPlanData());
-            }
             
             // Update study program ID if different
             if (!existingPlan.getStudyProgramId().equals(request.getStudyProgramId())) {
@@ -311,9 +299,6 @@ public class StudyPlanController {
             // Apply partial updates
             if (updates.containsKey("name")) {
                 existingPlan.setName((String) updates.get("name"));
-            }
-            if (updates.containsKey("planData")) {
-                existingPlan.setPlanData((String) updates.get("planData"));
             }
             if (updates.containsKey("isActive")) {
                 existingPlan.setIsActive((Boolean) updates.get("isActive"));

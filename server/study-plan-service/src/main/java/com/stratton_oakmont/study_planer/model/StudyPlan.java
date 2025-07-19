@@ -3,7 +3,8 @@ package com.stratton_oakmont.study_planer.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "study_plans")
@@ -21,27 +22,19 @@ public class StudyPlan {
     @Column(name = "user_id", nullable = false)
     private Long userId;
     
-    @Column(name = "created_date", nullable = false)
-    private LocalDateTime createdDate;
-    
-    @Column(name = "last_modified")
-    private LocalDateTime lastModified;
-    
     // Store only the study program ID (foreign key reference)
     @Column(name = "study_program_id", nullable = true)
     private Long studyProgramId;
-    
-    // Additional fields for study plan data (JSON for now)
-    @Column(name = "plan_data", columnDefinition = "TEXT")
-    private String planData; // JSON string containing semester structure, selected courses, etc.
+
+    // Relationship to semesters - replace the JSON planData
+    @OneToMany(mappedBy = "studyPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Semester> semesters = new ArrayList<>();
     
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
     
     // Constructors
     public StudyPlan() {
-        this.createdDate = LocalDateTime.now();
-        this.lastModified = LocalDateTime.now();
     }
     
     public StudyPlan(String name, Long userId) {
@@ -82,22 +75,6 @@ public class StudyPlan {
         this.userId = userId;
     }
     
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-    
-    public void setCreatedDate(LocalDateTime createdDate) {
-        this.createdDate = createdDate;
-    }
-    
-    public LocalDateTime getLastModified() {
-        return lastModified;
-    }
-    
-    public void setLastModified(LocalDateTime lastModified) {
-        this.lastModified = lastModified;
-    }
-    
     public Long getStudyProgramId() {
         return studyProgramId;
     }
@@ -106,12 +83,23 @@ public class StudyPlan {
         this.studyProgramId = studyProgramId;
     }
     
-    public String getPlanData() {
-        return planData;
+    public List<Semester> getSemesters() {
+        return semesters;
     }
     
-    public void setPlanData(String planData) {
-        this.planData = planData;
+    public void setSemesters(List<Semester> semesters) {
+        this.semesters = semesters;
+    }
+    
+    // Utility methods for semester management
+    public void addSemester(Semester semester) {
+        semesters.add(semester);
+        semester.setStudyPlan(this);
+    }
+    
+    public void removeSemester(Semester semester) {
+        semesters.remove(semester);
+        semester.setStudyPlan(null);
     }
     
     public Boolean getIsActive() {
@@ -122,19 +110,12 @@ public class StudyPlan {
         this.isActive = isActive;
     }
     
-    // Lifecycle callbacks
-    @PreUpdate
-    public void preUpdate() {
-        this.lastModified = LocalDateTime.now();
-    }
-    
     @Override
     public String toString() {
         return "StudyPlan{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", userId=" + userId +
-                ", createdDate=" + createdDate +
                 ", isActive=" + isActive +
                 '}';
     }
