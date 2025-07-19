@@ -352,8 +352,8 @@ const StudyProgramSelectionDialog: React.FC<
             <CircularProgress sx={{ color: "#646cff" }} />
           </Box>
         ) : (
-          <TableContainer sx={{ maxHeight: "50vh" }}>
-            <Table stickyHeader>
+          <TableContainer sx={{ maxHeight: "50vh", overflowX: "hidden" }}>
+            <Table stickyHeader sx={{ tableLayout: "fixed" }}>
               <TableHead>
                 <TableRow sx={{ backgroundColor: "#333" }}>
                   <TableCell
@@ -361,7 +361,7 @@ const StudyProgramSelectionDialog: React.FC<
                       color: "white",
                       fontWeight: "bold",
                       backgroundColor: "#333",
-                      width: "50px",
+                      width: "60px",
                     }}
                   >
                     Select
@@ -371,6 +371,7 @@ const StudyProgramSelectionDialog: React.FC<
                       color: "white",
                       fontWeight: "bold",
                       backgroundColor: "#333",
+                      width: "120px",
                     }}
                   >
                     <TableSortLabel
@@ -387,6 +388,7 @@ const StudyProgramSelectionDialog: React.FC<
                       color: "white",
                       fontWeight: "bold",
                       backgroundColor: "#333",
+                      width: "35%",
                     }}
                   >
                     <TableSortLabel
@@ -403,6 +405,7 @@ const StudyProgramSelectionDialog: React.FC<
                       color: "white",
                       fontWeight: "bold",
                       backgroundColor: "#333",
+                      width: "25%",
                     }}
                   >
                     <TableSortLabel
@@ -419,6 +422,7 @@ const StudyProgramSelectionDialog: React.FC<
                       color: "white",
                       fontWeight: "bold",
                       backgroundColor: "#333",
+                      width: "80px",
                     }}
                   >
                     <TableSortLabel
@@ -435,6 +439,7 @@ const StudyProgramSelectionDialog: React.FC<
                       color: "white",
                       fontWeight: "bold",
                       backgroundColor: "#333",
+                      width: "90px",
                     }}
                   >
                     <TableSortLabel
@@ -451,7 +456,7 @@ const StudyProgramSelectionDialog: React.FC<
                       color: "white",
                       fontWeight: "bold",
                       backgroundColor: "#333",
-                      width: "50px",
+                      width: "60px",
                     }}
                   >
                     Info
@@ -477,7 +482,7 @@ const StudyProgramSelectionDialog: React.FC<
                     }}
                     onClick={(event) => handleRowClick(program, event)}
                   >
-                    <TableCell sx={{ color: "white", width: "50px" }}>
+                    <TableCell sx={{ color: "white", width: "60px" }}>
                       <Checkbox
                         checked={selectedProgram?.id === program.id}
                         onChange={() => handleProgramSelect(program)}
@@ -489,37 +494,60 @@ const StudyProgramSelectionDialog: React.FC<
                         }}
                       />
                     </TableCell>
-                    <TableCell sx={{ color: "white" }}>
+                    <TableCell sx={{ color: "white", width: "120px" }}>
                       <Chip
                         label={cleanDegreeText(program.degree)}
                         size="small"
                         sx={{
                           backgroundColor: "#646cff",
                           color: "white",
-                          fontSize: "0.75rem",
+                          fontSize: "0.7rem",
+                          maxWidth: "100%",
                         }}
                       />
                     </TableCell>
-                    <TableCell sx={{ color: "white" }}>
+                    <TableCell sx={{ color: "white", width: "35%" }}>
                       <Typography
                         variant="body2"
                         sx={{
                           fontWeight: 500,
+                          wordBreak: "break-word",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          display: "-webkit-box",
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: "vertical",
+                          lineHeight: 1.2,
                         }}
+                        title={program.name}
                       >
                         {program.name}
                       </Typography>
                     </TableCell>
-                    <TableCell sx={{ color: "white" }}>
-                      {program.fieldOfStudy}
+                    <TableCell sx={{ color: "white", width: "25%" }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          wordBreak: "break-word",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          display: "-webkit-box",
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: "vertical",
+                          lineHeight: 1.2,
+                        }}
+                        title={program.fieldOfStudy}
+                      >
+                        {program.fieldOfStudy}
+                      </Typography>
                     </TableCell>
-                    <TableCell sx={{ color: "white" }}>
+                    <TableCell sx={{ color: "white", width: "80px", textAlign: "center" }}>
                       {program.credits}
                     </TableCell>
-                    <TableCell sx={{ color: "white" }}>
+                    <TableCell sx={{ color: "white", width: "90px", textAlign: "center" }}>
                       {program.semesters}
                     </TableCell>
-                    <TableCell sx={{ color: "white", width: "50px" }}>
+                    <TableCell sx={{ color: "white", width: "60px" }}>
                       <IconButton
                         onClick={handleOpenCurriculum}
                         sx={{
