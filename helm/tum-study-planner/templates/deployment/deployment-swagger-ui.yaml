@@ -21,6 +21,9 @@ spec:
           image: "{{ .Values.swaggerUi.image.repository }}:{{ .Values.swaggerUi.image.tag }}"
           ports:
             - containerPort: 80
+          env:
+            - name: NGINX_ENVSUBST_OUTPUT_DIR
+              value: "/etc/nginx/conf.d"
           resources:
             requests:
               memory: "64Mi"
