@@ -80,38 +80,44 @@ ingress:
     nginx.ingress.kubernetes.io/rewrite-target: /
 
 # Image configurations
-images:
-  client:
+client:
+  image:
     repository: ghcr.io/AET-DevOps25/team-stratton-oakmont/client
     tag: latest
     pullPolicy: Always
 
-  studyPlanService:
+studyPlanService:
+  image:
     repository: ghcr.io/AET-DevOps25/team-stratton-oakmont/study-plan-service
     tag: latest
     pullPolicy: Always
 
-  programCatalogService:
+programCatalogService:
+  image:
     repository: ghcr.io/AET-DevOps25/team-stratton-oakmont/program-catalog-service
     tag: latest
     pullPolicy: Always
 
-  aiAdvisorService:
+aiAdvisorService:
+  image:
     repository: ghcr.io/AET-DevOps25/team-stratton-oakmont/ai-advisor-service
     tag: latest
     pullPolicy: Always
 
-  userAuthService:
+userAuthService:
+  image:
     repository: ghcr.io/AET-DevOps25/team-stratton-oakmont/user-auth-service
     tag: latest
     pullPolicy: Always
 
-  llmInferenceService:
+llmInferenceService:
+  image:
     repository: ghcr.io/AET-DevOps25/team-stratton-oakmont/llm-inference-service
     tag: latest
     pullPolicy: Always
 
-  swaggerUi:
+swaggerUi:
+  image:
     repository: ghcr.io/AET-DevOps25/team-stratton-oakmont/swagger-ui
     tag: latest
     pullPolicy: Always
