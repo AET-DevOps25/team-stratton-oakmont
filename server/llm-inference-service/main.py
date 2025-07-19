@@ -1,7 +1,7 @@
 import os
 import re
 import pandas as pd
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
@@ -12,11 +12,8 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 from dotenv import load_dotenv
-from database_connector import db_connector
+from data_service_client import data_service
 from langchain_google_genai import ChatGoogleGenerativeAI
-
-
-from fastapi import FastAPI
 from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
 from fastapi.responses import Response
 import time
@@ -32,19 +29,39 @@ class WeaviateCourseStore:
         self.client = client
         self.embedding = embedding
     
-    def similarity_search(self, query: str, k: int = 5) -> List[Dict]:
-        """Perform similarity search for courses"""
+    def similarity_search(self, query: str, k: int = 5, study_program_filter: Optional[str] = None) -> List[Dict]:
+        """Perform similarity search for courses
+        
+        Args:
+            query: Search query
+            k: Number of results to return
+            study_program_filter: Optional study program ID to filter results
+        """
         try:
             # Generate query vector
             query_vector = self.embedding.embed_query(query)
 
             # Use Weaviate v4 API
             collection = self.client.collections.get("TUMCourse")
-            result = collection.query.near_vector(
+            
+            # Build the query with optional filter
+            query_builder = collection.query.near_vector(
                 near_vector=query_vector,
                 limit=k,
                 return_metadata=['certainty']
             )
+            
+            # Add study program filter if provided
+            if study_program_filter:
+                query_builder = query_builder.where(
+                    {
+                        "path": "study_program_id",
+                        "operator": "Equal",
+                        "valueText": study_program_filter
+                    }
+                )
+            
+            result = query_builder
 
             # Convert to expected format
             documents = []
@@ -65,6 +82,7 @@ class WeaviateCourseStore:
                         'description_of_achievement_and_assessment_methods': course.get('description_of_achievement_and_assessment_methods'),
                         'intended_learning_outcomes': course.get('intended_learning_outcomes'),
                         'content': course.get('content', ''),
+                        'study_program_id': course.get('study_program_id'),
                         'certainty': certainty
                     }
                 })()
@@ -133,7 +151,7 @@ app.add_middleware(
 class ChatRequest(BaseModel):
     message: str
     session_id: Optional[str] = None
-    user_id: Optional[str] = None  # Add user context
+    study_plan_id: Optional[str] = None
 
 class ChatResponse(BaseModel):
     response: str
@@ -174,9 +192,38 @@ def extract_course_codes(text: str) -> List[str]:
     
     return list(set(course_codes))  # Remove duplicates
 
-def load_course_data():
-    """Load course data from PostgreSQL database or CSV fallback"""
-    return db_connector.get_course_data()
+def load_course_data(study_program_id: Optional[str] = None):
+    """Load course data from PostgreSQL database or CSV fallback
+    
+    Args:
+        study_program_id: Optional study program ID to filter courses
+    """
+    return data_service.get_course_data(study_program_id)
+
+def get_conversational_prompt_template():
+    """Get the conversational prompt template for the QA chain"""
+    return """
+    You are an AI study advisor for Technical University Munich (TUM). Use the following course information to answer the student's question in a natural, conversational way.
+    
+    Context: {context}
+    
+    Question: {question}
+    
+    Instructions:
+    1. Write your response in a natural, conversational tone as if you're talking to a student
+    2. Start with a brief, engaging summary of what the course is about and mention the course code naturally
+    3. For specific courses, structure your response naturally:
+       - Begin with what the course covers (1 sentence)
+       - Mention key details like ECTS credits, language, and level in a flowing manner
+       - Highlight interesting or unique aspects of the course
+       - Include practical information (prerequisites, assessment methods) when relevant
+    4. Keep the response informative but engaging, like a knowledgeable advisor would speak
+    5. Focus on courses from the student's study program when possible
+    6. Structure the response when appropriate using paragraphs or bullet points if it enhances clarity
+    7. Keep your answer concise and to the point, avoiding unnecessary jargon or complexity
+    
+    Answer:
+    """
 
 def setup_weaviate():
     """Initialize Weaviate client and vector store"""
@@ -227,34 +274,9 @@ def setup_qa_chain():
         return False
     
     try:
-        # Custom prompt template for course Q&A
-        prompt_template = """
-        You are an AI study advisor for Technical University Munich (TUM). Use the following course information to answer the student's question in a natural, conversational way.
-        
-        Context: {context}
-        
-        Question: {question}
-        
-        Instructions:
-        1. Write your response in a natural, conversational tone as if you're talking to a student
-        2. Start with a brief, engaging summary of what the course is about
-        3. For specific courses, structure your response naturally:
-           - Begin with what the course covers (2-3 sentences)
-           - Mention key details like ECTS credits, language, and level in a flowing manner
-           - Highlight interesting or unique aspects of the course
-           - Include practical information (prerequisites, assessment methods) when relevant
-        4. Use connecting phrases and transitions to make the response flow naturally
-        5. Avoid bullet points or overly structured lists - integrate information smoothly
-        6. Always mention the course code, but work it into the conversation naturally
-        7. If discussing programming languages or technical topics, explain them in context
-        8. End with something helpful or encouraging when appropriate
-        9. Keep the response informative but engaging, like a knowledgeable advisor would speak
-        
-        Answer:
-        """
-        
+        # Use the shared conversational prompt template
         PROMPT = PromptTemplate(
-            template=prompt_template,
+            template=get_conversational_prompt_template(),
             input_variables=["context", "question"]
         )
         
@@ -286,7 +308,7 @@ def setup_qa_chain():
 
 
 @app.post("/chat/", response_model=ChatResponse)
-async def chat_with_ai(request: ChatRequest):
+async def chat_with_ai(request: ChatRequest, authorization: Optional[str] = Header(None)):
     """Main chat endpoint with RAG functionality and study plan integration"""
     try:
         if not qa_chain:
@@ -294,22 +316,112 @@ async def chat_with_ai(request: ChatRequest):
             return ChatResponse(
                 response="I'm currently unable to access the course database. Please try again later.",
                 module_ids=[]
-        )
+            )
         
-        # Get user context if user_id is provided
+        # Extract Bearer token from Authorization header
+        bearer_token = None
+        debug_mode = os.getenv('DEBUG_MODE', 'false').lower() == 'true'
+        
+        if authorization and authorization.startswith("Bearer "):
+            bearer_token = authorization.split("Bearer ")[1]
+            if debug_mode:
+                print(f"🔑 Received Bearer token for authentication: {bearer_token[:20]}..." if len(bearer_token) > 20 else f"🔑 Received Bearer token: {bearer_token}")
+        else:
+            if debug_mode:
+                print(f"⚠️ No Authorization header received (authorization={authorization})")
+        
+        # Get user context and study program ID if study_plan_id is provided
         user_context = ""
-        if request.user_id:
-            study_plan = db_connector.get_user_study_plan(request.user_id)
-            if study_plan:
-                user_context = f"""
-                User Context:
-                - Degree Program: {study_plan['degree_program']}
-                - Current Semester: {study_plan['current_semester']}
-                - Completed Courses: {', '.join(study_plan['completed_courses'][:10])}
-                - Planned Courses: {', '.join(study_plan['planned_courses'][:10])}
-                
-                Please consider this context when providing recommendations.
-                """
+        study_program_id = None
+        if request.study_plan_id:
+            if debug_mode:
+                print(f"🔍 Received study plan ID: {request.study_plan_id}")
+            try:
+                study_plan = await data_service.get_user_study_plan(request.study_plan_id, bearer_token)
+                if debug_mode:
+                    print(f"🎯 Study plan retrieval result: {study_plan}")
+                if study_plan:
+                    # Extract study program ID for filtering
+                    study_program_id = study_plan.get('degree_program_id') or study_plan.get('degreeProgram', {}).get('id')
+                    
+                    user_context = f"""
+                    User Context:
+                    - Study Plan ID: {request.study_plan_id}
+                    - Degree Program: {study_plan.get('degree_program', study_plan.get('degreeProgram', {}).get('name', 'Unknown'))}
+                    - Current Semester: {study_plan.get('current_semester', study_plan.get('currentSemester', 'Unknown'))}
+                    - Study Program ID: {study_program_id}
+                    
+                    Please consider this context when providing recommendations and focus on courses relevant to this study program.
+                    """
+                    if debug_mode:
+                        print(f"🎯 Using study program filter: {study_program_id}")
+                        print(f"📝 User context: {user_context}")
+                else:
+                    print(f"⚠️ No study plan found for ID: {request.study_plan_id}")
+                    if not bearer_token:
+                        print("💡 Note: No authentication token provided. User may need to log in.")
+                    # Continue with general recommendations without study plan context
+            except Exception as e:
+                print(f"❌ Failed to retrieve study plan {request.study_plan_id}: {e}")
+                # Continue without study plan context
+        
+        # Create a custom retriever that filters by study program if available
+        if study_program_id and vector_store:
+            # Create a custom retriever with study program filtering
+            from langchain.schema.retriever import BaseRetriever
+            from typing import Any, Dict, List
+
+            class FilteredRetriever(BaseRetriever):
+                def __init__(self, store, study_program_filter, search_kwargs):
+                    super().__init__()
+                    object.__setattr__(self, 'store', store)
+                    object.__setattr__(self, 'study_program_filter', study_program_filter)
+                    object.__setattr__(self, 'search_kwargs', search_kwargs)
+
+                def _get_relevant_documents(self, query: str) -> List[Any]:
+                    return self.store.similarity_search(
+                        query, 
+                        study_program_filter=self.study_program_filter,
+                        **self.search_kwargs
+                    )
+
+            filtered_retriever = FilteredRetriever(
+                vector_store, 
+                study_program_id, 
+                {"k": 5}
+            )
+            
+            # Create a temporary QA chain with the filtered retriever
+            from langchain.chains import RetrievalQA
+            from langchain_google_genai import ChatGoogleGenerativeAI
+            from langchain.prompts import PromptTemplate
+            
+            # Use the shared conversational prompt template
+            PROMPT = PromptTemplate(
+                template=get_conversational_prompt_template(),
+                input_variables=["context", "question"]
+            )
+            
+            llm = ChatGoogleGenerativeAI(
+                model="gemini-2.5-pro",
+                temperature=0,
+                max_tokens=None,
+                max_retries=2
+            )
+            
+            filtered_qa_chain = RetrievalQA.from_chain_type(
+                llm=llm,
+                chain_type="stuff",
+                retriever=filtered_retriever,
+                chain_type_kwargs={"prompt": PROMPT},
+                return_source_documents=True
+            )
+            
+            # Use the filtered QA chain
+            current_qa_chain = filtered_qa_chain
+        else:
+            # Use the default QA chain
+            current_qa_chain = qa_chain
         
         # Enhance the query with user context
         enhanced_query = f"{user_context}\n\nStudent Question: {request.message}" if user_context else request.message
@@ -318,7 +430,7 @@ async def chat_with_ai(request: ChatRequest):
         mentioned_codes = extract_course_codes(request.message)
         
         # Query the RAG system
-        result = qa_chain({"query": enhanced_query})
+        result = current_qa_chain({"query": enhanced_query})
         
         response_text = result["result"]
         
@@ -326,9 +438,14 @@ async def chat_with_ai(request: ChatRequest):
         response_codes = extract_course_codes(response_text)
         all_codes = list(set(mentioned_codes + response_codes))
     
-        # Enhance response with study plan recommendations if applicable
-        if user_context and any(word in request.message.lower() for word in ['recommend', 'suggest', 'should take', 'plan']):
-            response_text += "\n\n💡 Based on your study plan, I can provide more personalized recommendations if you'd like!"
+        # Add helpful messages based on context availability
+        if request.study_plan_id and not user_context:
+            if not bearer_token:
+                response_text += "\n\n💡 **Tip**: Log in to get personalized course recommendations based on your study plan!"
+            else:
+                response_text += "\n\n💡 **Note**: I provided general recommendations. For personalized suggestions, please ensure your study plan is properly configured."
+        elif user_context and any(word in request.message.lower() for word in ['recommend', 'suggest', 'should take', 'plan']):
+            response_text += "\n\n💡 I've focused on courses from your study program. Would you like more personalized recommendations based on your completed courses?"
 
         return ChatResponse(
             response=response_text,
@@ -340,10 +457,15 @@ async def chat_with_ai(request: ChatRequest):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 @app.get("/course/{course_code}")
-async def get_course_info(course_code: str):
-    """Get detailed information about a specific course"""
+async def get_course_info(course_code: str, study_program_id: Optional[str] = None):
+    """Get detailed information about a specific course
+    
+    Args:
+        course_code: The course code to look up
+        study_program_id: Optional study program ID to filter results
+    """
     try:
-        df = load_course_data()
+        df = load_course_data(study_program_id)
         course_data = df[df['module_id'].str.upper() == course_code.upper()]
         
         if course_data.empty:
@@ -399,18 +521,3 @@ async def prometheus_middleware(request, call_next):
     ).inc()
     REQUEST_DURATION.observe(time.time() - start_time)
     return response
-
-@app.get("/metrics")
-async def metrics():
-    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
-
-@app.post("/infer/")
-async def infer(data: dict):
-    # This is a placeholder for the actual LLM inference logic.
-    # For example, using a pre-loaded model
-    prompt = data.get("prompt", "")
-    # Replace with actual LLM call
-    response = f"LLM response to: {prompt}" 
-    return {"inference": response}
-
-# Add other endpoints here

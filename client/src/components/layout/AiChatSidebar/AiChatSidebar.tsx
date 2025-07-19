@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
 import {
   Drawer,
   List,
@@ -18,6 +20,7 @@ import {
   CircularProgress,
   Chip,
   Link,
+  Collapse,
 } from "@mui/material";
 import {
   Send,
@@ -29,8 +32,11 @@ import {
   Clear,
   School,
   OpenInNew,
+  ExpandMore,
+  ExpandLess,
 } from "@mui/icons-material";
 import { aiAdvisorAPI } from "../../../api/aiAdvisor";
+import { getStudyPlanById } from "../../../api/studyPlans";
 
 interface Message {
   id: string;
@@ -48,6 +54,10 @@ interface ChatSession {
   messages: Message[];
   createdAt: Date;
   lastUpdated: Date;
+  studyPlanContext?: {
+    id: string;
+    name: string;
+  };
 }
 
 interface AiChatSidebarProps {
@@ -59,10 +69,180 @@ const AiChatSidebar: React.FC<AiChatSidebarProps> = ({ isOpen }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const location = useLocation();
+
+  // Extract study plan ID from URL path manually since this component
+  // is rendered outside of the route component that has the :id parameter
+  const extractStudyPlanIdFromPath = () => {
+    const pathname = location.pathname;
+    const match = pathname.match(/^\/study-plans\/(\d+)$/);
+    return match ? match[1] : undefined;
+  };
+
+  const studyPlanId = extractStudyPlanIdFromPath();
+
+  // Get study plan ID with fallback to localStorage
+  const getStudyPlanId = () => {
+    if (studyPlanId) {
+      return studyPlanId;
+    }
+    const storedStudyPlanId = localStorage.getItem("currentStudyPlanId");
+    return storedStudyPlanId || undefined;
+  };
+
+  const currentStudyPlanId = getStudyPlanId();
+
+  // State for study plan name
+  const [currentStudyPlanName, setCurrentStudyPlanName] = useState<
+    string | null
+  >(null);
+
+  // Fetch study plan name from API
+  useEffect(() => {
+    const fetchStudyPlanName = async () => {
+      if (!currentStudyPlanId) {
+        console.log("No study plan ID found, setting name to null");
+        setCurrentStudyPlanName(null);
+        return;
+      }
+
+      console.log("=== STUDY PLAN NAME FETCHING DEBUG ===");
+      console.log("Current study plan ID:", currentStudyPlanId);
+      console.log("Current pathname:", location.pathname);
+
+      // Check if JWT token exists
+      const token = localStorage.getItem("jwtToken");
+      if (!token) {
+        console.warn("No JWT token found in localStorage");
+        setCurrentStudyPlanName(`Study Plan ${currentStudyPlanId}`);
+        return;
+      }
+      console.log("JWT token found:", token.substring(0, 50) + "...");
+
+      // Try to get from localStorage first for performance
+      const cachedName = localStorage.getItem(
+        `studyPlan_${currentStudyPlanId}_name`
+      );
+
+      // Clear incorrect cached values (temporary fix)
+      if (cachedName === "My Study Plans") {
+        console.log("Clearing incorrect cached name:", cachedName);
+        localStorage.removeItem(`studyPlan_${currentStudyPlanId}_name`);
+        // Fall through to fetch from API
+      } else if (cachedName) {
+        console.log("Found cached name:", cachedName);
+        setCurrentStudyPlanName(cachedName);
+
+        // Also verify the cached name with the API to ensure it's still correct
+        console.log("Verifying cached name with API...");
+        try {
+          const studyPlan = await getStudyPlanById(currentStudyPlanId);
+          if (studyPlan?.name && studyPlan.name !== cachedName) {
+            console.log(
+              `Cached name "${cachedName}" is outdated. Updating to "${studyPlan.name}"`
+            );
+            setCurrentStudyPlanName(studyPlan.name);
+            localStorage.setItem(
+              `studyPlan_${currentStudyPlanId}_name`,
+              studyPlan.name
+            );
+
+            // Update existing chat sessions with the correct study plan name
+            setChatSessions((prevSessions) =>
+              prevSessions.map((session) => {
+                if (
+                  session.studyPlanContext?.id === currentStudyPlanId &&
+                  session.studyPlanContext?.name !== studyPlan.name
+                ) {
+                  console.log(
+                    `Updating session ${session.id} with correct study plan name: ${studyPlan.name}`
+                  );
+                  return {
+                    ...session,
+                    studyPlanContext: {
+                      ...session.studyPlanContext,
+                      name: studyPlan.name,
+                    },
+                  };
+                }
+                return session;
+              })
+            );
+          }
+        } catch (error) {
+          console.error("Error verifying cached name:", error);
+        }
+        return;
+      }
+
+      // Fetch from API
+      try {
+        console.log("Calling API to fetch study plan details...");
+        console.log(
+          "API URL:",
+          `http://localhost:8081/api/v1/${currentStudyPlanId}`
+        );
+
+        const studyPlan = await getStudyPlanById(currentStudyPlanId);
+        console.log("API response received:", studyPlan);
+
+        if (studyPlan?.name) {
+          console.log("Setting study plan name to:", studyPlan.name);
+          setCurrentStudyPlanName(studyPlan.name);
+          // Cache the name for future use
+          localStorage.setItem(
+            `studyPlan_${currentStudyPlanId}_name`,
+            studyPlan.name
+          );
+          console.log("Name cached successfully");
+
+          // Update existing chat sessions with the correct study plan name
+          setChatSessions((prevSessions) =>
+            prevSessions.map((session) => {
+              if (
+                session.studyPlanContext?.id === currentStudyPlanId &&
+                session.studyPlanContext?.name !== studyPlan.name
+              ) {
+                console.log(
+                  `Updating session ${session.id} with correct study plan name: ${studyPlan.name}`
+                );
+                return {
+                  ...session,
+                  studyPlanContext: {
+                    ...session.studyPlanContext,
+                    name: studyPlan.name,
+                  },
+                };
+              }
+              return session;
+            })
+          );
+        } else {
+          console.warn("No name in study plan response, response:", studyPlan);
+          setCurrentStudyPlanName(`Study Plan ${currentStudyPlanId}`);
+        }
+      } catch (error) {
+        console.error(
+          "Could not fetch study plan name - detailed error:",
+          error
+        );
+        if (error instanceof Error) {
+          console.error("Error message:", error.message);
+          console.error("Error stack:", error.stack);
+        }
+        setCurrentStudyPlanName(`Study Plan ${currentStudyPlanId}`);
+      }
+      console.log("=== END STUDY PLAN NAME FETCHING DEBUG ===");
+    };
+
+    fetchStudyPlanName();
+  }, [currentStudyPlanId]);
+
   // Chat state
   const [currentMessage, setCurrentMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [historyExpanded, setHistoryExpanded] = useState(true);
 
   // Sessions state
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
@@ -70,6 +250,21 @@ const AiChatSidebar: React.FC<AiChatSidebarProps> = ({ isOpen }) => {
   const [currentMessages, setCurrentMessages] = useState<Message[]>([]);
 
   const sidebarWidth = 380;
+
+  // Start a new chat when study plan context changes
+  useEffect(() => {
+    if (activeChatId && currentStudyPlanId) {
+      // Check if current session has different context
+      const currentSession = chatSessions.find((s) => s.id === activeChatId);
+      if (currentSession?.studyPlanContext?.id !== currentStudyPlanId) {
+        console.log("Study plan context changed, starting new chat");
+        // Reset chat without using startNewChat function to avoid dependency issues
+        setActiveChatId(null);
+        setCurrentMessages([]);
+        setError(null);
+      }
+    }
+  }, [currentStudyPlanId, activeChatId, chatSessions]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -86,12 +281,27 @@ const AiChatSidebar: React.FC<AiChatSidebarProps> = ({ isOpen }) => {
     sources: string[];
   }> => {
     try {
-      const response = await aiAdvisorAPI.sendMessage(userMessage, sessionId);
+      // Get the study plan ID from the current session context or global context
+      let contextStudyPlanId = currentStudyPlanId;
+
+      if (sessionId) {
+        const session = chatSessions.find((s) => s.id === sessionId);
+        if (session?.studyPlanContext) {
+          contextStudyPlanId = session.studyPlanContext.id;
+        }
+      }
+
+      // Pass study plan ID to the backend for context and filtering
+      const response = await aiAdvisorAPI.sendMessage(
+        userMessage,
+        sessionId,
+        contextStudyPlanId
+      );
 
       return {
         content: response.response,
-        courseCodes: response.course_codes || [],
-        sources: response.sources || [],
+        courseCodes: response.module_ids || [],
+        sources: [],
       };
     } catch (error) {
       console.error("Error calling AI advisor API:", error);
@@ -178,6 +388,13 @@ const AiChatSidebar: React.FC<AiChatSidebarProps> = ({ isOpen }) => {
           messages: [userMessage, aiMessage],
           createdAt: new Date(),
           lastUpdated: new Date(),
+          studyPlanContext: currentStudyPlanId
+            ? {
+                id: currentStudyPlanId,
+                name:
+                  currentStudyPlanName || `Study Plan ${currentStudyPlanId}`,
+              }
+            : undefined,
         };
 
         setChatSessions((prev) => [newSession, ...prev]);
@@ -328,98 +545,153 @@ const AiChatSidebar: React.FC<AiChatSidebarProps> = ({ isOpen }) => {
       </Box>
       {/* Chat History Section */}
       <Box sx={{ px: 2, py: 1 }}>
-        <Typography
-          variant="subtitle2"
+        <Box
           sx={{
-            fontWeight: 600,
-            mb: 1,
-            color: "rgba(255, 255, 255, 0.7)",
             display: "flex",
             alignItems: "center",
-            gap: 1,
+            justifyContent: "space-between",
+            cursor: "pointer",
           }}
+          onClick={() => setHistoryExpanded(!historyExpanded)}
         >
-          <History fontSize="small" />
-          Chat History
-        </Typography>
-
-        {chatSessions.length === 0 ? (
           <Typography
-            variant="body2"
+            variant="subtitle2"
             sx={{
-              fontStyle: "italic",
-              px: 1,
-              py: 2,
-              color: "rgba(255, 255, 255, 0.5)",
+              fontWeight: 600,
+              color: "rgba(255, 255, 255, 0.7)",
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
             }}
           >
-            No chat history yet
+            <History fontSize="small" />
+            Chat History
           </Typography>
-        ) : (
-          <List sx={{ pt: 0, maxHeight: "200px", overflowY: "auto" }}>
-            {chatSessions.map((session) => (
-              <ListItem key={session.id} disablePadding>
-                <ListItemButton
-                  disableRipple
-                  onClick={() => loadChatSession(session.id)}
-                  selected={isChatActive(session.id)}
-                  sx={{
-                    pl: 2,
-                    minHeight: 40,
-                    borderRadius: 2,
-                    mx: 1,
-                    mb: 0.5,
-                    "&:hover": {
-                      backgroundColor: "rgba(100, 108, 255, 0.1)",
-                    },
-                    "&.Mui-selected": {
-                      backgroundColor: "rgba(100, 108, 255, 0.2)",
-                      "& .MuiListItemText-primary": {
-                        color: "#646cff",
-                        fontWeight: 600,
-                      },
-                    },
-                  }}
-                >
-                  <ListItemIcon sx={{ minWidth: 32 }}>
-                    <Chat
-                      fontSize="small"
-                      sx={{ color: "rgba(255, 255, 255, 0.7)" }}
-                    />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={session.title}
-                    primaryTypographyProps={{
-                      variant: "body2",
-                      sx: {
-                        fontWeight: 500,
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                        color: "white",
-                      },
-                    }}
-                  />
-                  <IconButton
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteChatSession(session.id);
-                    }}
+          <IconButton
+            size="small"
+            sx={{
+              color: "rgba(255, 255, 255, 0.7)",
+              p: 0.5,
+            }}
+          >
+            {historyExpanded ? (
+              <ExpandLess fontSize="small" />
+            ) : (
+              <ExpandMore fontSize="small" />
+            )}
+          </IconButton>
+        </Box>
+
+        <Collapse in={historyExpanded}>
+          {chatSessions.length === 0 ? (
+            <Typography
+              variant="body2"
+              sx={{
+                fontStyle: "italic",
+                px: 1,
+                py: 2,
+                color: "rgba(255, 255, 255, 0.5)",
+              }}
+            >
+              No chat history yet
+            </Typography>
+          ) : (
+            <List sx={{ pt: 1, maxHeight: "200px", overflowY: "auto" }}>
+              {chatSessions.map((session) => (
+                <ListItem key={session.id} disablePadding>
+                  <ListItemButton
+                    disableRipple
+                    onClick={() => loadChatSession(session.id)}
+                    selected={isChatActive(session.id)}
                     sx={{
-                      color: "rgba(255, 255, 255, 0.5)",
+                      pl: 2,
+                      minHeight: 40,
+                      borderRadius: 2,
+                      mx: 1,
+                      mb: 0.5,
                       "&:hover": {
-                        color: "#ff6b6b",
+                        backgroundColor: "rgba(100, 108, 255, 0.1)",
+                      },
+                      "&.Mui-selected": {
+                        backgroundColor: "rgba(100, 108, 255, 0.2)",
+                        "& .MuiListItemText-primary": {
+                          color: "#646cff",
+                          fontWeight: 600,
+                        },
                       },
                     }}
                   >
-                    <Delete fontSize="small" />
-                  </IconButton>
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-        )}
+                    <ListItemIcon sx={{ minWidth: 32 }}>
+                      <Chat
+                        fontSize="small"
+                        sx={{ color: "rgba(255, 255, 255, 0.7)" }}
+                      />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 0.5,
+                          }}
+                        >
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              fontWeight: 500,
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                              color: "white",
+                            }}
+                          >
+                            {session.title}
+                          </Typography>
+                          {session.studyPlanContext && (
+                            <Chip
+                              label={session.studyPlanContext.name}
+                              size="small"
+                              sx={{
+                                backgroundColor: "rgba(100, 108, 255, 0.2)",
+                                color: "#646cff",
+                                border: "1px solid rgba(100, 108, 255, 0.3)",
+                                fontSize: "0.6rem",
+                                height: "18px",
+                                maxWidth: "120px",
+                                alignSelf: "flex-start",
+                                "& .MuiChip-label": {
+                                  textOverflow: "ellipsis",
+                                  overflow: "hidden",
+                                  px: 0.5,
+                                },
+                              }}
+                            />
+                          )}
+                        </Box>
+                      }
+                    />
+                    <IconButton
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteChatSession(session.id);
+                      }}
+                      sx={{
+                        color: "rgba(255, 255, 255, 0.5)",
+                        "&:hover": {
+                          color: "#ff6b6b",
+                        },
+                      }}
+                    >
+                      <Delete fontSize="small" />
+                    </IconButton>
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+          )}
+        </Collapse>
       </Box>
       <Divider sx={{ borderColor: "rgba(100, 108, 255, 0.2)" }} />
       {/* Chat Messages Area */}
@@ -460,8 +732,9 @@ const AiChatSidebar: React.FC<AiChatSidebarProps> = ({ isOpen }) => {
                 AI Study Advisor
               </Typography>
               <Typography variant="body2" sx={{ maxWidth: "250px" }}>
-                Ask me about courses, study plans, prerequisites, or any
-                academic guidance you need!
+                {currentStudyPlanId
+                  ? "I'm here to help with your study plan! I have context about your degree program and can provide personalized course recommendations."
+                  : "Ask me about courses, study plans, prerequisites, or any academic guidance you need!"}
               </Typography>
             </Box>
           ) : (
@@ -488,9 +761,61 @@ const AiChatSidebar: React.FC<AiChatSidebarProps> = ({ isOpen }) => {
                         : "18px 18px 18px 4px",
                     }}
                   >
-                    <Typography variant="body2" sx={{ lineHeight: 1.4 }}>
-                      {message.content}
-                    </Typography>
+                    {message.isUser ? (
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          lineHeight: 1.4,
+                          whiteSpace: "pre-wrap",
+                        }}
+                      >
+                        {message.content}
+                      </Typography>
+                    ) : (
+                      <ReactMarkdown
+                        components={{
+                          p: ({ children }) => (
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                lineHeight: 1.4,
+                                marginBottom: 1,
+                                "&:last-child": { marginBottom: 0 },
+                              }}
+                            >
+                              {children}
+                            </Typography>
+                          ),
+                          strong: ({ children }) => (
+                            <Typography
+                              component="span"
+                              sx={{ fontWeight: "bold" }}
+                            >
+                              {children}
+                            </Typography>
+                          ),
+                          ul: ({ children }) => (
+                            <Box
+                              component="ul"
+                              sx={{ paddingLeft: 2, margin: 0 }}
+                            >
+                              {children}
+                            </Box>
+                          ),
+                          li: ({ children }) => (
+                            <Typography
+                              component="li"
+                              variant="body2"
+                              sx={{ lineHeight: 1.4, marginBottom: 0.5 }}
+                            >
+                              {children}
+                            </Typography>
+                          ),
+                        }}
+                      >
+                        {message.content}
+                      </ReactMarkdown>
+                    )}
 
                     {/* Show course codes for AI messages */}
                     {!message.isUser &&

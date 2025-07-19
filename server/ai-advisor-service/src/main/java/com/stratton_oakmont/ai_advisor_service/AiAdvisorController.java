@@ -26,9 +26,11 @@ public class AiAdvisorController {
     @Autowired
     private AiAdvisorService aiAdvisorService;
 
-    @PostMapping("/chat")
-    public Mono<ResponseEntity<ChatResponse>> chat(@Valid @RequestBody ChatRequest request) {
-        return aiAdvisorService.processChat(request)
+    @PostMapping("/chat/")
+    public Mono<ResponseEntity<ChatResponse>> chat(
+            @Valid @RequestBody ChatRequest request,
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
+        return aiAdvisorService.processChat(request, authorizationHeader)
                 .map(response -> ResponseEntity.ok(response))
                 .onErrorReturn(ResponseEntity.status(500).build());
     }

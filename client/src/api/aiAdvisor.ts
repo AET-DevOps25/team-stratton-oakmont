@@ -3,7 +3,7 @@ import { AI_ADVISOR_API_URL } from "../config/api";
 export interface ChatMessage {
   message: string;
   session_id?: string;
-  user_id?: string; // Add user context
+  study_plan_id?: string;
 }
 
 export interface ChatResponse {
@@ -36,18 +36,26 @@ class AiAdvisorAPI {
   async sendMessage(
     message: string,
     sessionId?: string,
-    userId?: string
+    studyPlanId?: string
   ): Promise<ChatResponse> {
     try {
-      const response = await fetch(`${this.baseUrl}/chat`, {
+      const token = localStorage.getItem("jwtToken");
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+
+      // Add Authorization header if token exists
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      const response = await fetch(`${this.baseUrl}/chat/`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
         body: JSON.stringify({
           message,
           session_id: sessionId,
-          user_id: userId,
+          study_plan_id: studyPlanId,
         }),
       });
 

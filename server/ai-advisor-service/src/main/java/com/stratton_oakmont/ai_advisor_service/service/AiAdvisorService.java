@@ -24,10 +24,17 @@ public class AiAdvisorService {
         this.webClient = webClientBuilder.build();
     }
 
-    public Mono<ChatResponse> processChat(ChatRequest request) {
-        return webClient
+    public Mono<ChatResponse> processChat(ChatRequest request, String authorizationHeader) {
+        WebClient.RequestBodySpec requestSpec = webClient
                 .post()
-                .uri(llmServiceUrl + "/chat/")
+                .uri(llmServiceUrl + "/chat/");
+        
+        // Add Authorization header if present
+        if (authorizationHeader != null && !authorizationHeader.trim().isEmpty()) {
+            requestSpec = requestSpec.header("Authorization", authorizationHeader);
+        }
+        
+        return requestSpec
                 .bodyValue(request)
                 .retrieve()
                 .bodyToMono(ChatResponse.class)
