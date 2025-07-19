@@ -23,7 +23,7 @@ public class OpenApiConfig {
         devServer.setDescription("Server URL in Development environment");
 
         Contact contact = new Contact();
-        contact.setEmail("f.seitz@tum.com");
+        contact.setEmail("f.seitz@tum.de");
         contact.setName("Team Stratton Oakmont");
 
         License mitLicense = new License()
