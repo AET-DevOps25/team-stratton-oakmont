@@ -32,6 +32,10 @@ public class StudyPlanService {
     }
 
     public StudyPlan createStudyPlanForUser(Long userId, Long studyProgramId, String name) {
+        return createStudyPlanForUser(userId, studyProgramId, name, null);
+    }
+
+    public StudyPlan createStudyPlanForUser(Long userId, Long studyProgramId, String name, String studyProgramName) {
         if (userId == null) {
             throw new IllegalArgumentException("User ID cannot be null");
         }
@@ -46,6 +50,7 @@ public class StudyPlanService {
         studyPlan.setName(name.trim());
         studyPlan.setUserId(userId);
         studyPlan.setStudyProgramId(studyProgramId);
+        studyPlan.setStudyProgramName(studyProgramName);
         studyPlan.setIsActive(true);
         
         return createStudyPlan(studyPlan);
@@ -87,6 +92,9 @@ public class StudyPlanService {
         }
         if (updatedPlan.getStudyProgramId() != null) {
             existingPlan.setStudyProgramId(updatedPlan.getStudyProgramId());
+        }
+        if (updatedPlan.getStudyProgramName() != null) {
+            existingPlan.setStudyProgramName(updatedPlan.getStudyProgramName());
         }
         if (updatedPlan.getIsActive() != null) {
             existingPlan.setIsActive(updatedPlan.getIsActive());

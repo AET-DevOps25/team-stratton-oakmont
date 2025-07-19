@@ -25,6 +25,9 @@ public class Semester {
     
     @Column(name = "semester_order", nullable = false)
     private Integer semesterOrder = 1; // Order within the study plan (1st semester, 2nd semester, etc.)
+
+    @Column(name = "winter_or_summer", length = 10)
+    private String winterOrSummer; // "WINTER" or "SUMMER"
     
     @OneToMany(mappedBy = "semester", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<SemesterCourse> courses = new ArrayList<>();
@@ -38,6 +41,11 @@ public class Semester {
         this.name = name;
         this.studyPlan = studyPlan;
         this.semesterOrder = semesterOrder;
+    }
+    
+    public Semester(String name, StudyPlan studyPlan, Integer semesterOrder, String winterOrSummer) {
+        this(name, studyPlan, semesterOrder);
+        this.winterOrSummer = winterOrSummer;
     }
     
     // Getters and Setters
@@ -71,6 +79,14 @@ public class Semester {
     
     public void setSemesterOrder(Integer semesterOrder) {
         this.semesterOrder = semesterOrder;
+    }
+    
+    public String getWinterOrSummer() {
+        return winterOrSummer;
+    }
+    
+    public void setWinterOrSummer(String winterOrSummer) {
+        this.winterOrSummer = winterOrSummer;
     }
     
     public List<SemesterCourse> getCourses() {

@@ -194,7 +194,12 @@ public class StudyPlanController {
         
         // Set study program info
         dto.setStudyProgramId(studyPlan.getStudyProgramId());
-        if (studyPlan.getStudyProgramId() != null) {
+        
+        // First, try to use the stored study program name
+        if (studyPlan.getStudyProgramName() != null && !studyPlan.getStudyProgramName().trim().isEmpty()) {
+            dto.setStudyProgramName(studyPlan.getStudyProgramName());
+        } else if (studyPlan.getStudyProgramId() != null) {
+            // Fallback to fetching from external service if no stored name
             try {
                 StudyProgramDto studyProgram = programCatalogClient.getStudyProgramById(studyPlan.getStudyProgramId()).orElse(null);
                 if (studyProgram != null) {

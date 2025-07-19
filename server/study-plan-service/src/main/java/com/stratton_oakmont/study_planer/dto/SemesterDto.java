@@ -18,6 +18,8 @@ public class SemesterDto {
     
     private Integer semesterOrder;
     
+    private String winterOrSummer; // "WINTER" or "SUMMER"
+    
     private List<SemesterCourseDto> courses;
     
     // Constructors
@@ -27,6 +29,11 @@ public class SemesterDto {
         this.name = name;
         this.studyPlanId = studyPlanId;
         this.semesterOrder = semesterOrder;
+    }
+    
+    public SemesterDto(String name, Long studyPlanId, Integer semesterOrder, String winterOrSummer) {
+        this(name, studyPlanId, semesterOrder);
+        this.winterOrSummer = winterOrSummer;
     }
     
     // Getters and Setters
@@ -60,6 +67,14 @@ public class SemesterDto {
     
     public void setSemesterOrder(Integer semesterOrder) {
         this.semesterOrder = semesterOrder;
+    }
+    
+    public String getWinterOrSummer() {
+        return winterOrSummer;
+    }
+    
+    public void setWinterOrSummer(String winterOrSummer) {
+        this.winterOrSummer = winterOrSummer;
     }
     
     public List<SemesterCourseDto> getCourses() {

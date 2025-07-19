@@ -41,14 +41,16 @@ public class SemesterController {
             // Get the study plan to verify it exists
             StudyPlan studyPlan = studyPlanService.getStudyPlanById(semesterDto.getStudyPlanId());
             
-            // Create semester
-            Semester semester = semesterService.createSemesterForStudyPlan(
-                studyPlan, 
+            // Create semester with all fields
+            Semester semester = new Semester(
                 semesterDto.getName(),
-                semesterDto.getSemesterOrder()
+                studyPlan,
+                semesterDto.getSemesterOrder(),
+                semesterDto.getWinterOrSummer()
             );
             
-            SemesterDto responseDto = convertToDto(semester);
+            Semester savedSemester = semesterService.createSemester(semester);
+            SemesterDto responseDto = convertToDto(savedSemester);
             return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
 
         } catch (Exception e) {
@@ -105,6 +107,9 @@ public class SemesterController {
             existingSemester.setName(semesterDto.getName());
             if (semesterDto.getSemesterOrder() != null) {
                 existingSemester.setSemesterOrder(semesterDto.getSemesterOrder());
+            }
+            if (semesterDto.getWinterOrSummer() != null) {
+                existingSemester.setWinterOrSummer(semesterDto.getWinterOrSummer());
             }
             
             Semester updatedSemester = semesterService.updateSemester(id, existingSemester);
@@ -165,6 +170,7 @@ public class SemesterController {
         dto.setName(semester.getName());
         dto.setStudyPlanId(semester.getStudyPlan().getId());
         dto.setSemesterOrder(semester.getSemesterOrder());
+        dto.setWinterOrSummer(semester.getWinterOrSummer());
         
         // TODO: Add courses conversion when needed
         // dto.setCourses(semester.getCourses().stream()

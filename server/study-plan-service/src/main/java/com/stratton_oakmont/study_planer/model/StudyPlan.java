@@ -26,6 +26,10 @@ public class StudyPlan {
     @Column(name = "study_program_id", nullable = true)
     private Long studyProgramId;
 
+    // Store the study program name for easier access
+    @Column(name = "study_program_name", length = 255)
+    private String studyProgramName;
+
     // Relationship to semesters - replace the JSON planData
     @OneToMany(mappedBy = "studyPlan", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Semester> semesters = new ArrayList<>();
@@ -81,6 +85,14 @@ public class StudyPlan {
     
     public void setStudyProgramId(Long studyProgramId) {
         this.studyProgramId = studyProgramId;
+    }
+    
+    public String getStudyProgramName() {
+        return studyProgramName;
+    }
+    
+    public void setStudyProgramName(String studyProgramName) {
+        this.studyProgramName = studyProgramName;
     }
     
     public List<Semester> getSemesters() {

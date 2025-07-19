@@ -38,6 +38,19 @@ public class SemesterService {
         return createSemester(semester);
     }
 
+    public Semester createSemesterForStudyPlan(StudyPlan studyPlan, String name, String winterOrSummer) {
+        // Get the next semester order
+        Integer nextOrder = getNextSemesterOrder(studyPlan.getId());
+        
+        Semester semester = new Semester(name, studyPlan, nextOrder, winterOrSummer);
+        return createSemester(semester);
+    }
+
+    public Semester createSemesterForStudyPlan(StudyPlan studyPlan, String name, Integer order, String winterOrSummer) {
+        Semester semester = new Semester(name, studyPlan, order, winterOrSummer);
+        return createSemester(semester);
+    }
+
     // READ operations
     public List<Semester> getAllSemesters() {
         return semesterRepository.findAll();
@@ -72,6 +85,9 @@ public class SemesterService {
         if (updatedSemester.getSemesterOrder() != null) {
             existingSemester.setSemesterOrder(updatedSemester.getSemesterOrder());
         }
+        if (updatedSemester.getWinterOrSummer() != null) {
+            existingSemester.setWinterOrSummer(updatedSemester.getWinterOrSummer());
+        }
         
         return semesterRepository.save(existingSemester);
     }
@@ -85,6 +101,12 @@ public class SemesterService {
     public Semester updateSemesterOrder(Long id, Integer newOrder) {
         Semester semester = getSemesterById(id);
         semester.setSemesterOrder(newOrder);
+        return semesterRepository.save(semester);
+    }
+
+    public Semester updateWinterOrSummer(Long id, String winterOrSummer) {
+        Semester semester = getSemesterById(id);
+        semester.setWinterOrSummer(winterOrSummer);
         return semesterRepository.save(semester);
     }
 
