@@ -541,10 +541,22 @@ const StudyProgramSelectionDialog: React.FC<
                         {program.fieldOfStudy}
                       </Typography>
                     </TableCell>
-                    <TableCell sx={{ color: "white", width: "80px", textAlign: "center" }}>
+                    <TableCell
+                      sx={{
+                        color: "white",
+                        width: "80px",
+                        textAlign: "center",
+                      }}
+                    >
                       {program.credits}
                     </TableCell>
-                    <TableCell sx={{ color: "white", width: "90px", textAlign: "center" }}>
+                    <TableCell
+                      sx={{
+                        color: "white",
+                        width: "90px",
+                        textAlign: "center",
+                      }}
+                    >
                       {program.semesters}
                     </TableCell>
                     <TableCell sx={{ color: "white", width: "60px" }}>
