@@ -180,7 +180,7 @@
                 req.url.includes("localhost") &&
                 window.location.hostname !== "localhost"
               ) {
-                req.headers["Access-Control-Allow-Origin"] = "*";
+                // CORS headers must be set by the server, not the client.
               }
               return req;
             },
