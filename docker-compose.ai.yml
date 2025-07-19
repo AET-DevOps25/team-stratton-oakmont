@@ -23,7 +23,7 @@ services:
       context: ./server/llm-inference-service
       dockerfile: Dockerfile
     ports:
-      - "8082:8082"
+      - "8084:8084"
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - WEAVIATE_URL=http://weaviate:8080
@@ -42,7 +42,7 @@ services:
       - weaviate
     volumes:
       - ./data-collection/csv_tables:/app/data
-    command: uvicorn main:app --host 0.0.0.0 --port 8082 --reload
+    command: uvicorn main:app --host 0.0.0.0 --port 8084 --reload
 
   # AI Advisor Service (Java Spring Boot)
   ai-advisor:
@@ -52,7 +52,7 @@ services:
     ports:
       - "8084:8080"
     environment:
-      - LLM_INFERENCE_SERVICE_URL=http://llm-inference:8082
+      - LLM_INFERENCE_SERVICE_URL=http://llm-inference:8084
     depends_on:
       - llm-inference
 

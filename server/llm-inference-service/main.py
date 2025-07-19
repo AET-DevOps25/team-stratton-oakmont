@@ -37,58 +37,65 @@ class WeaviateCourseStore:
         try:
             # Generate query vector
             query_vector = self.embedding.embed_query(query)
-            
-            # Search Weaviate
-            result = self.client.query.get("TUMCourse", [
-                "courseCode", "courseName", "courseNameEn", "description", 
-                "descriptionEn", "semester", "organization", "tumOnlineUrl",
-                "ects", "activityType", "fullText"
-            ]).with_near_vector({
-                "vector": query_vector
-            }).with_limit(k).with_additional(["certainty"]).do()
-            
-            courses = result.get("data", {}).get("Get", {}).get("TUMCourse", [])
-            
+
+            # Use Weaviate v4 API
+            collection = self.client.collections.get("TUMCourse")
+            result = collection.query.near_vector(
+                near_vector=query_vector,
+                limit=k,
+                return_metadata=['certainty']
+            )
+
             # Convert to expected format
             documents = []
-            for course in courses:
+            for obj in result.objects:
+                course = obj.properties
+                certainty = getattr(obj.metadata, 'certainty', 0) if hasattr(obj, 'metadata') else 0
                 doc = type('Document', (), {
-                    'page_content': course.get('fullText', ''),
+                    'page_content': course.get('content', ''),
                     'metadata': {
-                        'course_code': course.get('courseCode'),
-                        'course_name': course.get('courseName'),
-                        'course_name_en': course.get('courseNameEn'),
-                        'description': course.get('description'),
-                        'description_en': course.get('descriptionEn'),
-                        'semester': course.get('semester'),
-                        'organization': course.get('organization'),
-                        'url': course.get('tumOnlineUrl'),
-                        'ects': course.get('ects'),
-                        'activity_type': course.get('activityType'),
-                        'certainty': course.get('_additional', {}).get('certainty', 0)
+                        'category': course.get('category'),
+                        'subcategory': course.get('subcategory'),
+                        'module_id': course.get('module_id'),
+                        'name': course.get('name'),
+                        'credits': course.get('credits'),
+                        'responsible': course.get('responsible'),
+                        'module_level': course.get('module_level'),
+                        'occurrence': course.get('occurrence'),
+                        'description_of_achievement_and_assessment_methods': course.get('description_of_achievement_and_assessment_methods'),
+                        'intended_learning_outcomes': course.get('intended_learning_outcomes'),
+                        'content': course.get('content', ''),
+                        'certainty': certainty
                     }
                 })()
                 documents.append(doc)
-            
+
             return documents
-            
+
         except Exception as e:
             print(f"Error in similarity search: {e}")
             return []
     
-    def as_retriever(self, search_kwargs=None):
-        """Return a retriever interface"""
+    def as_retriever(self, search_type=None, search_kwargs=None):
+        """Return a retriever interface. Accepts search_type for compatibility but ignores it."""
         if search_kwargs is None:
             search_kwargs = {"k": 5}
-        
-        class Retriever:
+
+        from langchain.schema.retriever import BaseRetriever
+        from typing import Any, Dict, List
+
+        class Retriever(BaseRetriever):
+            store: Any = None
+            search_kwargs: Dict[str, Any] = {}
+
             def __init__(self, store, search_kwargs):
-                self.store = store
-                self.search_kwargs = search_kwargs
-            
-            def get_relevant_documents(self, query):
+                super().__init__()
+                object.__setattr__(self, 'store', store)
+                object.__setattr__(self, 'search_kwargs', search_kwargs)
+
+            def _get_relevant_documents(self, query: str) -> List[Any]:
                 return self.store.similarity_search(query, **self.search_kwargs)
-        
+
         return Retriever(self, search_kwargs)
 
 
@@ -130,15 +137,21 @@ class ChatRequest(BaseModel):
 
 class ChatResponse(BaseModel):
     response: str
-    course_codes: List[str] = []
-    sources: List[str] = []
+    module_ids: List[str] = []
 
 class CourseInfo(BaseModel):
-    course_code: str
-    course_name: str
-    description: str
-    semester: str
-    ects: Optional[int] = None
+    module_id: str
+    name: str
+    content: str
+    category: Optional[str] = None
+    subcategory: Optional[str] = None
+    credits: Optional[int] = None
+    responsible: Optional[str] = None
+    module_level: Optional[str] = None
+    occurrence: Optional[str] = None
+    description_of_achievement_and_assessment_methods: Optional[str] = None
+    intended_learning_outcomes: Optional[str] = None
+    certainty: Optional[float] = None
 
 # Global variables for RAG components
 weaviate_client = None
@@ -170,23 +183,26 @@ def setup_weaviate():
     global weaviate_client, vector_store, embeddings
     
     try:
-        # Initialize Weaviate v4 client with both HTTP and gRPC endpoints
-        from weaviate.connect import ConnectionParams
-        from weaviate import WeaviateClient
-        weaviate_http_url = os.getenv("WEAVIATE_URL", "http://localhost:8080")
-        weaviate_grpc_url = os.getenv("WEAVIATE_GRPC_URL", "http://localhost:50051")
-        connection_params = ConnectionParams.grpc_both(
-            http_url=weaviate_http_url,
-            grpc_url=weaviate_grpc_url
+        import weaviate
+        weaviate_host = os.getenv("WEAVIATE_HOST", "localhost")
+        weaviate_port = int(os.getenv("WEAVIATE_PORT", "8080"))
+        weaviate_grpc_port = int(os.getenv("WEAVIATE_GRPC_PORT", "50051"))
+        # Use connect_to_local for robust local/K8s connection
+        weaviate_client_local = weaviate.connect_to_local(
+            host=weaviate_host,
+            port=weaviate_port,
+            grpc_port=weaviate_grpc_port
         )
-        weaviate_client = WeaviateClient(connection_params)
+        # Assign to global
+        global weaviate_client, embeddings, vector_store
+        weaviate_client = weaviate_client_local
 
         # Use Gemini embeddings
         embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
 
         # Check if TUMCourse schema exists
         schema = weaviate_client.collections.list_all()
-        if "TUMCourse" not in [col.name for col in schema]:
+        if "TUMCourse" not in schema:
             print("⚠️  TUMCourse schema not found in Weaviate!")
             print("Please run the population script first: python populate_weaviate.py")
             return False
@@ -202,64 +218,6 @@ def setup_weaviate():
 
     except Exception as e:
         print(f"Error setting up Weaviate: {e}")
-        return False
-
-def populate_vector_database():
-    """Populate Weaviate with course data"""
-    global vector_store
-    
-    if not vector_store:
-        return False
-        
-    try:
-        df = load_course_data()
-        if df.empty:
-            return False
-        
-        # Prepare documents for vector store
-        documents = []
-        metadatas = []
-        
-        for _, row in df.iterrows():
-            # Create a comprehensive text for embedding
-            text_content = f"""
-            Course Code: {row['course_code']}
-            Course Name: {row['course_name']}
-            Course Name (EN): {row.get('course_name_en', '')}
-            Description: {row['final_description']}
-            Semester: {row.get('semester_title', '')}
-            Hours per Week: {row.get('hoursperweek', '')}
-            Instruction Languages: {row.get('instruction_languages', '')}
-            Organization: {row.get('org_name', '')}
-            """.strip()
-            
-            documents.append(text_content)
-            metadatas.append({
-                'course_code': row['course_code'],
-                'course_name': row['course_name'],
-                'course_name_en': row.get('course_name_en', ''),
-                'description': row['final_description'],
-                'semester': row.get('semester_title', ''),
-                'url': row.get('tumonline_url', ''),
-            })
-        
-        # Add documents to vector store in batches
-        batch_size = 100
-        for i in range(0, len(documents), batch_size):
-            batch_docs = documents[i:i+batch_size]
-            batch_metas = metadatas[i:i+batch_size]
-            
-            vector_store.add_texts(
-                texts=batch_docs,
-                metadatas=batch_metas
-            )
-        
-        print(f"Successfully added {len(documents)} course documents to vector store")
-        return True
-        
-    except Exception as e:
-        print(f"Error populating vector database: {e}")
-        return False
 
 def setup_qa_chain():
     """Setup the QA chain with custom prompt"""
@@ -271,20 +229,26 @@ def setup_qa_chain():
     try:
         # Custom prompt template for course Q&A
         prompt_template = """
-        You are an AI study advisor for Technical University Munich (TUM). Use the following course information to answer the student's question about TUM courses.
+        You are an AI study advisor for Technical University Munich (TUM). Use the following course information to answer the student's question in a natural, conversational way.
         
         Context: {context}
         
         Question: {question}
         
         Instructions:
-        1. Focus specifically on the courses mentioned or relevant to the question
-        2. If a specific course code is mentioned, provide detailed information about that course
-        3. If the question is about course topics, programming languages, or content, extract that information from the course descriptions
-        4. If you cannot find specific information in the provided context, clearly state that
-        5. Always mention the course code when referring to specific courses
-        6. Keep your response concise but informative
-        7. If multiple courses are relevant, briefly mention each one
+        1. Write your response in a natural, conversational tone as if you're talking to a student
+        2. Start with a brief, engaging summary of what the course is about
+        3. For specific courses, structure your response naturally:
+           - Begin with what the course covers (2-3 sentences)
+           - Mention key details like ECTS credits, language, and level in a flowing manner
+           - Highlight interesting or unique aspects of the course
+           - Include practical information (prerequisites, assessment methods) when relevant
+        4. Use connecting phrases and transitions to make the response flow naturally
+        5. Avoid bullet points or overly structured lists - integrate information smoothly
+        6. Always mention the course code, but work it into the conversation naturally
+        7. If discussing programming languages or technical topics, explain them in context
+        8. End with something helpful or encouraging when appropriate
+        9. Keep the response informative but engaging, like a knowledgeable advisor would speak
         
         Answer:
         """
@@ -329,10 +293,8 @@ async def chat_with_ai(request: ChatRequest):
             # Fallback to simple response if RAG is not available
             return ChatResponse(
                 response="I'm currently unable to access the course database. Please try again later.",
-                course_codes=[],
-                confidence=0.0,
-                sources=[]
-            )
+                module_ids=[]
+        )
         
         # Get user context if user_id is provided
         user_context = ""
@@ -359,32 +321,18 @@ async def chat_with_ai(request: ChatRequest):
         result = qa_chain({"query": enhanced_query})
         
         response_text = result["result"]
-        source_docs = result.get("source_documents", [])
         
         # Extract course codes from the response and sources
         response_codes = extract_course_codes(response_text)
         all_codes = list(set(mentioned_codes + response_codes))
-        
-        # Get source URLs and enhance with study plan context
-        sources = []
-        for doc in source_docs:
-            if doc.metadata.get('url'):
-                sources.append(doc.metadata['url'])
-        
-        # Calculate confidence based on source relevance and user context
-        base_confidence = min(len(source_docs) * 0.2, 1.0)
-        # Boost confidence if we have user context
-        confidence = min(base_confidence * 1.2, 1.0) if user_context else base_confidence
-        
+    
         # Enhance response with study plan recommendations if applicable
         if user_context and any(word in request.message.lower() for word in ['recommend', 'suggest', 'should take', 'plan']):
             response_text += "\n\n💡 Based on your study plan, I can provide more personalized recommendations if you'd like!"
-        
+
         return ChatResponse(
             response=response_text,
-            course_codes=all_codes,
-            confidence=confidence,
-            sources=sources[:3]  # Limit to top 3 sources
+            module_ids=all_codes
         )
         
     except Exception as e:
@@ -396,18 +344,25 @@ async def get_course_info(course_code: str):
     """Get detailed information about a specific course"""
     try:
         df = load_course_data()
-        course_data = df[df['course_code'].str.upper() == course_code.upper()]
+        course_data = df[df['module_id'].str.upper() == course_code.upper()]
         
         if course_data.empty:
             raise HTTPException(status_code=404, detail="Course not found")
         
         course = course_data.iloc[0]
         return CourseInfo(
-            course_code=course['course_code'],
-            course_name=course['course_name'],
-            description=course['final_description'],
-            semester=course.get('semester_title', ''),
-            ects=course.get('ects', None)
+            module_id=course['module_id'],
+            name=course['name'],
+            content=course['content'],
+            category=course.get('category', None),
+            subcategory=course.get('subcategory', None),
+            credits=course.get('credits', None),
+            responsible=course.get('responsible', None),
+            module_level=course.get('module_level', None),
+            occurrence=course.get('occurrence', None),
+            description_of_achievement_and_assessment_methods=course.get('description_of_achievement_and_assessment_methods', None),
+            intended_learning_outcomes=course.get('intended_learning_outcomes', None),
+            certainty=None
         )
         
     except HTTPException:
@@ -457,9 +412,5 @@ async def infer(data: dict):
     # Replace with actual LLM call
     response = f"LLM response to: {prompt}" 
     return {"inference": response}
-
-@app.get("/")
-async def root():
-    return {"message": "LLM Inference Service is running"}
 
 # Add other endpoints here

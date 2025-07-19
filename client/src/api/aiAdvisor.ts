@@ -8,16 +8,22 @@ export interface ChatMessage {
 
 export interface ChatResponse {
   response: string;
-  course_codes: string[];
-  sources: string[];
+  module_ids: string[];
 }
 
 export interface CourseInfo {
-  course_code: string;
-  course_name: string;
-  description: string;
-  semester: string;
-  ects?: number;
+  module_id: string;
+  name: string;
+  content: string;
+  category?: string;
+  subcategory?: string;
+  credits?: number;
+  responsible?: string;
+  module_level?: string;
+  occurrence?: string;
+  description_of_achievement_and_assessment_methods?: string;
+  intended_learning_outcomes?: string;
+  certainty?: number;
 }
 
 class AiAdvisorAPI {

@@ -24,50 +24,56 @@ class DatabaseConnector:
         )
 
     def get_course_data(self) -> pd.DataFrame:
-        """Get course data from PostgreSQL study_data_db"""
+        """Get course data from curriculums_x_module_details in PostgreSQL study_data_db with CSV fallback"""
         try:
             query = """
             SELECT 
-                course_code,
-                course_name,
-                course_name_en,
-                description,
-                description_en,
-                semester_title,
-                hoursperweek,
-                instruction_languages,
-                org_name,
-                tumonline_url,
-                ects_credits
-            FROM courses 
-            WHERE course_code IS NOT NULL 
-                AND course_name IS NOT NULL
+                study_program_id,
+                category,
+                subcategory,
+                course_id_and_name,
+                link,
+                module_id,
+                name,
+                credits,
+                version,
+                valid,
+                responsible,
+                organisation,
+                note,
+                module_level,
+                abbreviation,
+                subtitle,
+                duration,
+                occurrence,
+                language,
+                related_programs,
+                total_hours,
+                contact_hours,
+                self_study_hours,
+                description_of_achievement_and_assessment_methods,
+                exam_retake_next_semester,
+                exam_retake_at_the_end_of_semester,
+                prerequisites_recommended,
+                intended_learning_outcomes,
+                content,
+                teaching_and_learning_methods,
+                media,
+                reading_list,
+                curriculum_id,
+                transformed_link,
+                extraction_method,
+                id as csv_id
+            FROM curriculums_x_module_details
+            WHERE module_id IS NOT NULL AND name IS NOT NULL
             """
-            
             df = pd.read_sql(query, self.study_data_engine)
-            print(f"Loaded {len(df)} courses from study_data_db")
+            print(f"✅ Loaded {len(df)} courses from PostgreSQL curriculums_x_module_details")
             return df
-            
         except Exception as e:
-            print(f"Error loading from PostgreSQL: {e}")
-            print("Falling back to CSV file...")
-            return self.get_course_data_from_csv()
-
-    def get_course_data_from_csv(self) -> pd.DataFrame:
-        """Fallback: Get course data from CSV file"""
-        try:
-            csv_path = "../data-collection/csv_tables/modules.csv"
-            if not os.path.exists(csv_path):
-                csv_path = "/app/data/modules.csv"
-            
-            df = pd.read_csv(csv_path)
-            df = df.dropna(subset=['course_code', 'course_name'])
-            print(f"Loaded {len(df)} courses from CSV file")
-            return df
-            
-        except Exception as e:
-            print(f"Error loading CSV: {e}")
-            return pd.DataFrame()
+            print(f"❌ Error loading from PostgreSQL: {e}")
+            print("🔄 Attempting to load from CSV fallback...")
+            return self._load_csv_fallback()
 
     def get_user_study_plan(self, user_id: str) -> Optional[dict]:
         """Get user's current study plan and completed courses"""
@@ -103,6 +109,62 @@ class DatabaseConnector:
         except Exception as e:
             print(f"Error getting user study plan: {e}")
             return None
+
+    def _load_csv_fallback(self) -> pd.DataFrame:
+        """Load course data from CSV files as fallback when PostgreSQL is not available"""
+        try:
+            # Try to load module_details.csv which should have the most complete data
+            # Path is relative to the project root (two levels up from server/llm-inference-service)
+            csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 
+                                   'data-collection', 'csv_tables', 'module_details.csv')
+            
+            if os.path.exists(csv_path):
+                df = pd.read_csv(csv_path)
+                print(f"📁 Loaded {len(df)} courses from CSV fallback: {csv_path}")
+                
+                # Ensure we have the required columns and rename if necessary
+                if 'module_id' in df.columns and 'name' in df.columns:
+                    df = df.fillna('')
+                    # Add missing columns that might be expected
+                    expected_columns = [
+                        'study_program_id', 'category', 'subcategory', 'course_id_and_name',
+                        'link', 'module_id', 'name', 'credits', 'version', 'valid', 
+                        'responsible', 'organisation', 'note', 'module_level', 
+                        'abbreviation', 'subtitle', 'duration', 'occurrence', 'language',
+                        'related_programs', 'total_hours', 'contact_hours', 'self_study_hours',
+                        'description_of_achievement_and_assessment_methods', 
+                        'exam_retake_next_semester', 'exam_retake_at_the_end_of_semester',
+                        'prerequisites_recommended', 'intended_learning_outcomes', 'content',
+                        'teaching_and_learning_methods', 'media', 'reading_list',
+                        'curriculum_id', 'transformed_link', 'extraction_method', 'csv_id'
+                    ]
+                    
+                    for col in expected_columns:
+                        if col not in df.columns:
+                            df[col] = ''
+                    
+                    return df[df['module_id'].notna() & df['name'].notna()]
+                else:
+                    print(f"❌ CSV file missing required columns: module_id, name")
+            
+            # If module_details.csv doesn't work, try other CSV files
+            print("🔄 Trying alternative CSV files...")
+            for csv_name in ['module_details_scraped.csv', 'modules.csv']:
+                alt_csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 
+                                           'data-collection', 'csv_tables', csv_name)
+                if os.path.exists(alt_csv_path):
+                    df = pd.read_csv(alt_csv_path)
+                    if 'module_id' in df.columns:
+                        print(f"📁 Using alternative CSV: {csv_name} ({len(df)} records)")
+                        df = df.fillna('')
+                        return df[df['module_id'].notna()]
+            
+            print("❌ No suitable CSV fallback found")
+            return pd.DataFrame()  # Return empty DataFrame if no CSV works
+            
+        except Exception as e:
+            print(f"❌ Error loading CSV fallback: {e}")
+            return pd.DataFrame()
 
 # Global database connector instance
 db_connector = DatabaseConnector()

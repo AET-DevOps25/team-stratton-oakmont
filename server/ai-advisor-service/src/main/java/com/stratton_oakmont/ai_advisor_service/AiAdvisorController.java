@@ -15,8 +15,12 @@ import jakarta.validation.Valid;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1")
-@CrossOrigin(origins = "*") // Configure this properly for production
+@RequestMapping("")
+@CrossOrigin(origins = {
+    "https://tum-study-planner.student.k8s.aet.cit.tum.de",
+    "http://localhost:5173", 
+    "http://localhost:3000"
+})
 public class AiAdvisorController {
 
     @Autowired

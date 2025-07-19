@@ -17,7 +17,7 @@ public class AiAdvisorService {
 
     private final WebClient webClient;
     
-    @Value("${llm.inference.service.url:http://localhost:8082}")
+    @Value("${llm.inference.service.url:http://localhost:8084}")
     private String llmServiceUrl;
 
     public AiAdvisorService(WebClient.Builder webClientBuilder) {
@@ -57,6 +57,6 @@ public class AiAdvisorService {
     }
 
     private ChatResponse createFallbackResponse(String message) {
-        return new ChatResponse(message, Arrays.asList(), 0.0, Arrays.asList());
+        return new ChatResponse(message, Arrays.asList());
     }
 }
