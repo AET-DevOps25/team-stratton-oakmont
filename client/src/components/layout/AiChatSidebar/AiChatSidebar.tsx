@@ -526,20 +526,6 @@ const AiChatSidebar: React.FC<AiChatSidebarProps> = ({ isOpen }) => {
                 <Add fontSize="small" />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Clear all chats">
-              <IconButton
-                size="small"
-                onClick={clearAllChats}
-                sx={{
-                  color: "rgba(255, 255, 255, 0.7)",
-                  "&:hover": {
-                    backgroundColor: "rgba(255, 255, 255, 0.1)",
-                  },
-                }}
-              >
-                <Clear fontSize="small" />
-              </IconButton>
-            </Tooltip>
           </Box>
         </Box>
       </Box>
@@ -596,7 +582,27 @@ const AiChatSidebar: React.FC<AiChatSidebarProps> = ({ isOpen }) => {
               No chat history yet
             </Typography>
           ) : (
-            <List sx={{ pt: 1, maxHeight: "200px", overflowY: "auto" }}>
+            <List
+              sx={{
+                pt: 1,
+                maxHeight: chatSessions.length > 2 ? "160px" : "auto",
+                overflowY: chatSessions.length > 2 ? "auto" : "visible",
+                "&::-webkit-scrollbar": {
+                  width: "6px",
+                },
+                "&::-webkit-scrollbar-track": {
+                  background: "rgba(255, 255, 255, 0.1)",
+                  borderRadius: "3px",
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  background: "rgba(100, 108, 255, 0.5)",
+                  borderRadius: "3px",
+                  "&:hover": {
+                    background: "rgba(100, 108, 255, 0.7)",
+                  },
+                },
+              }}
+            >
               {chatSessions.map((session) => (
                 <ListItem key={session.id} disablePadding>
                   <ListItemButton
