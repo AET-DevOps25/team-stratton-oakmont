@@ -22,7 +22,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll() // Allow Swagger UI access
-                .requestMatchers("/", "/api/v1/**", "/index.html", "/study-plans/**", "/actuator/**", "/my-study-plans", "/programs", "/{id:[0-9]+}", "/{id:[0-9]+}/rename", "/{id:[0-9]+}/delete").permitAll()
+                .requestMatchers("/", "/api/v1/**", "/index.html", "/study-plans/**", "/actuator/**", "/my-study-plans", "/programs", "/{id:[0-9]+}", "/{id:[0-9]+}/rename", "/{id:[0-9]+}/delete", "/semesters/**", "/semester-courses/**").permitAll()
                 .anyRequest().authenticated()
             );
         return http.build();
