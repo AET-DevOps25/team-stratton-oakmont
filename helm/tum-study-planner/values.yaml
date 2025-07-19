@@ -163,7 +163,7 @@ autoscaling:
       minReplicas: 1
       maxReplicas: 15
       targetCPU: 60
-      targetMemory: 75
+      targetMemory: 80
       behavior:
         scaleUp:
           stabilization: 60
@@ -228,10 +228,10 @@ resources:
   studyPlanService:
     requests:
       cpu: 200m
-      memory: 256Mi
+      memory: 384Mi
     limits:
       cpu: 1000m
-      memory: 1Gi
+      memory: 1.5Gi
 
   aiAdvisorService:
     requests:
@@ -244,18 +244,18 @@ resources:
   programCatalogService:
     requests:
       cpu: 150m
-      memory: 256Mi
+      memory: 512Mi
     limits:
-      cpu: 800m
-      memory: 1Gi
+      cpu: 1500m
+      memory: 3Gi
 
   userAuthService:
     requests:
       cpu: 100m
-      memory: 128Mi
+      memory: 256Mi
     limits:
-      cpu: 500m
-      memory: 512Mi
+      cpu: 1000m
+      memory: 1.5Gi
 
   llmInferenceService:
     requests:
