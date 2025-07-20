@@ -34,6 +34,8 @@ import {
   createSemester,
   getCoursesBySemester,
   toggleSemesterCourseCompletion,
+  deleteSemester,
+  deleteSemesterCourse,
 } from "../../api/studyPlans";
 import type {
   StudyPlanDto,
@@ -354,8 +356,43 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
     }
   };
 
-  const handleRemoveSemester = (semesterId: string) => {
+  const handleRemoveSemester = async (semesterId: string) => {
+    // Find the semester to be removed for potential revert
+    const semesterToRemove = semesters.find((s) => s.id === semesterId);
+
+    if (!semesterToRemove) {
+      console.warn("Semester not found for removal:", semesterId);
+      return;
+    }
+
+    // Update local state immediately for better UX
     setSemesters(semesters.filter((semester) => semester.id !== semesterId));
+
+    // Persist deletion to backend
+    try {
+      const semesterDbId = Number(semesterId);
+      if (semesterDbId && !isNaN(semesterDbId)) {
+        await deleteSemester(semesterDbId);
+        console.log(`Successfully deleted semester with ID: ${semesterId}`);
+      } else {
+        console.warn("Invalid semester ID for deletion:", semesterId);
+      }
+    } catch (error) {
+      console.error("Failed to delete semester from backend:", error);
+
+      // Revert local state if backend call fails - add the semester back at the same position
+      const originalIndex = semesters.findIndex((s) => s.id === semesterId);
+      setSemesters((prevSemesters) => {
+        const newSemesters = [...prevSemesters];
+        newSemesters.splice(
+          originalIndex >= 0 ? originalIndex : newSemesters.length,
+          0,
+          semesterToRemove
+        );
+        return newSemesters;
+      });
+      // You might want to show an error message to the user
+    }
   };
 
   const handleToggleSemesterExpanded = (semesterId: string) => {
@@ -564,7 +601,17 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
     }
   };
 
-  const handleRemoveCourse = (semesterId: string, courseId: string) => {
+  const handleRemoveCourse = async (semesterId: string, courseId: string) => {
+    // Find the course to be removed for potential revert
+    const semester = semesters.find((s) => s.id === semesterId);
+    const courseToRemove = semester?.courses.find((c) => c.id === courseId);
+
+    if (!courseToRemove) {
+      console.warn("Course not found for removal:", courseId);
+      return;
+    }
+
+    // Update local state immediately for better UX
     setSemesters(
       semesters.map((semester) =>
         semester.id === semesterId
@@ -577,6 +624,32 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
           : semester
       )
     );
+
+    // Persist deletion to backend
+    try {
+      const courseDbId = Number(courseId);
+      if (courseDbId && !isNaN(courseDbId)) {
+        await deleteSemesterCourse(courseDbId);
+        console.log(`Successfully deleted course with ID: ${courseId}`);
+      } else {
+        console.warn("Invalid course ID for deletion:", courseId);
+      }
+    } catch (error) {
+      console.error("Failed to delete course from backend:", error);
+
+      // Revert local state if backend call fails
+      setSemesters(
+        semesters.map((semester) =>
+          semester.id === semesterId
+            ? {
+                ...semester,
+                courses: [...semester.courses, courseToRemove], // Add the course back
+              }
+            : semester
+        )
+      );
+      // You might want to show an error message to the user
+    }
   };
 
   const handleToggleCourseCompleted = async (
