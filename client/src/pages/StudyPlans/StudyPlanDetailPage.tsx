@@ -295,7 +295,7 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
 
         for (let i = 0; i < localSemesters.length; i++) {
           const semester = localSemesters[i];
-          
+
           const semesterRequest = {
             name: semester.name,
             studyPlanId: studyPlan.id,
@@ -313,21 +313,26 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
             });
             console.log(`Successfully created semester: ${semester.name}`);
           } catch (semesterError) {
-            console.error(`Failed to create semester ${semester.name}:`, semesterError);
+            console.error(
+              `Failed to create semester ${semester.name}:`,
+              semesterError
+            );
           }
         }
 
         // Update local state with backend IDs
         setSemesters((prevSemesters) =>
           prevSemesters.map((semester) => {
-            const created = createdSemesters.find(c => c.localId === semester.id);
-            return created 
-              ? { ...semester, id: created.backendId }
-              : semester;
+            const created = createdSemesters.find(
+              (c) => c.localId === semester.id
+            );
+            return created ? { ...semester, id: created.backendId } : semester;
           })
         );
 
-        console.log(`Successfully created ${createdSemesters.length} semesters for ${type} start`);
+        console.log(
+          `Successfully created ${createdSemesters.length} semesters for ${type} start`
+        );
       } catch (error) {
         console.error("Failed to create semesters in backend:", error);
         // You might want to show an error message to the user
