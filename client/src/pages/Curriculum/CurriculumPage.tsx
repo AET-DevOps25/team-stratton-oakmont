@@ -135,28 +135,7 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
   // Also update to sort the courses without pagination:
 
   // useEffect for sorting without pagination
-  useEffect(() => {
-    // Sort the filtered courses and display all of them
-    const sortedCourses = [...filteredCourses].sort((a, b) => {
-      const aValue = a[orderBy];
-      const bValue = b[orderBy];
-
-      if (typeof aValue === "string" && typeof bValue === "string") {
-        return order === "asc"
-          ? aValue.localeCompare(bValue)
-          : bValue.localeCompare(aValue);
-      }
-
-      if (typeof aValue === "number" && typeof bValue === "number") {
-        return order === "asc" ? aValue - bValue : bValue - aValue;
-      }
-
-      return 0;
-    });
-
-    // No pagination - show all sorted courses
-  }, [filteredCourses, orderBy, order]);
-
+// Removed redundant useEffect block for sorting logic.
   // Memoized sorted courses
   const sortedCourses = useMemo(() => {
     return [...filteredCourses].sort((a, b) => {
