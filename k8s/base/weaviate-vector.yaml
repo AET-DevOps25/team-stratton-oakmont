@@ -31,6 +31,14 @@ spec:
       containers:
         - name: weaviate
           image: semitechnologies/weaviate:latest
+          command: ["/bin/weaviate"]
+          args:
+            - "--host"
+            - "0.0.0.0"
+            - "--port"
+            - "8000"
+            - "--scheme"
+            - "http"
           ports:
             - containerPort: 8000
             - containerPort: 50051
@@ -43,8 +51,6 @@ spec:
               value: "node1"
             - name: ENABLE_GRPC_SERVER
               value: "true"
-            - name: HTTP_PORT
-              value: "8000"
           volumeMounts:
             - name: weaviate-storage
               mountPath: /var/lib/weaviate

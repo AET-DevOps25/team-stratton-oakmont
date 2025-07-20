@@ -20,13 +20,25 @@ spec:
         - name: llm-inference-service
           image: "{{ .Values.llmInferenceService.image.repository }}:{{ .Values.llmInferenceService.image.tag }}"
           ports:
-            - containerPort: 8082
+            - containerPort: 8084
           env:
-            - name: GOOGLE_API_KEY
+            - name: OPENAI_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: tum-study-planner-secrets
-                  key: GOOGLE_API_KEY
+                  key: OPENAI_API_KEY
+            # Explicitly set OpenAI API type to prevent Google auto-detection
+            - name: OPENAI_API_TYPE
+              value: "openai"
+            # Disable Google API auto-detection completely
+            - name: GOOGLE_API_KEY
+              value: ""
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: ""
+            - name: GOOGLE_CLOUD_PROJECT
+              value: ""
+            - name: GCLOUD_PROJECT
+              value: ""
             - name: WEAVIATE_HOST
               value: {{ .Values.llmInferenceService.env.WEAVIATE_HOST | quote }}
             - name: WEAVIATE_PORT
@@ -37,6 +49,14 @@ spec:
               value: {{ .Values.llmInferenceService.env.WEAVIATE_URL | quote }}
             - name: WEAVIATE_GRPC_URL
               value: {{ .Values.llmInferenceService.env.WEAVIATE_GRPC_URL | quote }}
+            - name: OPENAI_BASE_URL
+              value: {{ .Values.llmInferenceService.env.OPENAI_BASE_URL | quote }}
+            - name: OLLAMA_BASE_URL
+              value: {{ .Values.llmInferenceService.env.OLLAMA_BASE_URL | quote }}
+            - name: CHAT_MODEL
+              value: {{ .Values.llmInferenceService.env.CHAT_MODEL | quote }}
+            - name: EMBEDDING_MODEL
+              value: {{ .Values.llmInferenceService.env.EMBEDDING_MODEL | quote }}
             - name: STUDY_DATA_DB_HOST
               value: {{ .Values.llmInferenceService.env.STUDY_DATA_DB_HOST | quote }}
             - name: STUDY_DATA_DB_PORT
