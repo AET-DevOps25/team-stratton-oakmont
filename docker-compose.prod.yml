@@ -47,6 +47,7 @@ services:
       - SPRING_PROFILES_ACTIVE=prod
       # Connect to Kubernetes Weaviate via port-forward or external access
       - WEAVIATE_URL=${WEAVIATE_URL:-http://host.docker.internal:8000}
+      - LLM_INFERENCE_SERVICE_URL=http://tum-study-planner-llm-inference-1:8084
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
