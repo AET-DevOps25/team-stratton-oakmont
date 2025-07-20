@@ -174,27 +174,27 @@ class RepositoryTest {
     }
 
     @Test
-    void testStudyPlanRepository_findByCreatedDateAfter() {
+    void testStudyPlanRepository_findByCreateDateAfter() {
         // Given
         LocalDateTime oneDayAgo = LocalDateTime.now().minusDays(1);
 
         // When
-        List<StudyPlan> recentPlans = studyPlanRepository.findByCreatedDateAfter(oneDayAgo);
+        List<StudyPlan> recentPlans = studyPlanRepository.findByCreateDateAfter(oneDayAgo);
 
         // Then
         assertEquals(2, recentPlans.size());
     }
 
     @Test
-    void testStudyPlanRepository_findByUserIdOrderByLastModifiedDesc() {
+    void testStudyPlanRepository_findByUserIdOrderByCreateDateDesc() {
         // When
-        List<StudyPlan> orderedPlans = studyPlanRepository.findByUserIdOrderByLastModifiedDesc(123L);
+        List<StudyPlan> orderedPlans = studyPlanRepository.findByUserIdOrderByCreateDateDesc(123L);
 
         // Then
         assertEquals(2, orderedPlans.size());
-        // Most recently modified should be first
-        assertTrue(orderedPlans.get(0).getLastModified().isAfter(orderedPlans.get(1).getLastModified()) ||
-                   orderedPlans.get(0).getLastModified().equals(orderedPlans.get(1).getLastModified()));
+        // Most recently created should be first
+        assertTrue(orderedPlans.get(0).getCreateDate().isAfter(orderedPlans.get(1).getCreateDate()) ||
+                   orderedPlans.get(0).getCreateDate().equals(orderedPlans.get(1).getCreateDate()));
     }
 
     @Test

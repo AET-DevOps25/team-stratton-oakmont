@@ -1,6 +1,7 @@
 package com.stratton_oakmont.study_planer.client;
 
 import com.stratton_oakmont.study_planer.dto.StudyProgramDto;
+import com.stratton_oakmont.study_planer.dto.ModuleDetailsDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -76,6 +77,23 @@ public class ProgramCatalogClient {
             return response.getBody();
         } catch (Exception e) {
             throw new RuntimeException("Failed to search study programs from program-catalog-service", e);
+        }
+    }
+    
+    public Optional<ModuleDetailsDto> getModuleDetails(String moduleId) {
+        try {
+            String url = programCatalogServiceUrl + "/api/v1/modules/module/" + moduleId;
+            ResponseEntity<ModuleDetailsDto> response = restTemplate.getForEntity(url, ModuleDetailsDto.class);
+            
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                return Optional.of(response.getBody());
+            } else {
+                return Optional.empty();
+            }
+        } catch (Exception e) {
+            // Log the error but don't throw exception to avoid breaking the flow
+            System.err.println("Failed to fetch module details for " + moduleId + ": " + e.getMessage());
+            return Optional.empty();
         }
     }
 }

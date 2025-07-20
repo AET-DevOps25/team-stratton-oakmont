@@ -1,7 +1,6 @@
 package com.stratton_oakmont.study_planer;
 
 import com.stratton_oakmont.study_planer.model.StudyPlan;
-import com.stratton_oakmont.study_planer.model.StudyProgram;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,41 +22,10 @@ class EntityTest {
     private TestEntityManager entityManager;
 
     @Test
-    void testStudyProgramEntity() {
-        // Given
-        StudyProgram program = new StudyProgram(
-            "M.Sc. Information Systems", 
-            120, 
-            4, 
-            "Master"
-        );
-        program.setDescription("Master's program in Information Systems");
-
-        // When
-        StudyProgram savedProgram = entityManager.persistAndFlush(program);
-
-        // Then
-        assertNotNull(savedProgram.getId());
-        assertEquals("M.Sc. Information Systems", savedProgram.getName());
-        assertEquals(120, savedProgram.getTotalCredits());
-        assertEquals(4, savedProgram.getSemesterDuration());
-        assertEquals("Master", savedProgram.getDegreeType());
-        assertNotNull(savedProgram.getCreatedDate());
-        assertNotNull(savedProgram.getLastModified());
-    }
-
-    @Test
     void testStudyPlanEntity() {
         // Given
-        StudyProgram program = new StudyProgram(
-            "M.Sc. Information Systems", 
-            120, 
-            4, 
-            "Master"
-        );
-        StudyProgram savedProgram = entityManager.persistAndFlush(program);
-
-        StudyPlan plan = new StudyPlan("My Study Plan", 123L, savedProgram);
+        StudyPlan plan = new StudyPlan("My Study Plan", 123L, 1L);
+        plan.setStudyProgramName("M.Sc. Information Systems");
 
         // When
         StudyPlan savedPlan = entityManager.persistAndFlush(plan);
@@ -66,37 +34,27 @@ class EntityTest {
         assertNotNull(savedPlan.getId());
         assertEquals("My Study Plan", savedPlan.getName());
         assertEquals(123L, savedPlan.getUserId());
-        assertEquals(savedProgram.getId(), savedPlan.getStudyProgram().getId());
+        assertEquals(1L, savedPlan.getStudyProgramId());
+        assertEquals("M.Sc. Information Systems", savedPlan.getStudyProgramName());
         assertTrue(savedPlan.getIsActive());
-        assertNotNull(savedPlan.getCreatedDate());
-        assertNotNull(savedPlan.getLastModified());
+        assertNotNull(savedPlan.getCreateDate());
     }
 
     @Test
-    void testStudyProgramAndStudyPlanRelationship() {
-        // Given
-        StudyProgram program = new StudyProgram(
-            "M.Sc. Information Systems", 
-            120, 
-            4, 
-            "Master"
-        );
-        StudyProgram savedProgram = entityManager.persistAndFlush(program);
-
-        StudyPlan plan1 = new StudyPlan("Plan 1", 123L, savedProgram);
-        StudyPlan plan2 = new StudyPlan("Plan 2", 456L, savedProgram);
-        
-        entityManager.persistAndFlush(plan1);
-        entityManager.persistAndFlush(plan2);
-        
-        // Clear to ensure we're fetching from database
-        entityManager.clear();
+    void testStudyPlanWithoutStudyProgram() {
+        // Given - test a study plan without a study program
+        StudyPlan plan = new StudyPlan("Free Form Plan", 456L);
 
         // When
-        StudyProgram foundProgram = entityManager.find(StudyProgram.class, savedProgram.getId());
+        StudyPlan savedPlan = entityManager.persistAndFlush(plan);
 
         // Then
-        assertNotNull(foundProgram);
-        assertEquals(2, foundProgram.getStudyPlans().size());
+        assertNotNull(savedPlan.getId());
+        assertEquals("Free Form Plan", savedPlan.getName());
+        assertEquals(456L, savedPlan.getUserId());
+        assertNull(savedPlan.getStudyProgramId());
+        assertNull(savedPlan.getStudyProgramName());
+        assertTrue(savedPlan.getIsActive());
+        assertNotNull(savedPlan.getCreateDate());
     }
 }

@@ -12,13 +12,8 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import {
-  createStudyPlan,
-  StudyPlanApiError,
-} from "../../api/studyPlans";
-import type {
-  CreateStudyPlanRequest,
-} from "../../api/studyPlans";
+import { createStudyPlan, StudyPlanApiError } from "../../api/studyPlans";
+import type { CreateStudyPlanRequest } from "../../api/studyPlans";
 import { useStudyPlans } from "../../contexts/StudyPlansContext";
 import StudyProgramSelectionDialog from "../../components/ui/StudyProgramSelectionDialog";
 import {
@@ -57,7 +52,10 @@ const LandingPage: React.FC = () => {
   }, []);
 
   // Create new study plan from our dialog
-  const handleCreateStudyPlan = async (studyPlanName: string, program: { id: string; name: string; degree: string; }) => {
+  const handleCreateStudyPlan = async (
+    studyPlanName: string,
+    program: { id: string; name: string; degree: string }
+  ) => {
     try {
       // Map from our dialog's string id to API's expected format
       // For now, we'll use a mapping based on the program name until we integrate with real API
@@ -77,6 +75,7 @@ const LandingPage: React.FC = () => {
       const request: CreateStudyPlanRequest = {
         name: studyPlanName,
         studyProgramId: programIdMapping[program.id] || 1, // fallback to 1
+        studyProgramName: program.name, // Use the study program name (e.g., "Information Systems")
       };
 
       const newPlan = await createStudyPlan(request);

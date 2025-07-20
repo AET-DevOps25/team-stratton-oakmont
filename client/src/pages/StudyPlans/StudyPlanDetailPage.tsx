@@ -28,16 +28,23 @@ import type { DragEndEvent } from "@dnd-kit/core";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import {
   getStudyPlanById,
-  getStudyProgramById,
   StudyPlanApiError,
+  createMultipleCourses,
+  getSemestersByStudyPlan,
+  createSemester,
+  getCoursesBySemester,
+  toggleSemesterCourseCompletion,
+  deleteSemester,
+  deleteSemesterCourse,
 } from "../../api/studyPlans";
-import type { StudyPlanDto, StudyProgramDto } from "../../api/studyPlans";
+import type {
+  StudyPlanDto,
+  StudyProgramDto,
+  SemesterCourseDto,
+} from "../../api/studyPlans";
 import AnalyticsDashboard from "../../components/ui/AnalyticsDashboard";
 import SemesterCard from "../../components/ui/SemesterCard";
-import type {
-  SemesterData,
-  SemesterCourse,
-} from "../../components/ui/SemesterCard";
+import type { SemesterData } from "../../components/ui/SemesterCard";
 import CourseSearchDialog from "../../components/ui/CourseSearchDialog";
 
 interface StudyPlanDetailPageProps {}
@@ -48,9 +55,7 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
 
   // State for the specific study plan
   const [studyPlan, setStudyPlan] = useState<StudyPlanDto | null>(null);
-  const [studyProgram, setStudyProgram] = useState<StudyProgramDto | null>(
-    null
-  );
+  const [studyProgram] = useState<StudyProgramDto | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -84,19 +89,62 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
       const planResponse = await getStudyPlanById(planId);
       setStudyPlan(planResponse);
 
-      // Parse plan data if it exists
-      if (planResponse.planData) {
-        try {
-          const parsedPlanData = JSON.parse(planResponse.planData);
-          if (
-            parsedPlanData.semesters &&
-            Array.isArray(parsedPlanData.semesters)
-          ) {
-            setSemesters(parsedPlanData.semesters);
+      // Load semesters from the new database tables
+      try {
+        const semesterResponse = await getSemestersByStudyPlan(
+          parseInt(planId)
+        );
+
+        // Convert backend format to frontend format
+        const convertedSemesters = semesterResponse.map((semester) => ({
+          id: semester.id!.toString(),
+          name: semester.name,
+          courses: [], // Will be loaded separately if needed
+          expanded: true,
+        }));
+
+        setSemesters(convertedSemesters);
+
+        // Load courses for each semester
+        for (const semester of semesterResponse) {
+          if (semester.id) {
+            try {
+              const coursesResponse = await getCoursesBySemester(semester.id);
+              // Update the semester with its courses
+              setSemesters((prevSemesters) =>
+                prevSemesters.map((s) =>
+                  s.id === semester.id!.toString()
+                    ? {
+                        ...s,
+                        courses: coursesResponse.map(
+                          (course: SemesterCourseDto) => ({
+                            id: course.id?.toString() || course.courseId, // Use database ID as string, fallback to courseId
+                            name: course.courseName || course.courseId,
+                            code: course.courseCode || course.courseId,
+                            credits: course.credits || 0,
+                            semester: "",
+                            professor: course.professor || "",
+                            occurrence: course.occurrence || "",
+                            category: course.category || "",
+                            subcategory: course.subcategory || "",
+                            subSubcategory: "",
+                            completed: course.isCompleted,
+                          })
+                        ),
+                      }
+                    : s
+                )
+              );
+            } catch (courseError) {
+              console.warn(
+                `Could not load courses for semester ${semester.id}:`,
+                courseError
+              );
+            }
           }
-        } catch (parseError) {
-          console.warn("Could not parse plan data:", parseError);
         }
+      } catch (semesterError) {
+        console.warn("Could not load semesters from database:", semesterError);
       }
     } catch (err) {
       console.error("Error fetching study plan:", err);
@@ -159,7 +207,7 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
     }
   };
 
-  const handleAddSemester = () => {
+  const handleAddSemester = async () => {
     const newSemesterName = generateNextSemesterName();
     const newSemester: SemesterData = {
       id: Date.now().toString(),
@@ -167,13 +215,45 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
       courses: [],
       expanded: true,
     };
+
+    // Update local state immediately for better UX
     setSemesters([...semesters, newSemester]);
+
+    // Persist to backend
+    try {
+      if (studyPlan?.id) {
+        const semesterRequest = {
+          name: newSemesterName,
+          studyPlanId: studyPlan.id,
+          semesterOrder: semesters.length + 1,
+          winterOrSummer: newSemesterName.toLowerCase().includes("winter")
+            ? "WINTER"
+            : "SUMMER",
+        };
+
+        const createdSemester = await createSemester(semesterRequest);
+
+        // Update the local semester with the backend ID
+        setSemesters((prevSemesters) =>
+          prevSemesters.map((semester) =>
+            semester.id === newSemester.id
+              ? { ...semester, id: createdSemester.id!.toString() }
+              : semester
+          )
+        );
+
+        console.log(`Successfully created semester: ${newSemesterName}`);
+      }
+    } catch (error) {
+      console.error("Failed to create semester in backend:", error);
+      // You might want to show an error message to the user and revert local state
+    }
   };
 
-  const handleStartingSemesterSelection = (type: "winter" | "summer") => {
+  const handleStartingSemesterSelection = async (type: "winter" | "summer") => {
     const currentYear = new Date().getFullYear();
 
-    const semesters: SemesterData[] = [];
+    const localSemesters: SemesterData[] = [];
 
     for (let i = 0; i < 4; i++) {
       let semesterName: string;
@@ -199,15 +279,67 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
         }
       }
 
-      semesters.push({
-        id: (i + 1).toString(),
+      localSemesters.push({
+        id: (i + 1).toString(), // Temporary ID for UI
         name: semesterName,
         courses: [],
         expanded: true,
       });
     }
 
-    setSemesters(semesters);
+    // Update local state immediately for better UX
+    setSemesters(localSemesters);
+
+    // Persist all semesters to backend
+    if (studyPlan?.id) {
+      try {
+        const createdSemesters: { localId: string; backendId: string }[] = [];
+
+        for (let i = 0; i < localSemesters.length; i++) {
+          const semester = localSemesters[i];
+
+          const semesterRequest = {
+            name: semester.name,
+            studyPlanId: studyPlan.id,
+            semesterOrder: i + 1,
+            winterOrSummer: semester.name.toLowerCase().includes("winter")
+              ? "WINTER"
+              : "SUMMER",
+          };
+
+          try {
+            const createdSemester = await createSemester(semesterRequest);
+            createdSemesters.push({
+              localId: semester.id,
+              backendId: createdSemester.id!.toString(),
+            });
+            console.log(`Successfully created semester: ${semester.name}`);
+          } catch (semesterError) {
+            console.error(
+              `Failed to create semester ${semester.name}:`,
+              semesterError
+            );
+          }
+        }
+
+        // Update local state with backend IDs
+        setSemesters((prevSemesters) =>
+          prevSemesters.map((semester) => {
+            const created = createdSemesters.find(
+              (c) => c.localId === semester.id
+            );
+            return created ? { ...semester, id: created.backendId } : semester;
+          })
+        );
+
+        console.log(
+          `Successfully created ${createdSemesters.length} semesters for ${type} start`
+        );
+      } catch (error) {
+        console.error("Failed to create semesters in backend:", error);
+        // You might want to show an error message to the user
+      }
+    }
   };
 
   const handleCreateSemester = () => {
@@ -224,8 +356,43 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
     }
   };
 
-  const handleRemoveSemester = (semesterId: string) => {
+  const handleRemoveSemester = async (semesterId: string) => {
+    // Find the semester to be removed for potential revert
+    const semesterToRemove = semesters.find((s) => s.id === semesterId);
+
+    if (!semesterToRemove) {
+      console.warn("Semester not found for removal:", semesterId);
+      return;
+    }
+
+    // Update local state immediately for better UX
     setSemesters(semesters.filter((semester) => semester.id !== semesterId));
+
+    // Persist deletion to backend
+    try {
+      const semesterDbId = Number(semesterId);
+      if (semesterDbId && !isNaN(semesterDbId)) {
+        await deleteSemester(semesterDbId);
+        console.log(`Successfully deleted semester with ID: ${semesterId}`);
+      } else {
+        console.warn("Invalid semester ID for deletion:", semesterId);
+      }
+    } catch (error) {
+      console.error("Failed to delete semester from backend:", error);
+
+      // Revert local state if backend call fails - add the semester back at the same position
+      const originalIndex = semesters.findIndex((s) => s.id === semesterId);
+      setSemesters((prevSemesters) => {
+        const newSemesters = [...prevSemesters];
+        newSemesters.splice(
+          originalIndex >= 0 ? originalIndex : newSemesters.length,
+          0,
+          semesterToRemove
+        );
+        return newSemesters;
+      });
+      // You might want to show an error message to the user
+    }
   };
 
   const handleToggleSemesterExpanded = (semesterId: string) => {
@@ -316,67 +483,135 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
     setCourseSearchOpen(true);
   };
 
-  const handleAddCourseToSemester = (course: any) => {
+  const handleAddCourseToSemester = async (course: any) => {
     if (activeSemesterId) {
-      // Convert to SemesterCourse format
-      const semesterCourse = {
-        id: course.id,
-        name: course.name,
-        code: course.code || course.moduleId || "",
-        credits: course.credits,
-        semester: course.semester || "",
-        professor: course.professor || course.responsible || "",
-        occurrence: course.occurrence || "",
-        category: course.category,
-        subcategory: course.subcategory,
-        subSubcategory: course.subSubcategory,
-        completed: false,
-      };
+      try {
+        // Create API request
+        const courseRequest = {
+          semesterId: parseInt(activeSemesterId),
+          courseId: course.code || course.moduleId || course.id.toString(),
+          courseOrder:
+            (semesters.find((s) => s.id === activeSemesterId)?.courses.length ||
+              0) + 1,
+          isCompleted: false,
+        };
 
-      setSemesters(
-        semesters.map((semester) =>
-          semester.id === activeSemesterId
-            ? {
-                ...semester,
-                courses: [...semester.courses, semesterCourse],
-              }
-            : semester
-        )
-      );
+        // Create course in backend first
+        const createdCourse = await createMultipleCourses([courseRequest]);
+
+        if (createdCourse.length > 0) {
+          const backendCourse = createdCourse[0];
+
+          // Convert to frontend format
+          const semesterCourse = {
+            id: backendCourse.id!.toString(), // Use backend database ID
+            name: course.name,
+            code: course.code || course.moduleId || "",
+            credits: course.credits,
+            semester: course.semester || "",
+            professor: course.professor || course.responsible || "",
+            occurrence: course.occurrence || "",
+            category: course.category,
+            subcategory: course.subcategory,
+            subSubcategory: course.subSubcategory,
+            completed: backendCourse.isCompleted,
+          };
+
+          // Update local state with backend data
+          setSemesters(
+            semesters.map((semester) =>
+              semester.id === activeSemesterId
+                ? {
+                    ...semester,
+                    courses: [...semester.courses, semesterCourse],
+                  }
+                : semester
+            )
+          );
+        }
+      } catch (error) {
+        console.error("Failed to add course to backend:", error);
+        // Don't update local state if backend fails
+      }
     }
   };
 
-  const handleAddCoursesToSemester = (courses: any[]) => {
+  const handleAddCoursesToSemester = async (courses: any[]) => {
     if (activeSemesterId) {
-      // Convert each course to SemesterCourse format
-      const semesterCourses = courses.map((course) => ({
-        id: course.id,
-        name: course.name,
-        code: course.code || course.moduleId || "",
-        credits: course.credits,
-        semester: course.semester || "",
-        professor: course.professor || course.responsible || "",
-        occurrence: course.occurrence || "",
-        category: course.category,
-        subcategory: course.subcategory,
-        subSubcategory: course.subSubcategory,
-        completed: false,
-      }));
+      try {
+        // Convert to backend format and create API requests
+        const courseRequests = courses.map((course, index) => ({
+          semesterId: parseInt(activeSemesterId),
+          courseId: course.code || course.moduleId || course.id.toString(),
+          courseOrder:
+            (semesters.find((s) => s.id === activeSemesterId)?.courses.length ||
+              0) +
+            index +
+            1,
+          isCompleted: false,
+        }));
 
-      setSemesters(
-        semesters.map((semester) =>
-          semester.id === activeSemesterId
-            ? {
-                ...semester,
-                courses: [...semester.courses, ...semesterCourses],
-              }
-            : semester
-        )
-      );
+        // Create courses in backend first
+        const createdCourses = await createMultipleCourses(courseRequests);
+
+        // Convert created courses to frontend format
+        const semesterCourses = createdCourses.map((backendCourse) => {
+          // Find the original course data to get name and other details
+          const originalCourse = courses.find(
+            (course) =>
+              (course.code || course.moduleId || course.id.toString()) ===
+              backendCourse.courseId
+          );
+
+          return {
+            id: backendCourse.id!.toString(), // Use backend database ID
+            name: originalCourse?.name || backendCourse.courseId,
+            code: backendCourse.courseId,
+            credits: originalCourse?.credits || 0,
+            semester: "",
+            professor:
+              originalCourse?.professor || originalCourse?.responsible || "",
+            occurrence: originalCourse?.occurrence || "",
+            category: originalCourse?.category || "",
+            subcategory: originalCourse?.subcategory || "",
+            subSubcategory: originalCourse?.subSubcategory || "",
+            completed: backendCourse.isCompleted,
+          };
+        });
+
+        // Update local state with backend data
+        setSemesters(
+          semesters.map((semester) =>
+            semester.id === activeSemesterId
+              ? {
+                  ...semester,
+                  courses: [...semester.courses, ...semesterCourses],
+                }
+              : semester
+          )
+        );
+
+        console.log(
+          `Successfully added ${courses.length} courses to semester ${activeSemesterId}`
+        );
+      } catch (error) {
+        console.error("Failed to persist courses to backend:", error);
+        // Show error to user - don't update local state if backend fails
+      }
     }
   };
 
-  const handleRemoveCourse = (semesterId: string, courseId: string) => {
+  const handleRemoveCourse = async (semesterId: string, courseId: string) => {
+    // Find the course to be removed for potential revert
+    const semester = semesters.find((s) => s.id === semesterId);
+    const courseToRemove = semester?.courses.find((c) => c.id === courseId);
+
+    if (!courseToRemove) {
+      console.warn("Course not found for removal:", courseId);
+      return;
+    }
+
+    // Update local state immediately for better UX
     setSemesters(
       semesters.map((semester) =>
         semester.id === semesterId
@@ -389,12 +624,54 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
           : semester
       )
     );
+
+    // Persist deletion to backend
+    try {
+      const courseDbId = Number(courseId);
+      if (courseDbId && !isNaN(courseDbId)) {
+        await deleteSemesterCourse(courseDbId);
+        console.log(`Successfully deleted course with ID: ${courseId}`);
+      } else {
+        console.warn("Invalid course ID for deletion:", courseId);
+      }
+    } catch (error) {
+      console.error("Failed to delete course from backend:", error);
+
+      // Revert local state if backend call fails
+      setSemesters(
+        semesters.map((semester) =>
+          semester.id === semesterId
+            ? {
+                ...semester,
+                courses: [...semester.courses, courseToRemove], // Add the course back
+              }
+            : semester
+        )
+      );
+      // You might want to show an error message to the user
+    }
   };
 
-  const handleToggleCourseCompleted = (
+  const handleToggleCourseCompleted = async (
     semesterId: string,
     courseId: string
   ) => {
+    // Find the current course to get its database ID
+    const semester = semesters.find((s) => s.id === semesterId);
+    const course = semester?.courses.find((c) => c.id === courseId);
+
+    if (!course) {
+      console.error("Course not found for completion toggle");
+      return;
+    }
+
+    console.log("Course found for completion toggle:", {
+      courseId,
+      databaseId: course.id,
+      course,
+    });
+
+    // Update local state immediately for better UX
     setSemesters(
       semesters.map((semester) =>
         semester.id === semesterId
@@ -409,6 +686,42 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
           : semester
       )
     );
+
+    // Persist to backend
+    try {
+      // The course.id is already the correct database ID, just convert string to number
+      const courseDbId = Number(course.id);
+
+      if (courseDbId && !isNaN(courseDbId)) {
+        await toggleSemesterCourseCompletion(courseDbId);
+        console.log(
+          `Successfully toggled completion for course ${courseId} (DB ID: ${courseDbId})`
+        );
+      } else {
+        console.warn(
+          "Could not determine database ID for course completion toggle:",
+          { courseId: course.id, course }
+        );
+      }
+    } catch (error) {
+      console.error("Failed to persist course completion to backend:", error);
+
+      // Revert local state if backend call fails
+      setSemesters(
+        semesters.map((semester) =>
+          semester.id === semesterId
+            ? {
+                ...semester,
+                courses: semester.courses.map((course) =>
+                  course.id === courseId
+                    ? { ...course, completed: !course.completed } // Revert the change
+                    : course
+                ),
+              }
+            : semester
+        )
+      );
+    }
   };
 
   // Get used course IDs to exclude from search
@@ -504,8 +817,7 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
                 "No Program Assigned"}
             </Typography>
             <Typography variant="body2" sx={{ color: "#666" }}>
-              Last modified:{" "}
-              {new Date(studyPlan.lastModified).toLocaleDateString()}
+              Created: {new Date(studyPlan.createDate).toLocaleDateString()}
             </Typography>
           </Box>
           <Button

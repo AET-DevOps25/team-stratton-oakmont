@@ -1,51 +1,56 @@
 package com.stratton_oakmont.study_planer.service;
 
 import com.stratton_oakmont.study_planer.model.StudyPlan;
-import com.stratton_oakmont.study_planer.exception.StudyPlanNotFoundException;
-import com.stratton_oakmont.study_planer.exception.StudyPlanValidationException;
 import com.stratton_oakmont.study_planer.repository.StudyPlanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
 public class StudyPlanService {
 
     private final StudyPlanRepository studyPlanRepository;
+    private final SemesterService semesterService;
+    private final SemesterCourseService semesterCourseService;
 
     @Autowired
-    public StudyPlanService(StudyPlanRepository studyPlanRepository) {
+    public StudyPlanService(StudyPlanRepository studyPlanRepository, 
+                           SemesterService semesterService,
+                           SemesterCourseService semesterCourseService) {
         this.studyPlanRepository = studyPlanRepository;
+        this.semesterService = semesterService;
+        this.semesterCourseService = semesterCourseService;
     }
 
     // CREATE operations
     public StudyPlan createStudyPlan(StudyPlan studyPlan) {
         validateStudyPlan(studyPlan);
-        studyPlan.setCreatedDate(LocalDateTime.now());
-        studyPlan.setLastModified(LocalDateTime.now());
         return studyPlanRepository.save(studyPlan);
     }
 
     public StudyPlan createStudyPlanForUser(Long userId, Long studyProgramId, String name) {
+        return createStudyPlanForUser(userId, studyProgramId, name, null);
+    }
+
+    public StudyPlan createStudyPlanForUser(Long userId, Long studyProgramId, String name, String studyProgramName) {
         if (userId == null) {
-            throw new StudyPlanValidationException("User ID cannot be null");
+            throw new IllegalArgumentException("User ID cannot be null");
         }
         if (studyProgramId == null) {
-            throw new StudyPlanValidationException("Study program ID cannot be null");
+            throw new IllegalArgumentException("Study program ID cannot be null");
         }
         if (name == null || name.trim().isEmpty()) {
-            throw new StudyPlanValidationException("Study plan name cannot be empty");
+            throw new IllegalArgumentException("Study plan name cannot be empty");
         }
 
         StudyPlan studyPlan = new StudyPlan();
         studyPlan.setName(name.trim());
         studyPlan.setUserId(userId);
         studyPlan.setStudyProgramId(studyProgramId);
+        studyPlan.setStudyProgramName(studyProgramName);
         studyPlan.setIsActive(true);
         
         return createStudyPlan(studyPlan);
@@ -58,7 +63,7 @@ public class StudyPlanService {
 
     public StudyPlan getStudyPlanById(Long id) {
         return studyPlanRepository.findById(id)
-            .orElseThrow(() -> new StudyPlanNotFoundException("Study plan not found with id: " + id));
+            .orElseThrow(() -> new RuntimeException("Study plan not found with id: " + id));
     }
 
     public List<StudyPlan> getStudyPlansByUserId(Long userId) {
@@ -85,17 +90,16 @@ public class StudyPlanService {
         if (updatedPlan.getName() != null) {
             existingPlan.setName(updatedPlan.getName());
         }
-        if (updatedPlan.getPlanData() != null) {
-            existingPlan.setPlanData(updatedPlan.getPlanData());
-        }
         if (updatedPlan.getStudyProgramId() != null) {
             existingPlan.setStudyProgramId(updatedPlan.getStudyProgramId());
+        }
+        if (updatedPlan.getStudyProgramName() != null) {
+            existingPlan.setStudyProgramName(updatedPlan.getStudyProgramName());
         }
         if (updatedPlan.getIsActive() != null) {
             existingPlan.setIsActive(updatedPlan.getIsActive());
         }
         
-        existingPlan.setLastModified(LocalDateTime.now());
         validateStudyPlan(existingPlan);
         
         return studyPlanRepository.save(existingPlan);
@@ -108,7 +112,6 @@ public class StudyPlanService {
     public StudyPlan renameStudyPlan(Long id, String newName) {
         StudyPlan studyPlan = getStudyPlanById(id);
         studyPlan.setName(newName);
-        studyPlan.setLastModified(LocalDateTime.now());
         return studyPlanRepository.save(studyPlan);
     }
 
@@ -118,11 +121,15 @@ public class StudyPlanService {
         StudyPlan duplicatedPlan = new StudyPlan();
         duplicatedPlan.setName(newName);
         duplicatedPlan.setUserId(userId);
-        duplicatedPlan.setPlanData(originalPlan.getPlanData());
         duplicatedPlan.setStudyProgramId(originalPlan.getStudyProgramId());
         duplicatedPlan.setIsActive(true);
         
-        return createStudyPlan(duplicatedPlan);
+        StudyPlan savedPlan = createStudyPlan(duplicatedPlan);
+        
+        // TODO: Duplicate semesters and courses using the new services
+        // This will be implemented as part of the migration
+        
+        return savedPlan;
     }
 
     // DELETE operations
@@ -134,30 +141,29 @@ public class StudyPlanService {
     public void softDeleteStudyPlan(Long id) {
         StudyPlan studyPlan = getStudyPlanById(id);
         studyPlan.setIsActive(false);
-        studyPlan.setLastModified(LocalDateTime.now());
         studyPlanRepository.save(studyPlan);
     }
 
     // VALIDATION
     private void validateStudyPlan(StudyPlan studyPlan) {
         if (studyPlan == null) {
-            throw new StudyPlanValidationException("Study plan cannot be null");
+            throw new IllegalArgumentException("Study plan cannot be null");
         }
         
         if (studyPlan.getName() == null || studyPlan.getName().trim().isEmpty()) {
-            throw new StudyPlanValidationException("Study plan name is required");
+            throw new IllegalArgumentException("Study plan name is required");
         }
         
         if (studyPlan.getName().length() > 200) {
-            throw new StudyPlanValidationException("Study plan name cannot exceed 200 characters");
+            throw new IllegalArgumentException("Study plan name cannot exceed 200 characters");
         }
         
         if (studyPlan.getUserId() == null) {
-            throw new StudyPlanValidationException("User ID is required");
+            throw new IllegalArgumentException("User ID is required");
         }
         
         if (studyPlan.getStudyProgramId() == null) {
-            throw new StudyPlanValidationException("Study program ID is required");
+            throw new IllegalArgumentException("Study program ID is required");
         }
     }
 
@@ -172,13 +178,5 @@ public class StudyPlanService {
 
     public boolean userHasActiveStudyPlans(Long userId) {
         return studyPlanRepository.existsByUserIdAndIsActiveTrue(userId);
-    }
-
-    public List<StudyPlan> getRecentStudyPlans(Long userId, LocalDateTime since) {
-        return studyPlanRepository.findByUserIdAndCreatedDateAfter(userId, since);
-    }
-
-    public List<StudyPlan> getStudyPlansByUserOrderByModified(Long userId) {
-        return studyPlanRepository.findByUserIdOrderByLastModifiedDesc(userId);
     }
 }
