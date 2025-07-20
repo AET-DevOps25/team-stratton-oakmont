@@ -157,26 +157,27 @@ export const createStudyPlan = async (
 
 // API service function to get a study plan by ID
 export const getStudyPlanById = async (id: string): Promise<StudyPlanDto> => {
-  console.log("getStudyPlanById called with ID:", id);
+  try {
+    console.log("getStudyPlanById called with ID:", id);
 
-  const token = localStorage.getItem("jwtToken");
+    const token = localStorage.getItem("jwtToken");
 
-  if (!token) {
-    console.error("No JWT token found in localStorage");
-    throw new StudyPlanApiError(
-      401,
-      "UNAUTHORIZED",
-      "No authentication token found"
-    );
-  }
+    if (!token) {
+      console.error("No JWT token found in localStorage");
+      throw new StudyPlanApiError(
+        401,
+        "UNAUTHORIZED",
+        "No authentication token found"
+      );
+    }
 
-  const response = await fetch(`${STUDY_PLAN_API_URL}/${id}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
+    const response = await fetch(`${STUDY_PLAN_API_URL}/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     const data = await response.json();
     console.log("API response data:", data);
