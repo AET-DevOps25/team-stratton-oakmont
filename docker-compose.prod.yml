@@ -70,27 +70,6 @@ services:
       - stratton-oakmont-network
     restart: unless-stopped
 
-  # LLM Inference Service (Python)
-  llm-inference-service:
-    build:
-      context: ./server/llm-inference-service
-    container_name: llm-inference-service
-    ports:
-      - "8084:8084"
-    env_file:
-      - .env
-    environment:
-      - ENV=production
-      # Connect to Kubernetes Weaviate via port-forward or external access
-      - WEAVIATE_URL=${WEAVIATE_URL:-http://host.docker.internal:8000}
-      - WEAVIATE_GRPC_URL=${WEAVIATE_GRPC_URL:-http://host.docker.internal:50051}
-      # Uses AWS RDS databases from environment variables
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    networks:
-      - stratton-oakmont-network
-    restart: unless-stopped
-
   # Client (React Frontend)
   client:
     build:
