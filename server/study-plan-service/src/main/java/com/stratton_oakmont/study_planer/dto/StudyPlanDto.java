@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class StudyPlanDto {
     
@@ -22,13 +23,11 @@ public class StudyPlanDto {
     
     private String studyProgramName;
     
-    private String planData;
+    private List<SemesterDto> semesters;
     
     private Boolean isActive;
     
-    private LocalDateTime createdDate;
-    
-    private LocalDateTime lastModified;
+    private LocalDateTime createDate;
 
     // Constructors
     public StudyPlanDto() {}
@@ -56,15 +55,12 @@ public class StudyPlanDto {
     public String getStudyProgramName() { return studyProgramName; }
     public void setStudyProgramName(String studyProgramName) { this.studyProgramName = studyProgramName; }
 
-    public String getPlanData() { return planData; }
-    public void setPlanData(String planData) { this.planData = planData; }
+    public List<SemesterDto> getSemesters() { return semesters; }
+    public void setSemesters(List<SemesterDto> semesters) { this.semesters = semesters; }
 
     public Boolean getIsActive() { return isActive; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }
 
-    public LocalDateTime getCreatedDate() { return createdDate; }
-    public void setCreatedDate(LocalDateTime createdDate) { this.createdDate = createdDate; }
-
-    public LocalDateTime getLastModified() { return lastModified; }
-    public void setLastModified(LocalDateTime lastModified) { this.lastModified = lastModified; }
+    public LocalDateTime getCreateDate() { return createDate; }
+    public void setCreateDate(LocalDateTime createDate) { this.createDate = createDate; }
 }

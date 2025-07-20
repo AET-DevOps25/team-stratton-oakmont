@@ -8,15 +8,12 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface StudyPlanRepository extends JpaRepository<StudyPlan, Long> {
     
     // Find all study plans for a specific user
     List<StudyPlan> findByUserId(Long userId);
-
-    List<StudyPlan> findByUserIdOrderByCreatedDateDesc(Long userId);
     
     // Find active study plans for a user
     List<StudyPlan> findByUserIdAndIsActiveTrue(Long userId);
@@ -31,16 +28,6 @@ public interface StudyPlanRepository extends JpaRepository<StudyPlan, Long> {
     @Query("SELECT sp FROM StudyPlan sp WHERE LOWER(sp.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<StudyPlan> findByNameContainingIgnoreCase(@Param("keyword") String keyword);
     
-    // Find study plans created after a specific date
-    List<StudyPlan> findByCreatedDateAfter(LocalDateTime date);
-    
-    // Find study plans modified after a specific date
-    List<StudyPlan> findByLastModifiedAfter(LocalDateTime date);
-    
-    // Custom query to find user's most recently modified study plan
-    @Query("SELECT sp FROM StudyPlan sp WHERE sp.userId = :userId ORDER BY sp.lastModified DESC")
-    List<StudyPlan> findByUserIdOrderByLastModifiedDesc(@Param("userId") Long userId);
-    
     // Count total active study plans for a user
     long countByUserIdAndIsActiveTrue(Long userId);
     
@@ -53,6 +40,9 @@ public interface StudyPlanRepository extends JpaRepository<StudyPlan, Long> {
     // Check if user has any active study plans
     boolean existsByUserIdAndIsActiveTrue(Long userId);
     
-    // Find study plans created after a specific date for a user
-    List<StudyPlan> findByUserIdAndCreatedDateAfter(Long userId, LocalDateTime date);
+    // Find study plans created after a specific date
+    List<StudyPlan> findByCreateDateAfter(LocalDateTime date);
+    
+    // Find study plans by user ordered by creation date (newest first)
+    List<StudyPlan> findByUserIdOrderByCreateDateDesc(Long userId);
 }

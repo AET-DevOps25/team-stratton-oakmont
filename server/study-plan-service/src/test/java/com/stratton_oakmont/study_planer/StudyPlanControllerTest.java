@@ -1,11 +1,9 @@
-package com.stratton_oakmont.study_planer.controller;
+package com.stratton_oakmont.study_planer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stratton_oakmont.study_planer.controller.StudyPlanController;
 import com.stratton_oakmont.study_planer.dto.CreateStudyPlanRequest;
 import com.stratton_oakmont.study_planer.model.StudyPlan;
-import com.stratton_oakmont.study_planer.model.StudyProgram;
 import com.stratton_oakmont.study_planer.service.StudyPlanService;
-import com.stratton_oakmont.study_planer.service.StudyProgramService;
 import com.stratton_oakmont.study_planer.util.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,9 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,16 +27,12 @@ class StudyPlanControllerTest {
     private StudyPlanService studyPlanService;
 
     @Mock
-    private StudyProgramService studyProgramService;
-
-    @Mock
     private JwtUtil jwtUtil;
 
     @InjectMocks  // This will inject the mocks into the controller
     private StudyPlanController studyPlanController;
 
     private StudyPlan testStudyPlan;
-    private StudyProgram testStudyProgram;
     private CreateStudyPlanRequest createRequest;
     private String validToken;
     private String authHeader;
@@ -49,18 +40,13 @@ class StudyPlanControllerTest {
     @BeforeEach
     void setUp() {
         // Setup test data
-        testStudyProgram = new StudyProgram("M.Sc. Information Systems", 120, 4, "Master");
-        testStudyProgram.setId(1L);
-
-        testStudyPlan = new StudyPlan("My Study Plan", 123L, testStudyProgram);
+        testStudyPlan = new StudyPlan("My Study Plan", 123L, 1L);
         testStudyPlan.setId(9L);
-        testStudyPlan.setCreatedDate(LocalDateTime.now());
-        testStudyPlan.setLastModified(LocalDateTime.now());
+        testStudyPlan.setStudyProgramName("M.Sc. Information Systems");
 
         createRequest = new CreateStudyPlanRequest();
         createRequest.setName("New Study Plan");
         createRequest.setStudyProgramId(1L);
-        createRequest.setPlanData("{}");
 
         validToken = "valid.jwt.token";
         authHeader = "Bearer " + validToken;
@@ -150,7 +136,7 @@ class StudyPlanControllerTest {
         when(jwtUtil.isTokenValid(validToken)).thenReturn(false);
 
         // When
-        ResponseEntity<?> response = studyPlanController.createStudyPlan(createRequest, authHeader);
+        ResponseEntity<?> response = studyPlanController.createStudyPlan(createRequest);
 
         // Then
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
@@ -163,7 +149,7 @@ class StudyPlanControllerTest {
         when(jwtUtil.extractTokenFromHeader(null)).thenReturn(null);
 
         // When
-        ResponseEntity<?> response = studyPlanController.createStudyPlan(createRequest, null);
+        ResponseEntity<?> response = studyPlanController.createStudyPlan(createRequest);
 
         // Then
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
@@ -197,7 +183,7 @@ class StudyPlanControllerTest {
         when(studyPlanService.getStudyPlanById(1L)).thenReturn(testStudyPlan);
 
         // When
-        ResponseEntity<?> response = studyPlanController.getStudyPlanById(1L, authHeader);
+        ResponseEntity<?> response = studyPlanController.getStudyPlanById(1L);
 
         // Then
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -210,12 +196,13 @@ class StudyPlanControllerTest {
         when(jwtUtil.isTokenValid(validToken)).thenReturn(true);
         when(jwtUtil.extractUserIdFromToken(validToken)).thenReturn(123L);
 
-        StudyPlan otherUserPlan = new StudyPlan("Other Plan", 456L, testStudyProgram);
+        StudyPlan otherUserPlan = new StudyPlan("Other Plan", 456L, 2L);
+        otherUserPlan.setStudyProgramName("B.Sc. Computer Science");
         otherUserPlan.setId(2L);
         when(studyPlanService.getStudyPlanById(2L)).thenReturn(otherUserPlan);
 
         // When
-        ResponseEntity<?> response = studyPlanController.getStudyPlanById(2L, authHeader);
+        ResponseEntity<?> response = studyPlanController.getStudyPlanById(2L);
 
         // Then
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
@@ -253,7 +240,7 @@ class StudyPlanControllerTest {
         when(studyPlanService.getStudyPlanById(1L)).thenReturn(testStudyPlan);
 
         // When
-        ResponseEntity<?> response = studyPlanController.deleteStudyPlan(1L, authHeader);
+        ResponseEntity<?> response = studyPlanController.deleteStudyPlan(1L);
 
         // Then
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -272,7 +259,7 @@ class StudyPlanControllerTest {
         when(studyPlanService.updateStudyPlan(eq(1L), any(StudyPlan.class))).thenReturn(testStudyPlan);
 
         // When
-        ResponseEntity<?> response = studyPlanController.renameStudyPlan(1L, renameRequest, authHeader);
+        ResponseEntity<?> response = studyPlanController.renameStudyPlan(1L, renameRequest);
 
         // Then
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -291,7 +278,7 @@ class StudyPlanControllerTest {
         // You might need to handle validation differently in direct controller testing
 
         // When
-        ResponseEntity<?> response = studyPlanController.createStudyPlan(invalidRequest, authHeader);
+        ResponseEntity<?> response = studyPlanController.createStudyPlan(invalidRequest);
 
         // Then
         // This might need adjustment based on how your controller handles validation
