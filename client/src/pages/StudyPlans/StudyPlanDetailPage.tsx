@@ -248,10 +248,10 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
     }
   };
 
-  const handleStartingSemesterSelection = (type: "winter" | "summer") => {
+  const handleStartingSemesterSelection = async (type: "winter" | "summer") => {
     const currentYear = new Date().getFullYear();
 
-    const semesters: SemesterData[] = [];
+    const localSemesters: SemesterData[] = [];
 
     for (let i = 0; i < 4; i++) {
       let semesterName: string;
@@ -277,15 +277,62 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
         }
       }
 
-      semesters.push({
-        id: (i + 1).toString(),
+      localSemesters.push({
+        id: (i + 1).toString(), // Temporary ID for UI
         name: semesterName,
         courses: [],
         expanded: true,
       });
     }
 
-    setSemesters(semesters);
+    // Update local state immediately for better UX
+    setSemesters(localSemesters);
+
+    // Persist all semesters to backend
+    if (studyPlan?.id) {
+      try {
+        const createdSemesters: { localId: string; backendId: string }[] = [];
+
+        for (let i = 0; i < localSemesters.length; i++) {
+          const semester = localSemesters[i];
+          
+          const semesterRequest = {
+            name: semester.name,
+            studyPlanId: studyPlan.id,
+            semesterOrder: i + 1,
+            winterOrSummer: semester.name.toLowerCase().includes("winter")
+              ? "WINTER"
+              : "SUMMER",
+          };
+
+          try {
+            const createdSemester = await createSemester(semesterRequest);
+            createdSemesters.push({
+              localId: semester.id,
+              backendId: createdSemester.id!.toString(),
+            });
+            console.log(`Successfully created semester: ${semester.name}`);
+          } catch (semesterError) {
+            console.error(`Failed to create semester ${semester.name}:`, semesterError);
+          }
+        }
+
+        // Update local state with backend IDs
+        setSemesters((prevSemesters) =>
+          prevSemesters.map((semester) => {
+            const created = createdSemesters.find(c => c.localId === semester.id);
+            return created 
+              ? { ...semester, id: created.backendId }
+              : semester;
+          })
+        );
+
+        console.log(`Successfully created ${createdSemesters.length} semesters for ${type} start`);
+      } catch (error) {
+        console.error("Failed to create semesters in backend:", error);
+        // You might want to show an error message to the user
+      }
+    }
   };
 
   const handleCreateSemester = () => {
