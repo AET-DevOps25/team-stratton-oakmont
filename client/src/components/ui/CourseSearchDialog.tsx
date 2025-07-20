@@ -23,17 +23,20 @@ import {
 } from "@mui/material";
 import { Search, Close, Info } from "@mui/icons-material";
 import { CourseDetailsDialog } from "./CourseDetailsDialog";
+import { moduleDetailsAPI } from "../../api/moduleDetails";
 
-// Course interface matching CurriculumPage
+// Course interface that can handle both simple Course and ModuleDetails
 interface Course {
   id: string;
   name: string;
-  code: string;
+  code?: string;
+  moduleId?: string; // For ModuleDetails
   credits: number;
-  semester: string;
+  semester?: string;
   language: string;
-  professor: string;
-  occurrence: string;
+  professor?: string;
+  responsible?: string; // For ModuleDetails
+  occurrence?: string;
   description?: string;
   prerequisites?: string[];
   category: string;
@@ -42,6 +45,21 @@ interface Course {
   completed?: boolean;
   learningMethods?: string;
   assessment?: string;
+  // ModuleDetails specific fields
+  organisation?: string;
+  moduleLevel?: string;
+  totalHours?: number;
+  contactHours?: number;
+  selfStudyHours?: number;
+  descriptionOfAchievementAndAssessmentMethods?: string;
+  examRetakeNextSemester?: string;
+  examRetakeAtTheEndOfSemester?: string;
+  prerequisitesRecommended?: string;
+  intendedLearningOutcomes?: string;
+  content?: string;
+  teachingAndLearningMethods?: string;
+  media?: string;
+  readingList?: string;
 }
 
 interface CourseSearchDialogProps {
@@ -61,6 +79,7 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
   title = "Add Course",
   excludeIds = [],
 }) => {
+  const STUDY_PROGRAM_ID = 121; // M.Sc. Information Systems
   const [courses, setCourses] = useState<Course[]>([]);
   const [filteredCourses, setFilteredCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -70,205 +89,36 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [courseDetailsOpen, setCourseDetailsOpen] = useState(false);
-  const [selectedCourses, setSelectedCourses] = useState<Set<string>>(new Set());
+  const [selectedCourses, setSelectedCourses] = useState<Set<string>>(
+    new Set()
+  );
+  const [categories, setCategories] = useState<string[]>([]);
   const multiSelectMode = true; // Always use multi-select mode
-
-  // Mock data - same as CurriculumPage
-  const mockCourses: Course[] = [
-    // Master Thesis
-    {
-      id: "mt1",
-      name: "Master's Thesis in Information Systems",
-      code: "IN2982",
-      credits: 30,
-      semester: "Any",
-      language: "English",
-      professor: "Various",
-      occurrence: "Winter/Summer",
-      description: "Independent research project culminating in a master's thesis",
-      category: "Master Thesis",
-    },
-    // Mandatory Courses
-    {
-      id: "m1",
-      name: "Advanced Programming",
-      code: "IN0002",
-      credits: 6,
-      semester: "Winter",
-      language: "English",
-      professor: "Pretschner",
-      occurrence: "Winter",
-      description: "Advanced programming concepts and software engineering practices",
-      prerequisites: ["Programming Fundamentals"],
-      category: "Mandatory Courses",
-      learningMethods: "Lectures, hands-on programming exercises, group projects, code reviews",
-      assessment: "Written exam (60%), programming assignments (30%), participation (10%)",
-    },
-    {
-      id: "m2",
-      name: "Database Systems",
-      code: "IN0007",
-      credits: 6,
-      semester: "Summer",
-      language: "English",
-      professor: "Kemper",
-      occurrence: "Winter/Summer",
-      description: "Design and implementation of database systems",
-      prerequisites: ["Data Structures"],
-      category: "Mandatory Courses",
-    },
-    {
-      id: "m3",
-      name: "Information Systems Architecture",
-      code: "IN0015",
-      credits: 9,
-      semester: "Winter",
-      language: "English",
-      professor: "Krcmar",
-      occurrence: "Winter",
-      description: "Enterprise architecture and information systems design",
-      category: "Mandatory Courses",
-    },
-    // Practical Courses
-    {
-      id: "p1",
-      name: "Software Engineering Lab",
-      code: "IN0012",
-      credits: 5,
-      semester: "Summer",
-      language: "English",
-      professor: "Pretschner",
-      occurrence: "Summer",
-      description: "Hands-on software development project",
-      category: "Practical Courses",
-    },
-    {
-      id: "p2",
-      name: "Industry Internship",
-      code: "IN0019",
-      credits: 5,
-      semester: "Any",
-      language: "English",
-      professor: "Various",
-      occurrence: "Winter/Summer",
-      description: "Professional internship in industry",
-      category: "Practical Courses",
-    },
-    // Cross-Disciplinary Electives
-    {
-      id: "se1",
-      name: "Advanced Software Engineering",
-      code: "IN0006",
-      credits: 6,
-      semester: "Winter",
-      language: "English",
-      professor: "Pretschner",
-      occurrence: "Winter",
-      description: "Modern software engineering methodologies and practices",
-      category: "Cross-Disciplinary Electives",
-      subcategory: "Core Computer Science",
-      subSubcategory: "Software Engineering",
-    },
-    {
-      id: "se2",
-      name: "Software Testing and Quality Assurance",
-      code: "IN0013",
-      credits: 6,
-      semester: "Summer",
-      language: "English",
-      professor: "Pretschner",
-      occurrence: "Summer",
-      description: "Comprehensive testing strategies and quality management",
-      category: "Cross-Disciplinary Electives",
-      subcategory: "Core Computer Science",
-      subSubcategory: "Software Engineering",
-    },
-    {
-      id: "ml1",
-      name: "Introduction to Machine Learning",
-      code: "IN2064",
-      credits: 6,
-      semester: "Winter",
-      language: "English",
-      professor: "Dai",
-      occurrence: "Winter/Summer",
-      description: "Fundamental machine learning algorithms and applications",
-      prerequisites: ["Linear Algebra", "Statistics"],
-      category: "Cross-Disciplinary Electives",
-      subcategory: "Data & Intelligence",
-      subSubcategory: "Machine Learning and Data Analysis",
-      learningMethods: "Interactive lectures, Python programming labs, data analysis projects, algorithmic challenges",
-      assessment: "Midterm exam (40%), final project (40%), weekly assignments (20%)",
-    },
-    {
-      id: "ml2",
-      name: "Deep Learning",
-      code: "IN2346",
-      credits: 6,
-      semester: "Summer",
-      language: "English",
-      professor: "Dai",
-      occurrence: "Summer",
-      description: "Neural networks and deep learning architectures",
-      prerequisites: ["Machine Learning"],
-      category: "Cross-Disciplinary Electives",
-      subcategory: "Data & Intelligence",
-      subSubcategory: "Machine Learning and Data Analysis",
-    },
-    {
-      id: "mgmt1",
-      name: "IT Project Management",
-      code: "WI000123",
-      credits: 6,
-      semester: "Winter",
-      language: "English",
-      professor: "Krcmar",
-      occurrence: "Winter",
-      description: "Managing information technology projects",
-      category: "Cross-Disciplinary Electives",
-      subcategory: "Human & Systems Interaction",
-      subSubcategory: "Management",
-    },
-    {
-      id: "cg1",
-      name: "Computer Graphics",
-      code: "IN2097",
-      credits: 6,
-      semester: "Winter",
-      language: "English",
-      professor: "Westermann",
-      occurrence: "Winter",
-      description: "Fundamentals of computer graphics and visualization",
-      category: "Cross-Disciplinary Electives",
-      subcategory: "Specialized Domains",
-      subSubcategory: "Computer Graphics and Vision",
-    },
-    {
-      id: "if1",
-      name: "Ethics in Information Technology",
-      code: "IN0014",
-      credits: 3,
-      semester: "Summer",
-      language: "English",
-      professor: "Broy",
-      occurrence: "Summer",
-      description: "Ethical considerations in IT development and deployment",
-      category: "Elective Modules in Interdisciplinary Fundamentals",
-    },
-  ];
-
-  // Get unique categories from mock courses
-  const uniqueCategories = Array.from(new Set(mockCourses.map(course => course.category)));
 
   const fetchCourses = async () => {
     try {
       setLoading(true);
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      setCourses(mockCourses);
-      setFilteredCourses(mockCourses);
+
+      // Fetch modules and categories in parallel
+      const [moduleDetails, distinctCategories] = await Promise.all([
+        moduleDetailsAPI.getModulesByStudyProgram(STUDY_PROGRAM_ID),
+        moduleDetailsAPI.getDistinctCategories(STUDY_PROGRAM_ID),
+      ]);
+
+      // Convert ModuleDetails to Course format
+      const convertedCourses = moduleDetails.map((module) =>
+        moduleDetailsAPI.convertModuleDetailsToCourse(module)
+      );
+
+      setCourses(convertedCourses);
+      setFilteredCourses(convertedCourses);
+      setCategories(distinctCategories);
     } catch (error) {
       console.error("Error fetching courses:", error);
+      // Fallback to empty arrays on error
+      setCourses([]);
+      setFilteredCourses([]);
+      setCategories([]);
     } finally {
       setLoading(false);
     }
@@ -288,16 +138,28 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
       filtered = filtered.filter(
         (course) =>
           course.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          course.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          course.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          course.professor.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (course.code &&
+            course.code.toLowerCase().includes(searchQuery.toLowerCase())) ||
+          course.description
+            ?.toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          (course.professor &&
+            course.professor
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())) ||
+          (course.responsible &&
+            course.responsible
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())) ||
           course.category.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
     // Apply category filter
     if (selectedCategories.length > 0) {
-      filtered = filtered.filter((course) => selectedCategories.includes(course.category));
+      filtered = filtered.filter((course) =>
+        selectedCategories.includes(course.category)
+      );
     }
 
     setFilteredCourses(filtered);
@@ -330,12 +192,16 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
     switch (category) {
       case "Master Thesis":
         return "#9c27b0";
+      case "Mandatory":
       case "Mandatory Courses":
         return "#f44336";
+      case "Practical":
       case "Practical Courses":
         return "#ff9800";
+      case "Electives":
       case "Cross-Disciplinary Electives":
         return "#646cff";
+      case "Interdisciplinary":
       case "Elective Modules in Interdisciplinary Fundamentals":
         return "#4caf50";
       default:
@@ -344,9 +210,9 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
   };
 
   const handleCategoryToggle = (category: string) => {
-    setSelectedCategories(prev => 
+    setSelectedCategories((prev) =>
       prev.includes(category)
-        ? prev.filter(c => c !== category)
+        ? prev.filter((c) => c !== category)
         : [...prev, category]
     );
   };
@@ -355,12 +221,16 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
     switch (category) {
       case "Master Thesis":
         return "Master Thesis";
+      case "Mandatory":
       case "Mandatory Courses":
         return "Mandatory";
+      case "Practical":
       case "Practical Courses":
         return "Practical";
+      case "Electives":
       case "Cross-Disciplinary Electives":
         return "Electives";
+      case "Interdisciplinary":
       case "Elective Modules in Interdisciplinary Fundamentals":
         return "Interdisciplinary";
       default:
@@ -387,7 +257,9 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
 
   const handleAddSelectedCourses = () => {
     if (onAddCourses && selectedCourses.size > 0) {
-      const coursesToAdd = courses.filter(course => selectedCourses.has(course.id));
+      const coursesToAdd = courses.filter((course) =>
+        selectedCourses.has(course.id)
+      );
       onAddCourses(coursesToAdd);
     }
     handleClose();
@@ -396,17 +268,70 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
   const handleCourseRowClick = (course: Course, event: React.MouseEvent) => {
     // Check if the click was on a button or checkbox
     const target = event.target as HTMLElement;
-    if (target.closest('button') || target.closest('[role="checkbox"]')) {
+    if (target.closest("button") || target.closest('[role="checkbox"]')) {
       return; // Don't handle row click if button/checkbox was clicked
     }
-    
+
     // In multi-select mode (which is always on), only handle adding to selection
     handleAddCourse(course);
   };
 
-  const handleCourseClick = (course: Course) => {
-    setSelectedCourse(course);
-    setCourseDetailsOpen(true);
+  const handleCourseClick = async (course: Course) => {
+    try {
+      // Fetch full module details using the moduleId or code
+      const moduleId = course.code || course.id;
+      const moduleDetails = await moduleDetailsAPI.getModuleDetailsByModuleId(
+        moduleId
+      );
+
+      if (moduleDetails) {
+        // Create a rich Course object with all ModuleDetails data preserved
+        const enrichedCourse: Course = {
+          id: moduleDetails.id.toString(),
+          name: moduleDetails.name,
+          code: moduleDetails.moduleId,
+          moduleId: moduleDetails.moduleId,
+          credits: moduleDetails.credits,
+          semester: course.semester, // Keep the extracted semester
+          language: moduleDetails.language,
+          professor: moduleDetails.responsible,
+          responsible: moduleDetails.responsible,
+          occurrence: moduleDetails.occurrence,
+          description:
+            moduleDetails.intendedLearningOutcomes || moduleDetails.content,
+          category: moduleDetails.category,
+          subcategory: moduleDetails.subcategory,
+          // Add all the rich ModuleDetails fields
+          organisation: moduleDetails.organisation,
+          moduleLevel: moduleDetails.moduleLevel,
+          totalHours: moduleDetails.totalHours,
+          contactHours: moduleDetails.contactHours,
+          selfStudyHours: moduleDetails.selfStudyHours,
+          descriptionOfAchievementAndAssessmentMethods:
+            moduleDetails.descriptionOfAchievementAndAssessmentMethods,
+          examRetakeNextSemester: moduleDetails.examRetakeNextSemester,
+          examRetakeAtTheEndOfSemester:
+            moduleDetails.examRetakeAtTheEndOfSemester,
+          prerequisitesRecommended: moduleDetails.prerequisitesRecommended,
+          intendedLearningOutcomes: moduleDetails.intendedLearningOutcomes,
+          content: moduleDetails.content,
+          teachingAndLearningMethods: moduleDetails.teachingAndLearningMethods,
+          media: moduleDetails.media,
+          readingList: moduleDetails.readingList,
+        };
+        setSelectedCourse(enrichedCourse);
+      } else {
+        // Fallback to the existing course data if module details not found
+        setSelectedCourse(course);
+      }
+
+      setCourseDetailsOpen(true);
+    } catch (error) {
+      console.error("Error fetching module details:", error);
+      // Fallback to existing course data on error
+      setSelectedCourse(course);
+      setCourseDetailsOpen(true);
+    }
   };
 
   const handleCloseDetails = () => {
@@ -486,44 +411,34 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
 
           {/* Category Filter Chips */}
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-            <Typography variant="body2" sx={{ color: "#aaa", mr: 1, alignSelf: "center" }}>
+            <Typography
+              variant="body2"
+              sx={{ color: "#aaa", mr: 1, alignSelf: "center" }}
+            >
               Filter by category:
             </Typography>
-            {uniqueCategories.map((category) => (
+            {categories.map((category) => (
               <Chip
                 key={category}
                 label={getCategoryDisplayName(category)}
                 onClick={() => handleCategoryToggle(category)}
                 sx={{
-                  backgroundColor: selectedCategories.includes(category) 
-                    ? getCategoryColor(category) 
+                  backgroundColor: selectedCategories.includes(category)
+                    ? "#646cff"
                     : "#555",
                   color: "white",
-                  border: selectedCategories.includes(category) 
-                    ? `2px solid ${getCategoryColor(category)}` 
+                  border: selectedCategories.includes(category)
+                    ? "2px solid #646cff"
                     : "2px solid transparent",
                   "&:hover": {
                     backgroundColor: selectedCategories.includes(category)
-                      ? getCategoryColor(category)
+                      ? "#5a5acf"
                       : "#666",
                   },
                   transition: "all 0.2s ease",
                 }}
               />
             ))}
-            {selectedCategories.length > 0 && (
-              <Chip
-                label="Clear Filters"
-                onClick={() => setSelectedCategories([])}
-                sx={{
-                  backgroundColor: "#f44336",
-                  color: "white",
-                  "&:hover": {
-                    backgroundColor: "#d32f2f",
-                  },
-                }}
-              />
-            )}
           </Box>
         </Box>
 
@@ -544,10 +459,23 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
             <Table stickyHeader>
               <TableHead>
                 <TableRow sx={{ backgroundColor: "#333" }}>
-                  <TableCell sx={{ color: "white", fontWeight: "bold", backgroundColor: "#333", width: "50px" }}>
+                  <TableCell
+                    sx={{
+                      color: "white",
+                      fontWeight: "bold",
+                      backgroundColor: "#333",
+                      width: "50px",
+                    }}
+                  >
                     Select
                   </TableCell>
-                  <TableCell sx={{ color: "white", fontWeight: "bold", backgroundColor: "#333" }}>
+                  <TableCell
+                    sx={{
+                      color: "white",
+                      fontWeight: "bold",
+                      backgroundColor: "#333",
+                    }}
+                  >
                     <TableSortLabel
                       active={orderBy === "name"}
                       direction={orderBy === "name" ? order : "asc"}
@@ -557,7 +485,13 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
                       Name
                     </TableSortLabel>
                   </TableCell>
-                  <TableCell sx={{ color: "white", fontWeight: "bold", backgroundColor: "#333" }}>
+                  <TableCell
+                    sx={{
+                      color: "white",
+                      fontWeight: "bold",
+                      backgroundColor: "#333",
+                    }}
+                  >
                     <TableSortLabel
                       active={orderBy === "code"}
                       direction={orderBy === "code" ? order : "asc"}
@@ -567,7 +501,13 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
                       ID
                     </TableSortLabel>
                   </TableCell>
-                  <TableCell sx={{ color: "white", fontWeight: "bold", backgroundColor: "#333" }}>
+                  <TableCell
+                    sx={{
+                      color: "white",
+                      fontWeight: "bold",
+                      backgroundColor: "#333",
+                    }}
+                  >
                     <TableSortLabel
                       active={orderBy === "credits"}
                       direction={orderBy === "credits" ? order : "asc"}
@@ -577,13 +517,32 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
                       ECTS
                     </TableSortLabel>
                   </TableCell>
-                  <TableCell sx={{ color: "white", fontWeight: "bold", backgroundColor: "#333" }}>
+                  <TableCell
+                    sx={{
+                      color: "white",
+                      fontWeight: "bold",
+                      backgroundColor: "#333",
+                    }}
+                  >
                     Professor
                   </TableCell>
-                  <TableCell sx={{ color: "white", fontWeight: "bold", backgroundColor: "#333" }}>
+                  <TableCell
+                    sx={{
+                      color: "white",
+                      fontWeight: "bold",
+                      backgroundColor: "#333",
+                    }}
+                  >
                     Category
                   </TableCell>
-                  <TableCell sx={{ color: "white", fontWeight: "bold", backgroundColor: "#333", width: "50px" }}>
+                  <TableCell
+                    sx={{
+                      color: "white",
+                      fontWeight: "bold",
+                      backgroundColor: "#333",
+                      width: "50px",
+                    }}
+                  >
                     Info
                   </TableCell>
                 </TableRow>
@@ -605,46 +564,34 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
                         onChange={() => handleAddCourse(course)}
                         sx={{
                           color: "#646cff",
-                          '&.Mui-checked': {
+                          "&.Mui-checked": {
                             color: "#646cff",
                           },
                         }}
                       />
                     </TableCell>
                     <TableCell sx={{ color: "white" }}>
-                      <Typography 
-                        variant="body2" 
-                        sx={{ 
+                      <Typography
+                        variant="body2"
+                        sx={{
                           fontWeight: 500,
                         }}
                       >
                         {course.name}
                       </Typography>
-                      {course.description && (
-                        <Typography
-                          variant="caption"
-                          sx={{ color: "#aaa", display: "block", mt: 0.5 }}
-                        >
-                          {course.description}
-                        </Typography>
-                      )}
                     </TableCell>
-                    <TableCell sx={{ color: "white" }}>{course.code}</TableCell>
-                    <TableCell sx={{ color: "white" }}>{course.credits}</TableCell>
-                    <TableCell sx={{ color: "white" }}>{course.professor}</TableCell>
+                    <TableCell sx={{ color: "white" }}>
+                      {course.code || course.moduleId || course.id}
+                    </TableCell>
+                    <TableCell sx={{ color: "white" }}>
+                      {course.credits}
+                    </TableCell>
+                    <TableCell sx={{ color: "white" }}>
+                      {course.professor || course.responsible || "N/A"}
+                    </TableCell>
                     <TableCell sx={{ color: "white" }}>
                       <Chip
-                        label={
-                          course.category === "Mandatory Courses"
-                            ? "Mandatory"
-                            : course.category === "Practical Courses"
-                            ? "Practical"
-                            : course.category === "Cross-Disciplinary Electives"
-                            ? "Electives"
-                            : course.category === "Elective Modules in Interdisciplinary Fundamentals"
-                            ? "Interdisciplinary"
-                            : course.category
-                        }
+                        label={getCategoryDisplayName(course.category)}
                         size="small"
                         sx={{
                           backgroundColor: getCategoryColor(course.category),
@@ -661,7 +608,9 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
                         }}
                         sx={{
                           color: "#646cff",
-                          "&:hover": { backgroundColor: "rgba(100, 108, 255, 0.1)" },
+                          "&:hover": {
+                            backgroundColor: "rgba(100, 108, 255, 0.1)",
+                          },
                         }}
                       >
                         <Info />
@@ -686,7 +635,13 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
         )}
       </DialogContent>
 
-      <DialogActions sx={{ p: 3, borderTop: "1px solid #444", justifyContent: "space-between" }}>
+      <DialogActions
+        sx={{
+          p: 3,
+          borderTop: "1px solid #444",
+          justifyContent: "space-between",
+        }}
+      >
         <Button
           onClick={handleClose}
           sx={{
@@ -715,7 +670,8 @@ const CourseSearchDialog: React.FC<CourseSearchDialogProps> = ({
             },
           }}
         >
-          Add {selectedCourses.size > 0 ? `${selectedCourses.size} ` : ""}Selected Course{selectedCourses.size !== 1 ? 's' : ''}
+          Add {selectedCourses.size > 0 ? `${selectedCourses.size} ` : ""}
+          Selected Course{selectedCourses.size !== 1 ? "s" : ""}
         </Button>
       </DialogActions>
 

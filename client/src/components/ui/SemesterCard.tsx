@@ -28,19 +28,17 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { CourseDetailsDialog } from "./CourseDetailsDialog";
+import { moduleDetailsAPI } from "../../api/moduleDetails";
 
-// Course interface
-interface Course {
+// Minimal course interface for semester management (without language, description, prerequisites)
+interface SemesterCourse {
   id: string;
   name: string;
   code: string;
   credits: number;
   semester: string;
-  language: string;
   professor: string;
   occurrence: string;
-  description?: string;
-  prerequisites?: string[];
   category: string;
   subcategory?: string;
   subSubcategory?: string;
@@ -50,15 +48,15 @@ interface Course {
 interface SemesterData {
   id: string;
   name: string;
-  courses: Course[];
+  courses: SemesterCourse[];
   expanded?: boolean;
 }
 
 interface CourseItemProps {
-  course: Course;
+  course: SemesterCourse;
   onToggleCompleted: (courseId: string) => void;
   onRemoveCourse: (courseId: string) => void;
-  onCourseClick?: (course: Course) => void;
+  onCourseClick?: (course: SemesterCourse) => void;
   semesterId: string;
 }
 
@@ -201,7 +199,8 @@ const CourseItem: React.FC<CourseItemProps> = ({
                 ? "Practical"
                 : course.category === "Cross-Disciplinary Electives"
                 ? "Electives"
-                : course.category === "Elective Modules in Interdisciplinary Fundamentals"
+                : course.category ===
+                  "Elective Modules in Interdisciplinary Fundamentals"
                 ? "Interdisciplinary"
                 : course.category
             }
@@ -266,10 +265,13 @@ const SemesterCard: React.FC<SemesterCardProps> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(semester.name);
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [selectedCourse, setSelectedCourse] = useState<any>(null);
   const [courseDetailsOpen, setCourseDetailsOpen] = useState(false);
 
-  const totalCredits = semester.courses.reduce((sum, course) => sum + course.credits, 0);
+  const totalCredits = semester.courses.reduce(
+    (sum, course) => sum + course.credits,
+    0
+  );
 
   const handleStartEdit = () => {
     setIsEditing(true);
@@ -288,9 +290,67 @@ const SemesterCard: React.FC<SemesterCardProps> = ({
     setEditName(semester.name);
   };
 
-  const handleCourseClick = (course: Course) => {
-    setSelectedCourse(course);
-    setCourseDetailsOpen(true);
+  const handleCourseClick = async (course: SemesterCourse) => {
+    try {
+      // Fetch full module details using the moduleId or code
+      const moduleId = course.code || course.id;
+      const moduleDetails = await moduleDetailsAPI.getModuleDetailsByModuleId(
+        moduleId
+      );
+
+      if (moduleDetails) {
+        // Create a rich Course object with all ModuleDetails data preserved
+        const enrichedCourse = {
+          id: moduleDetails.id.toString(),
+          name: moduleDetails.name,
+          code: moduleDetails.moduleId,
+          moduleId: moduleDetails.moduleId,
+          credits: moduleDetails.credits,
+          semester: course.semester, // Keep the extracted semester
+          language: moduleDetails.language,
+          professor: course.professor, // Keep the existing professor
+          responsible: moduleDetails.responsible,
+          occurrence: moduleDetails.occurrence,
+          category: moduleDetails.category,
+          subcategory: moduleDetails.subcategory,
+          completed: course.completed,
+          // ModuleDetails specific fields
+          organisation: moduleDetails.organisation,
+          moduleLevel: moduleDetails.moduleLevel,
+          totalHours: moduleDetails.totalHours,
+          contactHours: moduleDetails.contactHours,
+          selfStudyHours: moduleDetails.selfStudyHours,
+          descriptionOfAchievementAndAssessmentMethods:
+            moduleDetails.descriptionOfAchievementAndAssessmentMethods,
+          examRetakeNextSemester: moduleDetails.examRetakeNextSemester,
+          examRetakeAtTheEndOfSemester:
+            moduleDetails.examRetakeAtTheEndOfSemester,
+          prerequisitesRecommended: moduleDetails.prerequisitesRecommended,
+          intendedLearningOutcomes: moduleDetails.intendedLearningOutcomes,
+          content: moduleDetails.content,
+          teachingAndLearningMethods: moduleDetails.teachingAndLearningMethods,
+          media: moduleDetails.media,
+          readingList: moduleDetails.readingList,
+        };
+
+        setSelectedCourse(enrichedCourse);
+      } else {
+        // Fallback to basic course data if module details not found
+        setSelectedCourse({
+          ...course,
+          language: "N/A", // Add missing language field for compatibility
+        });
+      }
+      setCourseDetailsOpen(true);
+    } catch (error) {
+      console.error("Error fetching module details:", error);
+      // Fallback to basic course data on error
+      setSelectedCourse({
+        ...course,
+        language: "N/A", // Add missing language field for compatibility
+      });
+      setCourseDetailsOpen(true);
+    }
   };
 
   const handleCloseDialog = () => {
@@ -301,17 +361,17 @@ const SemesterCard: React.FC<SemesterCardProps> = ({
   // Function to detect semester type
   const getSemesterType = (name: string) => {
     const nameLower = name.toLowerCase();
-    if (nameLower.includes('summer') || nameLower.includes('ss')) {
-      return { type: 'Summer', color: '#ff9800' };
-    } else if (nameLower.includes('winter') || nameLower.includes('ws')) {
-      return { type: 'Winter', color: '#2196f3' };
+    if (nameLower.includes("summer") || nameLower.includes("ss")) {
+      return { type: "Summer", color: "#ff9800" };
+    } else if (nameLower.includes("winter") || nameLower.includes("ws")) {
+      return { type: "Winter", color: "#2196f3" };
     } else {
       // Try to detect from semester number (odd = winter, even = summer in many systems)
-      const semesterNumber = parseInt(name.match(/(\d+)/)?.[1] || '0');
+      const semesterNumber = parseInt(name.match(/(\d+)/)?.[1] || "0");
       if (semesterNumber > 0) {
-        return semesterNumber % 2 === 1 
-          ? { type: 'Winter', color: '#2196f3' }
-          : { type: 'Summer', color: '#ff9800' };
+        return semesterNumber % 2 === 1
+          ? { type: "Winter", color: "#2196f3" }
+          : { type: "Summer", color: "#ff9800" };
       }
     }
     return null;
@@ -334,7 +394,14 @@ const SemesterCard: React.FC<SemesterCardProps> = ({
           borderBottom: semester.expanded ? "1px solid #444" : "none",
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            mb: 2,
+          }}
+        >
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             <School sx={{ color: "#646cff" }} />
             {isEditing ? (
@@ -343,8 +410,8 @@ const SemesterCard: React.FC<SemesterCardProps> = ({
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
                   onKeyPress={(e) => {
-                    if (e.key === 'Enter') handleSaveEdit();
-                    if (e.key === 'Escape') handleCancelEdit();
+                    if (e.key === "Enter") handleSaveEdit();
+                    if (e.key === "Escape") handleCancelEdit();
                   }}
                   size="small"
                   sx={{
@@ -357,10 +424,7 @@ const SemesterCard: React.FC<SemesterCardProps> = ({
                     "& .MuiInputBase-input": { color: "white" },
                   }}
                 />
-                <IconButton
-                  onClick={handleSaveEdit}
-                  sx={{ color: "#4caf50" }}
-                >
+                <IconButton onClick={handleSaveEdit} sx={{ color: "#4caf50" }}>
                   <Check />
                 </IconButton>
                 <IconButton
@@ -372,17 +436,14 @@ const SemesterCard: React.FC<SemesterCardProps> = ({
               </Box>
             ) : (
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <Typography 
-                  variant="h6" 
+                <Typography
+                  variant="h6"
                   sx={{ color: "white", fontWeight: 600 }}
                   onClick={handleStartEdit}
                 >
                   {semester.name}
                 </Typography>
-                <IconButton
-                  onClick={handleStartEdit}
-                  sx={{ color: "#646cff" }}
-                >
+                <IconButton onClick={handleStartEdit} sx={{ color: "#646cff" }}>
                   <Edit />
                 </IconButton>
               </Box>
@@ -391,10 +452,10 @@ const SemesterCard: React.FC<SemesterCardProps> = ({
               <Chip
                 label={semesterTypeInfo.type}
                 size="small"
-                sx={{ 
-                  backgroundColor: semesterTypeInfo.color, 
+                sx={{
+                  backgroundColor: semesterTypeInfo.color,
                   color: "white",
-                  fontWeight: 500
+                  fontWeight: 500,
                 }}
               />
             )}
@@ -478,42 +539,60 @@ const SemesterCard: React.FC<SemesterCardProps> = ({
 
                 {/* Course Name Column */}
                 <Box sx={{ flex: "1 1 auto" }}>
-                  <Typography variant="caption" sx={{ color: "#aaa", fontWeight: 600 }}>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "#aaa", fontWeight: 600 }}
+                  >
                     Course Name
                   </Typography>
                 </Box>
 
                 {/* Course Code Column */}
                 <Box sx={{ width: "80px", textAlign: "center" }}>
-                  <Typography variant="caption" sx={{ color: "#aaa", fontWeight: 600 }}>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "#aaa", fontWeight: 600 }}
+                  >
                     Code
                   </Typography>
                 </Box>
 
                 {/* Credits Column */}
                 <Box sx={{ width: "60px", textAlign: "center" }}>
-                  <Typography variant="caption" sx={{ color: "#aaa", fontWeight: 600 }}>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "#aaa", fontWeight: 600 }}
+                  >
                     ECTS
                   </Typography>
                 </Box>
 
                 {/* Professor Column */}
                 <Box sx={{ width: "120px", textAlign: "center" }}>
-                  <Typography variant="caption" sx={{ color: "#aaa", fontWeight: 600 }}>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "#aaa", fontWeight: 600 }}
+                  >
                     Professor
                   </Typography>
                 </Box>
 
                 {/* Category Column */}
                 <Box sx={{ width: "100px", textAlign: "center" }}>
-                  <Typography variant="caption" sx={{ color: "#aaa", fontWeight: 600 }}>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "#aaa", fontWeight: 600 }}
+                  >
                     Category
                   </Typography>
                 </Box>
 
                 {/* Checkbox Column */}
                 <Box sx={{ width: "48px", textAlign: "center" }}>
-                  <Typography variant="caption" sx={{ color: "#aaa", fontWeight: 600 }}>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "#aaa", fontWeight: 600 }}
+                  >
                     Done
                   </Typography>
                 </Box>
@@ -522,16 +601,20 @@ const SemesterCard: React.FC<SemesterCardProps> = ({
                 <Box sx={{ width: "40px" }} />
               </Box>
 
-              <SortableContext 
-                items={semester.courses.map(course => course.id)}
+              <SortableContext
+                items={semester.courses.map((course) => course.id)}
                 strategy={verticalListSortingStrategy}
               >
                 {semester.courses.map((course) => (
                   <CourseItem
                     key={course.id}
                     course={course}
-                    onToggleCompleted={(courseId) => onToggleCourseCompleted(semester.id, courseId)}
-                    onRemoveCourse={(courseId) => onRemoveCourse(semester.id, courseId)}
+                    onToggleCompleted={(courseId) =>
+                      onToggleCourseCompleted(semester.id, courseId)
+                    }
+                    onRemoveCourse={(courseId) =>
+                      onRemoveCourse(semester.id, courseId)
+                    }
                     onCourseClick={handleCourseClick}
                     semesterId={semester.id}
                   />
@@ -569,4 +652,4 @@ const SemesterCard: React.FC<SemesterCardProps> = ({
 };
 
 export default SemesterCard;
-export type { SemesterData, Course };
+export type { SemesterData, SemesterCourse };

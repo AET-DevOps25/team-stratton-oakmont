@@ -76,7 +76,6 @@ export interface Course {
 }
 
 class ModuleDetailsAPI {
-
   /**
    * Get curriculum overview with statistics
    */
