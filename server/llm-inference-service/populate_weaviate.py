@@ -3,8 +3,8 @@ import sys
 import pandas as pd
 import weaviate
 from dotenv import load_dotenv
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
 import json
+import requests
 from typing import List, Dict
 from weaviate.collections.classes.config import DataType
 from weaviate.collections.classes.data import DataObject 
@@ -14,6 +14,54 @@ from sqlalchemy import create_engine
 # Load environment variables
 load_dotenv()
 
+class OllamaEmbeddings:
+    """Custom embeddings class for Ollama API via Open WebUI"""
+    
+    def __init__(self, model: str, base_url: str, api_key: str):
+        self.model = model
+        self.base_url = base_url.rstrip('/')
+        self.api_key = api_key
+        
+    def embed_query(self, text: str) -> List[float]:
+        """Embed a single text query"""
+        return self.embed_documents([text])[0]
+    
+    def embed_documents(self, texts: List[str]) -> List[List[float]]:
+        """Embed multiple documents"""
+        url = f"{self.base_url}/api/embed"
+        
+        headers = {
+            'Content-Type': 'application/json'
+        }
+        
+        # Add authorization header if API key is provided
+        if self.api_key:
+            headers['Authorization'] = f'Bearer {self.api_key}'
+        
+        data = {
+            "model": self.model,
+            "input": texts
+        }
+        
+        try:
+            response = requests.post(url, headers=headers, json=data, timeout=30)
+            response.raise_for_status()
+            result = response.json()
+            
+            # Handle both single embedding and multiple embeddings
+            if 'embeddings' in result:
+                return result['embeddings']
+            elif 'embedding' in result:
+                # Single embedding case
+                return [result['embedding']]
+            else:
+                raise ValueError(f"Unexpected response format: {result}")
+                
+        except requests.exceptions.RequestException as e:
+            raise Exception(f"Error calling Ollama embedding API: {e}")
+        except json.JSONDecodeError as e:
+            raise Exception(f"Error parsing Ollama API response: {e}")
+
 class WeaviatePopulator:
     def __init__(self):
         self.client = None
@@ -21,7 +69,7 @@ class WeaviatePopulator:
         self.setup_weaviate()
         
     def setup_weaviate(self):
-        """Initialize Weaviate client (v4) and Gemini embeddings"""
+        """Initialize Weaviate client (v4) and Ollama embeddings"""
         try:
             # Connect to Weaviate via local port-forwarding
             self.client = weaviate.connect_to_custom(
@@ -33,18 +81,45 @@ class WeaviatePopulator:
                 grpc_secure=False,
                 skip_init_checks=True
             )
-            self.embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
-            print("\u2705 Connected to Weaviate (localhost port-forward) and Gemini Embeddings")
+            
+            # Setup Open WebUI embeddings (same as main.py)
+            api_key = os.getenv("OPENAI_API_KEY")
+            ollama_base_url = os.getenv("OLLAMA_BASE_URL", "https://gpu.aet.cit.tum.de/ollama")
+            embedding_model = os.getenv("EMBEDDING_MODEL", "llama3.3:latest")
+            
+            print(f"🔧 Using embedding model: {embedding_model}")
+            print(f"🌐 Using Ollama API base: {ollama_base_url}")
+            print(f"🔑 API key length: {len(api_key) if api_key else 0}")
+            
+            # Explicitly disable any Google credential detection
+            for env_var in ['GOOGLE_APPLICATION_CREDENTIALS', 'GOOGLE_API_KEY', 'GOOGLE_CLOUD_PROJECT', 'GCLOUD_PROJECT']:
+                if env_var in os.environ:
+                    print(f"🚫 Clearing {env_var}")
+                    del os.environ[env_var]
+            
+            self.embeddings = OllamaEmbeddings(
+                model=embedding_model,
+                base_url=ollama_base_url,
+                api_key=api_key
+            )
+            
+            # Test embeddings
+            print("🧪 Testing embeddings...")
+            test_embedding = self.embeddings.embed_query("test")
+            print(f"✅ Ollama embeddings working (dimension: {len(test_embedding)})")
+            print("✅ Connected to Weaviate (localhost port-forward) and Ollama Embeddings")
         except Exception as e:
-            print(f"\u274c Failed to connect to Weaviate or Gemini: {e}")
+            print(f"❌ Failed to connect to Weaviate or Ollama: {e}")
             sys.exit(1)
     
     def create_schema(self):
         """Create Weaviate schema for TUM courses (v4, all CSV columns)"""
         try:
             # Delete existing class if it exists
-            if "TUMCourse" in self.client.collections.list_all():                print("🗑️  Deleting existing TUMCourse schema...")
-            self.client.collections.delete("TUMCourse")
+            if "TUMCourse" in self.client.collections.list_all():
+                print("🗑️  Deleting existing TUMCourse schema...")
+                self.client.collections.delete("TUMCourse")
+            
             # All columns from curriculums_x_module_details table (id renamed to csv_id)
             properties = [
                 {"name": "study_program_id", "data_type": DataType.INT},
@@ -167,7 +242,10 @@ class WeaviatePopulator:
             results = collection.query.near_text(query="course", limit=1)
             if results.objects:
                 sample = results.objects[0].properties
-                print(f"📝 Sample course: {sample['courseCode']} - {sample['courseName']}")
+                # Use safe key access since schema might be different
+                module_id = sample.get('module_id', sample.get('courseCode', 'Unknown'))
+                name = sample.get('name', sample.get('courseName', 'Unknown'))
+                print(f"📝 Sample course: {module_id} - {name}")
             
         except Exception as e:
             print(f"⚠️  Verification warning: {e}")
