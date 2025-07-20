@@ -32,7 +32,7 @@ spec:
         - name: weaviate
           image: semitechnologies/weaviate:latest
           ports:
-            - containerPort: 8080
+            - containerPort: 8000
             - containerPort: 50051
           env:
             - name: QUERY_DEFAULTS_LIMIT
@@ -43,6 +43,8 @@ spec:
               value: "node1"
             - name: ENABLE_GRPC_SERVER
               value: "true"
+            - name: HTTP_PORT
+              value: "8000"
           volumeMounts:
             - name: weaviate-storage
               mountPath: /var/lib/weaviate
@@ -69,8 +71,8 @@ spec:
   selector:
     app: weaviate-vector
   ports:
-    - port: 8080
-      targetPort: 8080
+    - port: 8000
+      targetPort: 8000
       name: http
     - port: 50051
       targetPort: 50051

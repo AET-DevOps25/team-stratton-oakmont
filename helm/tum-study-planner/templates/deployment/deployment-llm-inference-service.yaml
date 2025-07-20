@@ -27,6 +27,12 @@ spec:
                 secretKeyRef:
                   name: tum-study-planner-secrets
                   key: GOOGLE_API_KEY
+            - name: WEAVIATE_HOST
+              value: {{ .Values.llmInferenceService.env.WEAVIATE_HOST | quote }}
+            - name: WEAVIATE_PORT
+              value: {{ .Values.llmInferenceService.env.WEAVIATE_PORT | quote }}
+            - name: WEAVIATE_GRPC_PORT
+              value: {{ .Values.llmInferenceService.env.WEAVIATE_GRPC_PORT | quote }}
             - name: WEAVIATE_URL
               value: {{ .Values.llmInferenceService.env.WEAVIATE_URL | quote }}
             - name: WEAVIATE_GRPC_URL
