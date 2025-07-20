@@ -37,6 +37,7 @@ import {
 } from "@mui/icons-material";
 import { aiAdvisorAPI } from "../../../api/aiAdvisor";
 import { getStudyPlanById } from "../../../api/studyPlans";
+import { STUDY_PLAN_API_URL } from "../../../config/api";
 
 interface Message {
   id: string;
@@ -178,10 +179,7 @@ const AiChatSidebar: React.FC<AiChatSidebarProps> = ({ isOpen }) => {
       // Fetch from API
       try {
         console.log("Calling API to fetch study plan details...");
-        console.log(
-          "API URL:",
-          `http://localhost:8081/api/v1/${currentStudyPlanId}`
-        );
+        console.log("API URL:", `${STUDY_PLAN_API_URL}/${currentStudyPlanId}`);
 
         const studyPlan = await getStudyPlanById(currentStudyPlanId);
         console.log("API response received:", studyPlan);
