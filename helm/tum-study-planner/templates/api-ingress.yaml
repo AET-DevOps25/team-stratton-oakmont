@@ -5,12 +5,12 @@ metadata:
   name: tum-study-planner-api-ingress
   namespace: {{ .Values.namespace }}
   annotations:
-    kubernetes.io/ingress.class: "nginx"
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /api/v1/$2
 spec:
+  ingressClassName: nginx
   tls:
     - hosts:
         - {{ .Values.ingress.host }}
