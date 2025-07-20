@@ -93,13 +93,13 @@ spec:
           # Unified Swagger UI (these paths are handled by the separate swagger-ui ingress)
           # Removed to prevent path conflicts with tum-study-planner-swagger-ui-ingress
 
----
+
 # Raw API documentation endpoints with path rewriting
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: tum-study-planner-raw-api-docs-ingress
-  namespace: { { .Values.namespace } }
+  namespace: {{ .Values.namespace }}
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
@@ -114,10 +114,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - { { .Values.ingress.host } }
+        - {{ .Values.ingress.host }}
       secretName: tum-study-planner-tls
   rules:
-    - host: { { .Values.ingress.host } }
+    - host: {{ .Values.ingress.host }}
       http:
         paths:
           - path: /api-docs/study-plan/api/v1/api-docs
@@ -184,13 +184,13 @@ spec:
                 port:
                   number: 8082
 
----
+
 # Separate ingress for unified swagger with path rewriting
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: tum-study-planner-swagger-ui-ingress
-  namespace: { { .Values.namespace } }
+  namespace: {{ .Values.namespace }}
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
@@ -205,10 +205,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - { { .Values.ingress.host } }
+        - {{ .Values.ingress.host }}
       secretName: tum-study-planner-tls
   rules:
-    - host: { { .Values.ingress.host } }
+    - host: {{ .Values.ingress.host }}
       http:
         paths:
           - path: /api-docs
