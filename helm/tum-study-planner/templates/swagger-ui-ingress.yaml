@@ -1,8 +1,9 @@
+# prettier-ignore
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: tum-study-planner-swagger-ui-ingress
-  namespace: { { .Values.namespace } }
+  namespace: {{ .Values.namespace }}
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /
@@ -17,10 +18,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - { { .Values.ingress.host } }
+        - {{ .Values.ingress.host }}
       secretName: tum-study-planner-tls
   rules:
-    - host: { { .Values.ingress.host } }
+    - host: {{ .Values.ingress.host }}
       http:
         paths:
           - path: /api-docs
