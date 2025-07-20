@@ -86,6 +86,35 @@
       debug:
         msg: "Detected public IP: {{ public_ip }}"
 
+    - name: Create Kubernetes port-forward service for Weaviate access
+      copy:
+        content: |
+          [Unit]
+          Description=Kubernetes Weaviate Port Forward
+          After=network.target
+
+          [Service]
+          Type=simple
+          User=ec2-user
+          ExecStart=/usr/local/bin/kubectl port-forward -n tum-study-planner svc/weaviate-vector-service 8000:8000 50051:50051 --address=0.0.0.0
+          Restart=always
+          RestartSec=5
+
+          [Install]
+          WantedBy=multi-user.target
+        dest: /etc/systemd/system/k8s-weaviate-forward.service
+        mode: "0644"
+      become: yes
+
+    - name: Enable and start Kubernetes port-forward service
+      systemd:
+        name: k8s-weaviate-forward
+        enabled: yes
+        state: started
+        daemon_reload: yes
+      become: yes
+      ignore_errors: yes
+
     - name: Copy local environment file
       copy:
         src: "{{ playbook_dir }}/../.env" # This looks for .env in project root
@@ -122,9 +151,9 @@
         delay: 10
         timeout: 300
       loop:
-        - 80
-        - 8080
-        - 8081
-        - 8082
-        - 8083
-        - 8000
+        - 80 # client
+        - 8080 # program-catalog-service
+        - 8081 # study-plan-service
+        - 8082 # ai-advisor-service
+        - 8083 # user-auth-service
+        - 8084 # llm-inference-service

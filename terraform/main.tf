@@ -60,6 +60,13 @@ resource "aws_instance" "app_server" {
   key_name      = var.aws_key_name
   vpc_security_group_ids = [aws_security_group.app_sg.id]
 
+  # Add larger root volume
+  root_block_device {
+    volume_type           = "gp3"
+    volume_size          = 30  # 30GB instead of default 8GB
+    delete_on_termination = true
+  }
+
   tags = {
     Name = "Study-Planner-App-Server"
   }

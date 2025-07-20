@@ -75,7 +75,7 @@ export AWS_KEY_NAME="$KEY_NAME"
 EOF
 
     # Update terraform.tfvars
-    cat > terraform/terraform.tfvars << EOF
+    cat > ../terraform/terraform.tfvars << EOF
 aws_key_name = "$KEY_NAME"
 EOF
     
@@ -161,7 +161,7 @@ echo "🏗️  Starting infrastructure deployment..."
 
 # Step 1: Initialize and apply Terraform
 echo "🔧 Deploying infrastructure with Terraform..."
-cd terraform
+cd ../terraform
 
 if ! terraform init; then
     echo "❌ Terraform init failed"
@@ -276,9 +276,14 @@ if [[ "$ssh_ready" != "true" ]]; then
     exit 1
 fi
 
+    fi
+fi
+
+cd ..
+
 # Step 3: Deploy application with Ansible
 echo "🎭 Deploying application with Ansible..."
-cd ansible
+cd ../ansible
 
 if ! ansible-playbook -i inventory.yml deploy.yml \
   -e "instance_ip=$INSTANCE_IP" \

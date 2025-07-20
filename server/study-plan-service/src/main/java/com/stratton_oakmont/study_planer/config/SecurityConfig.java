@@ -1,6 +1,20 @@
-package com.stratton_oakmont.study_planer.config;
-
-import com.stratton_oakmont.study_planer.filter.JwtAuthenticationFilter;
+package com.stratton_oakmont.study_planer.co    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList(
+            "https://tum-study-planner.student.k8s.aet.cit.tum.de",
+            "http://localhost:5173",  // Vite dev server
+            "http://localhost:3000",  // Alternative React port
+            "http://localhost:80",     // Docker/nginx port
+            "http://localhost"         // Swagger UI
+        ));
+        // Allow any origin for EC2/AWS deployments (you can restrict this to specific IP ranges if needed)
+        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);om.stratton_oakmont.study_planer.filter.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
