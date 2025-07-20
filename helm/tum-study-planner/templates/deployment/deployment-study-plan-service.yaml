@@ -25,6 +25,7 @@ spec:
       containers:
         - name: study-plan-service
           image: "{{ .Values.studyPlanService.image.repository }}:{{ .Values.studyPlanService.image.tag }}"
+          imagePullPolicy: Always
           ports:
             - containerPort: 8081
               name: http

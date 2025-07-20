@@ -25,6 +25,7 @@ spec:
       containers:
         - name: user-auth-service
           image: "{{ .Values.userAuthService.image.repository }}:{{ .Values.userAuthService.image.tag }}"
+          imagePullPolicy: Always
           ports:
             - containerPort: 8083
               name: http
