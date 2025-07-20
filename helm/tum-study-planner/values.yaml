@@ -128,8 +128,8 @@ llmInferenceService:
 
 swaggerUi:
   image:
-    repository: ghcr.io/AET-DevOps25/team-stratton-oakmont/swagger-ui
-    tag: latest
+    repository: nginx
+    tag: 1.29.0-alpine
     pullPolicy: Always
 
 # Database configurations (using existing k8s manifests)

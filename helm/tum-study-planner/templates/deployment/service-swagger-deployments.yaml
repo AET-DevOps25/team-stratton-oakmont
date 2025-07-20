@@ -1,0 +1,65 @@
+# Individual service Swagger UI deployments
+{{- $services := list "study-plan" "user-auth" "program-catalog" "ai-advisor" }}
+
+{{- range $service := $services }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $service }}-swagger-ui
+  namespace: {{ $.Values.namespace }}
+  labels:
+    {{- include "tum-study-planner.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ $service }}-swagger-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "tum-study-planner.selectorLabels" $ | nindent 6 }}
+      app.kubernetes.io/component: {{ $service }}-swagger-ui
+  template:
+    metadata:
+      labels:
+        {{- include "tum-study-planner.labels" $ | nindent 8 }}
+        app.kubernetes.io/component: {{ $service }}-swagger-ui
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.29.0-alpine
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "10m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        volumeMounts:
+        - name: swagger-ui-config
+          mountPath: /usr/share/nginx/html
+          readOnly: true
+      volumes:
+      - name: swagger-ui-config
+        configMap:
+          name: {{ $service }}-swagger-ui-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $service }}-swagger-ui-service
+  namespace: {{ $.Values.namespace }}
+  labels:
+    {{- include "tum-study-planner.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ $service }}-swagger-ui
+spec:
+  selector:
+    {{- include "tum-study-planner.selectorLabels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ $service }}-swagger-ui
+  ports:
+  - port: 80
+    targetPort: 80
+    name: http
+  type: ClusterIP
+{{- end }}
