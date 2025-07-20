@@ -5,7 +5,7 @@ services:
   weaviate:
     image: semitechnologies/weaviate:1.24.10
     ports:
-      - "8000:8000" # REST API
+      - "8000:8080" # REST API (Weaviate listens on 8080 internally)
       - "50051:50051" # gRPC API
     environment:
       QUERY_DEFAULTS_LIMIT: 25
@@ -14,7 +14,7 @@ services:
       DEFAULT_VECTORIZER_MODULE: "none"
       ENABLE_MODULES: "text2vec-openai"
       CLUSTER_HOSTNAME: "node1"
-      HTTP_PORT: "8000"
+
     volumes:
       - weaviate_data:/var/lib/weaviate
 
@@ -27,7 +27,14 @@ services:
       - "8084:8084"
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - WEAVIATE_URL=http://weaviate:8000
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - USE_GEMINI=${USE_GEMINI:-false}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL:-https://gpu.aet.cit.tum.de/api}
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-https://gpu.aet.cit.tum.de/ollama}
+      - WEAVIATE_URL=http://weaviate:8080
+      - WEAVIATE_HOST=weaviate
+      - WEAVIATE_PORT=8080
+      - WEAVIATE_GRPC_PORT=50051
       # PostgreSQL connections
       - STUDY_DATA_DB_HOST=${STUDY_DATA_DB_HOST:-localhost}
       - STUDY_DATA_DB_PORT=${STUDY_DATA_DB_PORT:-5432}
@@ -44,18 +51,6 @@ services:
     volumes:
       - ./data-collection/csv_tables:/app/data
     command: uvicorn main:app --host 0.0.0.0 --port 8084 --reload
-
-  # AI Advisor Service (Java Spring Boot)
-  ai-advisor:
-    build:
-      context: ./server/ai-advisor-service
-      dockerfile: Dockerfile
-    ports:
-      - "8084:8080"
-    environment:
-      - LLM_INFERENCE_SERVICE_URL=http://llm-inference:8084
-    depends_on:
-      - llm-inference
 
 volumes:
   weaviate_data:

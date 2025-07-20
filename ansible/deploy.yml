@@ -67,8 +67,9 @@
     - name: Clone application repository
       git:
         repo: "{{ repo_url }}"
+        # TODO: change to main
         dest: "{{ app_dir }}"
-        version: "main"
+        version: "fix/study-plans"
         force: yes
       become_user: ec2-user
 
@@ -94,22 +95,68 @@
         group: ec2-user
         mode: "0600"
 
-    - name: Stop any existing containers
-      command: docker-compose -f docker-compose.prod.yml down --remove-orphans
+    - name: Add AWS-specific environment variables for Gemini API
+      lineinfile:
+        path: "{{ app_dir }}/.env"
+        line: "{{ item }}"
+        create: yes
+        owner: ec2-user
+        group: ec2-user
+        mode: "0600"
+      loop:
+        - "USE_GEMINI=true"
+        - "OPENAI_BASE_URL=https://api.openai.com/v1"
+        - "OLLAMA_BASE_URL=https://api.openai.com/v1"
+
+    - name: Check if Gemini Weaviate export exists locally
+      local_action:
+        module: stat
+        path: "{{ playbook_dir }}/../server/llm-inference-service/gemini-weaviate-export"
+      register: local_gemini_export
+      become: no
+
+    - name: Copy Gemini Weaviate export data if exists
+      copy:
+        src: "{{ playbook_dir }}/../server/llm-inference-service/gemini-weaviate-export/"
+        dest: "{{ app_dir }}/gemini-weaviate-export/"
+        owner: ec2-user
+        group: ec2-user
+        mode: "0644"
+      when: local_gemini_export.stat.exists
+
+    - name: Debug Gemini export status
+      debug:
+        msg: "Gemini export found: {{ local_gemini_export.stat.exists }}"
+
+    - name: Copy Weaviate import scripts
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: ec2-user
+        group: ec2-user
+        mode: "{{ item.mode }}"
+      loop:
+        - {
+            src: "{{ playbook_dir }}/../scripts/import-weaviate-data.sh",
+            dest: "{{ app_dir }}/import-weaviate-data.sh",
+            mode: "0755",
+          }
+        - {
+            src: "{{ playbook_dir }}/../scripts/import-weaviate-data.py",
+            dest: "{{ app_dir }}/import-weaviate-data.py",
+            mode: "0755",
+          }
+
+    - name: Stop existing containers
+      command: docker-compose -f docker-compose.prod.yml -f docker-compose.ai.yml down --remove-orphans
       args:
         chdir: "{{ app_dir }}"
-      become_user: ec2-user
       ignore_errors: yes
 
-    - name: Start application services with PUBLIC_IP environment variable
-      command: docker-compose -f docker-compose.prod.yml up -d --build --force-recreate
+    - name: Start application with Docker Compose (with AI services)
+      command: docker-compose -f docker-compose.prod.yml -f docker-compose.ai.yml up -d --build --force-recreate
       args:
         chdir: "{{ app_dir }}"
-      become_user: ec2-user
-      environment:
-        PUBLIC_IP: "http://{{ public_ip }}"
-      async: 500
-      poll: 30
       register: compose_result
 
     - name: Show Docker Compose output
@@ -122,9 +169,31 @@
         delay: 10
         timeout: 300
       loop:
-        - 80
-        - 8080
-        - 8081
-        - 8082
-        - 8083
-        - 8000
+        - 80 # client
+        - 8000 # weaviate
+        - 8080 # program-catalog-service
+        - 8081 # study-plan-service
+        - 8082 # ai-advisor-service
+        - 8083 # user-auth-service
+        - 8084 # llm-inference-service
+
+    - name: Populate Weaviate with Gemini course data
+      shell: |
+        cd {{ app_dir }}
+        if [ -f "./import-weaviate-data.py" ] && [ -d "./gemini-weaviate-export" ]; then
+          echo "🚀 Importing Gemini Weaviate data with Python script..."
+          python3 ./import-weaviate-data.py
+        elif [ -f "./import-weaviate-data.sh" ] && [ -d "./gemini-weaviate-export" ]; then
+          echo "🚀 Importing Gemini Weaviate data with bash script..."
+          ./import-weaviate-data.sh
+        else
+          echo "⚠️  Gemini Weaviate export data not found, skipping import"
+          echo "   Looking for: ./gemini-weaviate-export/"
+          ls -la ./
+        fi
+      become_user: ec2-user
+      register: weaviate_import_result
+
+    - name: Show Weaviate import result
+      debug:
+        var: weaviate_import_result.stdout_lines

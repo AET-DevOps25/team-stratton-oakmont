@@ -3,6 +3,7 @@ uvicorn[standard]
 weaviate-client>=4.0.0
 langchain
 langchain-openai
+langchain-google-genai
 langchain-huggingface
 langchain-community
 pandas

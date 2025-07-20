@@ -62,7 +62,7 @@ jobs:
             --set llmInferenceService.image.repository=${{ env.REGISTRY }}/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')/llm-inference-service \
             --set llmInferenceService.image.tag=latest \
             --set swaggerUi.image.repository=nginx \
-            --set swaggerUi.image.tag=1.29.0-alpine \
+            --set swaggerUi.image.tag=1.28.0-alpine \
             --wait --timeout=10m
 
       - name: Force rolling update for latest changes

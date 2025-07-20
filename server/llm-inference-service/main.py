@@ -17,6 +17,14 @@ from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_
 from fastapi.responses import Response
 import time
 
+# Import Gemini support
+try:
+    from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
+    GEMINI_AVAILABLE = True
+except ImportError:
+    GEMINI_AVAILABLE = False
+    print("⚠️  Gemini packages not available. Install with: pip install langchain-google-genai")
+
 
 # Load environment variables (only for local development)
 # In Kubernetes, environment variables are set directly
@@ -171,6 +179,66 @@ class OllamaEmbeddings:
             raise Exception(f"Error parsing Ollama API response: {e}")
 
 
+def get_llm_client(temperature: float = 0.7, model: str = None):
+    """Initialize LLM client based on USE_GEMINI environment variable"""
+    use_gemini = os.getenv("USE_GEMINI", "false").lower() == "true"
+    
+    if use_gemini and GEMINI_AVAILABLE:
+        print("🤖 Using Gemini AI")
+        gemini_api_key = os.getenv("GEMINI_API_KEY")
+        if not gemini_api_key:
+            raise ValueError("GEMINI_API_KEY environment variable is required when USE_GEMINI=true")
+        
+        return ChatGoogleGenerativeAI(
+            google_api_key=gemini_api_key,
+            model=model or "gemini-2.5-flash",
+            temperature=temperature,
+            convert_system_message_to_human=True
+        )
+    else:
+        print("🤖 Using OpenAI/OpenWebUI")
+        # Use existing OpenWebUI/OpenAI setup
+        base_url = os.getenv("OPENAI_BASE_URL", "https://gpu.aet.cit.tum.de/api")
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY environment variable is required")
+        
+        return ChatOpenAI(
+            base_url=base_url,
+            api_key=api_key,
+            model=model or "llama3.3:latest",
+            temperature=temperature
+        )
+
+
+def get_embeddings_client():
+    """Initialize embeddings client based on USE_GEMINI environment variable"""
+    use_gemini = os.getenv("USE_GEMINI", "false").lower() == "true"
+    
+    if use_gemini and GEMINI_AVAILABLE:
+        print("📊 Using Gemini embeddings")
+        gemini_api_key = os.getenv("GEMINI_API_KEY")
+        if not gemini_api_key:
+            raise ValueError("GEMINI_API_KEY environment variable is required when USE_GEMINI=true")
+        
+        return GoogleGenerativeAIEmbeddings(
+            google_api_key=gemini_api_key,
+            model="models/embedding-001"
+        )
+    else:
+        print("📊 Using custom Ollama embeddings")
+        # Use existing custom Ollama embeddings
+        base_url = os.getenv("OLLAMA_BASE_URL", "https://gpu.aet.cit.tum.de/ollama")
+        api_key = os.getenv("OPENAI_API_KEY")
+        embedding_model = os.getenv("EMBEDDING_MODEL", "llama3.3:latest")
+        
+        return OllamaEmbeddings(
+            base_url=base_url,
+            api_key=api_key,
+            model=embedding_model
+        )
+
+
 import time
 
 app = FastAPI(title="LLM Inference Service with RAG")
@@ -185,11 +253,22 @@ async def startup_event():
     try:
         print("🔌 Setting up Weaviate connection...")
         import weaviate
-        weaviate_host = os.getenv("WEAVIATE_HOST", "localhost")
-        weaviate_port = int(os.getenv("WEAVIATE_PORT", "8000"))
+        
+        # Determine if running in Docker or locally
+        is_docker = os.getenv('KUBERNETES_SERVICE_HOST') is not None or os.path.exists('/.dockerenv')
+        
+        if is_docker:
+            # Running in Docker/Kubernetes - use service names
+            weaviate_host = os.getenv("WEAVIATE_HOST", "weaviate")
+            weaviate_port = int(os.getenv("WEAVIATE_PORT", "8080"))
+        else:
+            # Running locally - use localhost
+            weaviate_host = "localhost"
+            weaviate_port = 8000  # External port mapping
+            
         weaviate_grpc_port = int(os.getenv("WEAVIATE_GRPC_PORT", "50051"))
         
-        print(f"🌐 Connecting to Weaviate at {weaviate_host}:{weaviate_port}")
+        print(f"🌐 Connecting to Weaviate at {weaviate_host}:{weaviate_port} (Docker: {is_docker})")
         weaviate_client = weaviate.connect_to_local(
             host=weaviate_host,
             port=weaviate_port,
@@ -209,26 +288,17 @@ async def startup_event():
         print(f"🌐 Using Ollama API base: {ollama_base_url}")
         print(f"🔑 API key length: {len(api_key) if api_key else 0}")
         
+        # Setup embeddings based on configuration
+        print("🔧 Setting up embeddings...")
         try:
-            # Explicitly disable any Google credential detection
-            for env_var in ['GOOGLE_APPLICATION_CREDENTIALS', 'GOOGLE_API_KEY', 'GOOGLE_CLOUD_PROJECT', 'GCLOUD_PROJECT']:
-                if env_var in os.environ:
-                    print(f"🚫 Clearing {env_var}")
-                    del os.environ[env_var]
-            
-            print("🔧 Initializing Ollama embeddings...")
-            embeddings = OllamaEmbeddings(
-                model=embedding_model,
-                base_url=ollama_base_url,
-                api_key=api_key
-            )
+            embeddings = get_embeddings_client()
             
             # Test embeddings
             print("🧪 Testing embeddings...")
             test_embedding = embeddings.embed_query("test")
-            print(f"✅ Ollama embeddings working (dimension: {len(test_embedding)})")
+            print(f"✅ Embeddings working (dimension: {len(test_embedding)})")
         except Exception as e:
-            print(f"❌ Ollama embeddings failed: {e}")
+            print(f"❌ Embeddings failed: {e}")
             import traceback
             traceback.print_exc()
             embeddings = None
@@ -361,9 +431,21 @@ def setup_weaviate():
     
     try:
         import weaviate
-        weaviate_host = os.getenv("WEAVIATE_HOST", "localhost")
-        weaviate_port = int(os.getenv("WEAVIATE_PORT", "8000"))
+        
+        # Determine if running in Docker or locally
+        is_docker = os.getenv('KUBERNETES_SERVICE_HOST') is not None or os.path.exists('/.dockerenv')
+        
+        if is_docker:
+            # Running in Docker/Kubernetes - use service names
+            weaviate_host = os.getenv("WEAVIATE_HOST", "weaviate")
+            weaviate_port = int(os.getenv("WEAVIATE_PORT", "8080"))
+        else:
+            # Running locally - use localhost
+            weaviate_host = "localhost"
+            weaviate_port = 8000  # External port mapping
+            
         weaviate_grpc_port = int(os.getenv("WEAVIATE_GRPC_PORT", "50051"))
+        
         # Use connect_to_local for robust local/K8s connection
         weaviate_client_local = weaviate.connect_to_local(
             host=weaviate_host,
@@ -424,22 +506,8 @@ def setup_qa_chain():
             input_variables=["context", "question"]
         )
         
-        # Initialize OpenAI-compatible LLM (for TUM's Open WebUI service)
-        api_key = os.getenv("OPENAI_API_KEY")
-        base_url = os.getenv("OPENAI_BASE_URL", "https://gpu.aet.cit.tum.de/api")  # Open WebUI API
-        model_name = os.getenv("CHAT_MODEL", "llama3.3:latest")  # Default to TUM's model
-        
-        print(f"🤖 Initializing LLM with model: {model_name}")
-        print(f"🌐 Using API base URL: {base_url}")
-        
-        llm = ChatOpenAI(
-            model=model_name,
-            temperature=0,
-            max_tokens=None,
-            max_retries=2,
-            openai_api_key=api_key,
-            openai_api_base=base_url
-        )
+        print("🤖 Initializing LLM...")
+        llm = get_llm_client()
         
         # Create QA chain
         qa_chain = RetrievalQA.from_chain_type(
@@ -555,19 +623,8 @@ async def chat_with_ai(request: ChatRequest, authorization: Optional[str] = Head
                 input_variables=["context", "question"]
             )
             
-            # Use same OpenAI-compatible configuration (for TUM's Open WebUI service)
-            api_key = os.getenv("OPENAI_API_KEY")
-            base_url = os.getenv("OPENAI_BASE_URL", "https://gpu.aet.cit.tum.de/api")  # Open WebUI API
-            model_name = os.getenv("CHAT_MODEL", "llama3.3:latest")  # Default to TUM's model
-            
-            llm = ChatOpenAI(
-                model=model_name,
-                temperature=0,
-                max_tokens=None,
-                max_retries=2,
-                openai_api_key=api_key,
-                openai_api_base=base_url
-            )
+            print("🤖 Initializing LLM for filtered search...")
+            llm = get_llm_client()
             
             filtered_qa_chain = RetrievalQA.from_chain_type(
                 llm=llm,

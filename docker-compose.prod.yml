@@ -11,6 +11,7 @@ services:
       - .env
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      # Uses AWS RDS database from environment variables
     networks:
       - stratton-oakmont-network
     restart: unless-stopped
@@ -27,6 +28,7 @@ services:
       - .env
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      # Uses AWS RDS databases from environment variables
     networks:
       - stratton-oakmont-network
     restart: unless-stopped
@@ -43,6 +45,11 @@ services:
       - .env
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      # Connect to Kubernetes Weaviate via port-forward or external access
+      - WEAVIATE_URL=${WEAVIATE_URL:-http://host.docker.internal:8000}
+      - LLM_INFERENCE_SERVICE_URL=http://tum-study-planner-llm-inference-1:8084
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - stratton-oakmont-network
     restart: unless-stopped
@@ -57,23 +64,9 @@ services:
       - "8083:8083"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      # Uses AWS RDS database from environment variables
     env_file:
       - .env
-    networks:
-      - stratton-oakmont-network
-    restart: unless-stopped
-
-  # LLM Inference Service (Python)
-  llm-inference-service:
-    build:
-      context: ./server/llm-inference-service
-    container_name: llm-inference-service
-    ports:
-      - "8084:8084"
-    env_file:
-      - .env
-    environment:
-      - ENV=production
     networks:
       - stratton-oakmont-network
     restart: unless-stopped
@@ -103,3 +96,5 @@ services:
 networks:
   stratton-oakmont-network:
     driver: bridge
+
+volumes: {}
