@@ -12,6 +12,13 @@ echo "=========================="
 WEAVIATE_URL="http://localhost:8000"
 EXPORT_DIR="/opt/tum-study-planner/weaviate-export"
 
+# If running locally (for testing)
+if [ -d "./weaviate-export" ]; then
+    EXPORT_DIR="./weaviate-export"
+fi
+
+echo "📁 Using export directory: $EXPORT_DIR"
+
 # Wait for Weaviate to be ready
 echo "⏳ Waiting for Weaviate to be ready..."
 for i in {1..30}; do
