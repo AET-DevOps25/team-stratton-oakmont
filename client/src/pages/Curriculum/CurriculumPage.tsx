@@ -30,7 +30,13 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Pagination,
+  TableCell,
+  TableSortLabel,
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableBody,
 } from "@mui/material";
 import {
   MenuBook,
@@ -115,9 +121,61 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
   // Configuration
   const STUDY_PROGRAM_ID = 121; // M.Sc. Information Systems
 
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [itemsPerPage] = useState<number>(12); // 12 courses per page
-  const [paginatedCourses, setPaginatedCourses] = useState<Course[]>([]);
+  const [orderBy, setOrderBy] = useState<keyof Course>("name");
+  const [order, setOrder] = useState<"asc" | "desc">("asc");
+
+  // Add this helper function after the existing helper functions around line 587:
+
+  const handleSort = (property: keyof Course) => {
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
+  };
+
+  // Also update to sort the courses without pagination:
+
+  // useEffect for sorting without pagination
+  useEffect(() => {
+    // Sort the filtered courses and display all of them
+    const sortedCourses = [...filteredCourses].sort((a, b) => {
+      const aValue = a[orderBy];
+      const bValue = b[orderBy];
+
+      if (typeof aValue === "string" && typeof bValue === "string") {
+        return order === "asc"
+          ? aValue.localeCompare(bValue)
+          : bValue.localeCompare(aValue);
+      }
+
+      if (typeof aValue === "number" && typeof bValue === "number") {
+        return order === "asc" ? aValue - bValue : bValue - aValue;
+      }
+
+      return 0;
+    });
+
+    // No pagination - show all sorted courses
+  }, [filteredCourses, orderBy, order]);
+
+  // Memoized sorted courses
+  const sortedCourses = useMemo(() => {
+    return [...filteredCourses].sort((a, b) => {
+      const aValue = a[orderBy];
+      const bValue = b[orderBy];
+
+      if (typeof aValue === "string" && typeof bValue === "string") {
+        return order === "asc"
+          ? aValue.localeCompare(bValue)
+          : bValue.localeCompare(aValue);
+      }
+
+      if (typeof aValue === "number" && typeof bValue === "number") {
+        return order === "asc" ? aValue - bValue : bValue - aValue;
+      }
+
+      return 0;
+    });
+  }, [filteredCourses, orderBy, order]);
 
   // Debounce search query to prevent API spam
   useEffect(() => {
@@ -286,211 +344,6 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
     curriculumOverview,
   ]);
 
-  // Memoized Course Card Component for better performance
-  const CourseCard = React.memo(({ course }: { course: Course }) => (
-    <Card
-      sx={{
-        backgroundColor: "#2a2a2a",
-        borderLeft: `6px solid ${getCategoryColor(course.category)}`,
-        borderRadius: 3,
-        transition: "all 0.3s ease",
-        cursor: "pointer",
-        "&:hover": {
-          backgroundColor: "#333",
-          transform: "translateY(-2px)",
-          boxShadow: `0 8px 24px rgba(${getCategoryColor(course.category)
-            .slice(1)
-            .match(/.{2}/g)
-            ?.map((hex) => parseInt(hex, 16))
-            .join(", ")}, 0.2)`,
-        },
-      }}
-      onClick={() => handleCourseClick(course)}
-    >
-      <CardContent sx={{ p: 3 }}>
-        {/* Course Header */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-            mb: 2,
-          }}
-        >
-          <Box sx={{ flex: 1 }}>
-            <Typography
-              variant="h6"
-              sx={{ color: "white", mb: 1, fontWeight: 600 }}
-            >
-              {course.name}
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{ color: "#646cff", mb: 1, fontWeight: 500 }}
-            >
-              {course.code}
-            </Typography>
-          </Box>
-          <Chip
-            label={`${course.credits} ECTS`}
-            sx={{
-              backgroundColor: getCategoryColor(course.category),
-              color: "white",
-              fontWeight: "bold",
-              fontSize: "0.9rem",
-            }}
-          />
-        </Box>
-
-        {/* Course Tags */}
-        <Box sx={{ display: "flex", gap: 1, mb: 2, flexWrap: "wrap" }}>
-          <Chip
-            label={course.category.replace(
-              "Required Modules Information Systems",
-              "Required IS"
-            )}
-            size="small"
-            sx={{
-              backgroundColor: getCategoryColor(course.category),
-              color: "white",
-              fontWeight: 500,
-            }}
-          />
-          {course.subcategory && (
-            <Chip
-              label={course.subcategory}
-              size="small"
-              sx={{ backgroundColor: "#666", color: "white" }}
-            />
-          )}
-
-          {/* Semester availability badge */}
-          <Chip
-            icon={getSemesterIcon(course.occurrence)}
-            label={course.occurrence}
-            size="small"
-            sx={{
-              backgroundColor: getSemesterColor(course.occurrence),
-              color: "white",
-              "& .MuiChip-icon": { color: "white" },
-            }}
-          />
-
-          {/* Language badge */}
-          <Chip
-            icon={<Language />}
-            label={course.language}
-            size="small"
-            sx={{
-              backgroundColor: "#666",
-              color: "white",
-              "& .MuiChip-icon": { color: "white" },
-            }}
-          />
-        </Box>
-
-        {/* Professor */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
-          <Person sx={{ fontSize: "1rem", color: "#aaa" }} />
-          <Typography variant="body2" sx={{ color: "#aaa" }}>
-            <strong>Professor:</strong> {course.professor}
-          </Typography>
-        </Box>
-
-        {/* Description */}
-        {course.description && (
-          <Typography
-            variant="body2"
-            sx={{ color: "#ccc", lineHeight: 1.5, mb: 2 }}
-          >
-            {course.description.length > 180
-              ? `${course.description.substring(0, 180)}...`
-              : course.description}
-          </Typography>
-        )}
-
-        {/* Prerequisites */}
-        {course.prerequisites && course.prerequisites.length > 0 && (
-          <Box sx={{ mt: 2 }}>
-            <Typography
-              variant="caption"
-              sx={{
-                color: "#ff9800",
-                fontWeight: 600,
-                display: "block",
-                mb: 1,
-              }}
-            >
-              Prerequisites:
-            </Typography>
-            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-              {course.prerequisites.slice(0, 3).map((prereq, index) => (
-                <Chip
-                  key={index}
-                  label={prereq}
-                  size="small"
-                  sx={{
-                    backgroundColor: "rgba(255, 152, 0, 0.2)",
-                    color: "#ff9800",
-                    border: "1px solid #ff9800",
-                  }}
-                />
-              ))}
-              {course.prerequisites.length > 3 && (
-                <Chip
-                  label={`+${course.prerequisites.length - 3} more`}
-                  size="small"
-                  sx={{
-                    backgroundColor: "rgba(255, 152, 0, 0.1)",
-                    color: "#ff9800",
-                  }}
-                />
-              )}
-            </Box>
-          </Box>
-        )}
-
-        {/* Click to view more indicator */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "flex-end",
-            alignItems: "center",
-            mt: 2,
-            gap: 1,
-            color: "#646cff",
-            opacity: 0.7,
-          }}
-        >
-          <Info sx={{ fontSize: "1rem" }} />
-          <Typography variant="caption">
-            Click for detailed information
-          </Typography>
-        </Box>
-      </CardContent>
-    </Card>
-  ));
-
-  // useEffect for pagination
-  useEffect(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const currentPageCourses = filteredCourses.slice(startIndex, endIndex);
-    setPaginatedCourses(currentPageCourses);
-  }, [filteredCourses, currentPage, itemsPerPage]);
-
-  // Reset to first page when filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [
-    selectedCategory,
-    selectedSubcategory,
-    selectedLanguage,
-    selectedOccurrence,
-    selectedCreditsRange,
-    debouncedSearchQuery,
-  ]);
-
   // Helper functions
   const getCategoryColor = (category: string) => {
     switch (category) {
@@ -635,21 +488,6 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
   };
 
   const categories = categoryStats.map((stat) => stat.category);
-
-  // pagination helper functions
-  const totalPages = Math.ceil(filteredCourses.length / itemsPerPage);
-
-  const handlePageChange = (
-    event: React.ChangeEvent<unknown>,
-    page: number
-  ) => {
-    setCurrentPage(page);
-    // Smooth scroll to top of course list
-    const courseListElement = document.getElementById("course-list-section");
-    if (courseListElement) {
-      courseListElement.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  };
 
   // Memoized calculations for performance
   const programStatistics = useMemo(() => {
@@ -997,7 +835,7 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
               variant="body2"
               sx={{ color: "#aaa", fontStyle: "italic", textAlign: "center" }}
             >
-              💡 Did you know? TUM offers over 170 degree programs across 15
+              💡 Did you know? TUM offers over 500 degree programs across 7
               different schools!
             </Typography>
           </Box>
@@ -1776,14 +1614,6 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
               <Typography variant="body1" sx={{ color: "#aaa" }}>
                 Showing{" "}
                 <strong style={{ color: "#646cff" }}>
-                  {(currentPage - 1) * itemsPerPage + 1}
-                </strong>
-                -
-                <strong style={{ color: "#646cff" }}>
-                  {Math.min(currentPage * itemsPerPage, filteredCourses.length)}
-                </strong>{" "}
-                of{" "}
-                <strong style={{ color: "#646cff" }}>
                   {filteredCourses.length}
                 </strong>{" "}
                 modules
@@ -1829,21 +1659,9 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
               </Box>
             )}
           </Box>
-
-          {/* Page info for mobile */}
-          {totalPages > 1 && (
-            <Box sx={{ mt: 2, display: { xs: "block", sm: "none" } }}>
-              <Typography
-                variant="body2"
-                sx={{ color: "#646cff", textAlign: "center" }}
-              >
-                Page {currentPage} of {totalPages}
-              </Typography>
-            </Box>
-          )}
         </Paper>
 
-        {/* Enhanced Course List */}
+        {/* Enhanced Course List - Table Format */}
         <Box>
           {filteredCourses.length === 0 ? (
             <Paper
@@ -1879,68 +1697,465 @@ const CurriculumPage: React.FC<CurriculumPageProps> = () => {
               </Button>
             </Paper>
           ) : (
-            <Grid container spacing={3}>
-              {paginatedCourses.map((course) => (
-                <Grid size={{ xs: 12, lg: 6 }} key={course.id}>
-                  <CourseCard course={course} />
-                </Grid>
-              ))}
-            </Grid>
-          )}
-
-          {/* Pagination Controls */}
-          {filteredCourses.length > 0 && totalPages > 1 && (
-            <Box
+            <Paper
               sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                mt: 4,
-                gap: 2,
-                flexWrap: "wrap",
+                backgroundColor: "#2a2a2a",
+                borderRadius: 3,
+                overflow: "hidden",
+                boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
+                border: "1px solid #444",
               }}
             >
-              <Pagination
-                count={totalPages}
-                page={currentPage}
-                onChange={handlePageChange}
-                color="primary"
-                size="large"
-                showFirstButton
-                showLastButton
+              <TableContainer
                 sx={{
-                  "& .MuiPaginationItem-root": {
-                    color: "white",
-                    borderColor: "#555",
-                    "&:hover": {
-                      backgroundColor: "rgba(100, 108, 255, 0.1)",
-                      borderColor: "#646cff",
-                    },
-                    "&.Mui-selected": {
-                      backgroundColor: "#646cff",
-                      color: "white",
-                      "&:hover": {
-                        backgroundColor: "#535bf2",
-                      },
-                    },
+                  maxHeight: "90vh",
+                  overflowX: "hidden",
+                  "&::-webkit-scrollbar": {
+                    width: "8px",
+                  },
+                  "&::-webkit-scrollbar-track": {
+                    backgroundColor: "#333",
+                  },
+                  "&::-webkit-scrollbar-thumb": {
+                    backgroundColor: "#666",
+                    borderRadius: "4px",
                   },
                 }}
-              />
-
-              {/* Results info for larger screens */}
-              <Typography
-                variant="body2"
-                sx={{
-                  color: "#aaa",
-                  display: { xs: "none", sm: "block" },
-                  ml: 2,
-                }}
               >
-                {(currentPage - 1) * itemsPerPage + 1}-
-                {Math.min(currentPage * itemsPerPage, filteredCourses.length)}{" "}
-                of {filteredCourses.length}
-              </Typography>
-            </Box>
+                <Table
+                  stickyHeader
+                  sx={{ tableLayout: "fixed", width: "100%" }}
+                >
+                  <TableHead>
+                    <TableRow>
+                      <TableCell
+                        sx={{
+                          color: "white",
+                          fontWeight: "bold",
+                          backgroundColor: "#333",
+                          borderBottom: "2px solid #444",
+                          width: { xs: "40%", sm: "35%" },
+                          minWidth: { xs: "200px", sm: "300px" },
+                        }}
+                      >
+                        <TableSortLabel
+                          active={orderBy === "name"}
+                          direction={orderBy === "name" ? order : "asc"}
+                          onClick={() => handleSort("name")}
+                          sx={{ color: "white !important" }}
+                        >
+                          Course Name
+                        </TableSortLabel>
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          color: "white",
+                          fontWeight: "bold",
+                          backgroundColor: "#333",
+                          borderBottom: "2px solid #444",
+                          width: { xs: "15%", sm: "9%" },
+                          display: { xs: "none", sm: "table-cell" },
+                        }}
+                      >
+                        <TableSortLabel
+                          active={orderBy === "code"}
+                          direction={orderBy === "code" ? order : "asc"}
+                          onClick={() => handleSort("code")}
+                          sx={{ color: "white !important" }}
+                        >
+                          Code
+                        </TableSortLabel>
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          color: "white",
+                          fontWeight: "bold",
+                          backgroundColor: "#333",
+                          borderBottom: "2px solid #444",
+                          width: { xs: "15%", sm: "60px" },
+                        }}
+                      >
+                        <TableSortLabel
+                          active={orderBy === "credits"}
+                          direction={orderBy === "credits" ? order : "asc"}
+                          onClick={() => handleSort("credits")}
+                          sx={{ color: "white !important" }}
+                        >
+                          ECTS
+                        </TableSortLabel>
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          color: "white",
+                          fontWeight: "bold",
+                          backgroundColor: "#333",
+                          borderBottom: "2px solid #444",
+                          width: { xs: "20%", sm: "12%" },
+                        }}
+                      >
+                        Category
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          color: "white",
+                          fontWeight: "bold",
+                          backgroundColor: "#333",
+                          borderBottom: "2px solid #444",
+                          width: "10%",
+                          display: { xs: "none", md: "table-cell" },
+                        }}
+                      >
+                        <TableSortLabel
+                          active={orderBy === "professor"}
+                          direction={orderBy === "professor" ? order : "asc"}
+                          onClick={() => handleSort("professor")}
+                          sx={{ color: "white !important" }}
+                        >
+                          Professor
+                        </TableSortLabel>
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          color: "white",
+                          fontWeight: "bold",
+                          backgroundColor: "#333",
+                          borderBottom: "2px solid #444",
+                          width: { xs: "15%", sm: "8%" },
+                          textAlign: "center",
+                          display: { xs: "none", sm: "table-cell" },
+                        }}
+                      >
+                        <TableSortLabel
+                          active={orderBy === "occurrence"}
+                          direction={orderBy === "occurrence" ? order : "asc"}
+                          onClick={() => handleSort("occurrence")}
+                          sx={{ color: "white !important" }}
+                        >
+                          Semester
+                        </TableSortLabel>
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          color: "white",
+                          fontWeight: "bold",
+                          backgroundColor: "#333",
+                          borderBottom: "2px solid #444",
+                          width: { xs: "15%", sm: "8%" },
+                          textAlign: "center",
+                          display: { xs: "none", lg: "table-cell" },
+                        }}
+                      >
+                        <TableSortLabel
+                          active={orderBy === "language"}
+                          direction={orderBy === "language" ? order : "asc"}
+                          onClick={() => handleSort("language")}
+                          sx={{ color: "white !important" }}
+                        >
+                          Language
+                        </TableSortLabel>
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          color: "white",
+                          fontWeight: "bold",
+                          backgroundColor: "#333",
+                          borderBottom: "2px solid #444",
+                          width: { xs: "10%", sm: "50px" },
+                          textAlign: "center",
+                        }}
+                      >
+                        Details
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {sortedCourses.map((course) => (
+                      <TableRow
+                        key={course.id}
+                        sx={{
+                          "&:hover": {
+                            backgroundColor: "#333",
+                            cursor: "pointer",
+                            transform: "translateX(2px)",
+                            transition: "all 0.2s ease-in-out",
+                          },
+                          borderBottom: "1px solid #444",
+                          borderLeft: `4px solid ${getCategoryColor(
+                            course.category
+                          )}`,
+                          transition: "all 0.2s ease-in-out",
+                          backgroundColor: "#2a2a2a",
+                        }}
+                        onClick={() => handleCourseClick(course)}
+                      >
+                        <TableCell sx={{ color: "white", py: 2 }}>
+                          <Box>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                fontWeight: 600,
+                                mb: 0.5,
+                                color: "white",
+                              }}
+                            >
+                              {course.name}
+                            </Typography>
+                            {course.description && (
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  color: "#aaa",
+                                  lineHeight: 1.3,
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  display: "-webkit-box",
+                                  WebkitLineClamp: { xs: 1, sm: 2 },
+                                  WebkitBoxOrient: "vertical",
+                                }}
+                              >
+                                {course.description}
+                              </Typography>
+                            )}
+                            {/* Show mobile info */}
+                            <Box
+                              sx={{
+                                display: { xs: "block", sm: "none" },
+                                mt: 1,
+                              }}
+                            >
+                              <Typography
+                                variant="caption"
+                                sx={{ color: "#646cff", fontWeight: 600 }}
+                              >
+                                {course.code}
+                              </Typography>
+                            </Box>
+                            {/* {course.prerequisites &&
+                              course.prerequisites.length > 0 && (
+                                <Box
+                                  sx={{
+                                    mt: 0.5,
+                                    display: { xs: "none", sm: "flex" },
+                                    gap: 0.5,
+                                    flexWrap: "wrap",
+                                  }}
+                                >
+                                  <Typography
+                                    variant="caption"
+                                    sx={{ color: "#ff9800", fontWeight: 600 }}
+                                  >
+                                    Prerequisites:
+                                  </Typography>
+                                  {course.prerequisites
+                                    .slice(0, 2)
+                                    .map((prereq, index) => (
+                                      <Chip
+                                        key={index}
+                                        label={prereq}
+                                        size="small"
+                                        sx={{
+                                          height: 16,
+                                          fontSize: "0.6rem",
+                                          backgroundColor:
+                                            "rgba(255, 152, 0, 0.2)",
+                                          color: "#ff9800",
+                                          border:
+                                            "1px solid rgba(255, 152, 0, 0.5)",
+                                        }}
+                                      />
+                                    ))}
+                                  {course.prerequisites.length > 2 && (
+                                    <Typography
+                                      variant="caption"
+                                      sx={{ color: "#ff9800" }}
+                                    >
+                                      +{course.prerequisites.length - 2} more
+                                    </Typography>
+                                  )}
+                                </Box>
+                              )} */}
+                          </Box>
+                        </TableCell>
+                        <TableCell
+                          sx={{
+                            color: "white",
+                            display: { xs: "none", sm: "table-cell" },
+                          }}
+                        >
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              fontWeight: 600,
+                              color: "#646cff",
+                            }}
+                          >
+                            {course.code}
+                          </Typography>
+                        </TableCell>
+                        <TableCell sx={{ color: "white", textAlign: "center" }}>
+                          <Chip
+                            label={`${course.credits}`}
+                            size="small"
+                            sx={{
+                              backgroundColor: getCategoryColor(
+                                course.category
+                              ),
+                              color: "white",
+                              fontWeight: "bold",
+                              minWidth: "40px",
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell sx={{ color: "white" }}>
+                          <Chip
+                            label={
+                              course.category ===
+                              "Required Modules Information Systems"
+                                ? "Required IS"
+                                : course.category === "Master's Thesis"
+                                ? "Thesis"
+                                : course.category === "Practical Lab"
+                                ? "Practical"
+                                : course.category === "Support Electives"
+                                ? "Support"
+                                : course.category === "Elective Courses"
+                                ? "Elective"
+                                : course.category
+                            }
+                            size="small"
+                            sx={{
+                              backgroundColor: getCategoryColor(
+                                course.category
+                              ),
+                              color: "white",
+                              fontSize: { xs: "0.65rem", sm: "0.75rem" },
+                              fontWeight: 500,
+                            }}
+                          />
+                          {course.subcategory && (
+                            <Chip
+                              label={
+                                course.subcategory.length > 15
+                                  ? `${course.subcategory.substring(0, 15)}...`
+                                  : course.subcategory
+                              }
+                              size="small"
+                              sx={{
+                                mt: 0.5,
+                                backgroundColor: "#666",
+                                color: "white",
+                                fontSize: "0.65rem",
+                                height: 18,
+                                display: { xs: "none", sm: "inline-flex" },
+                              }}
+                            />
+                          )}
+                        </TableCell>
+                        <TableCell
+                          sx={{
+                            color: "white",
+                            display: { xs: "none", md: "table-cell" },
+                          }}
+                        >
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              color: "#aaa",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            {course.professor}
+                          </Typography>
+                        </TableCell>
+                        <TableCell
+                          sx={{
+                            color: "white",
+                            textAlign: "center",
+                            display: { xs: "none", sm: "table-cell" },
+                          }}
+                        >
+                          <Chip
+                            icon={getSemesterIcon(course.occurrence)}
+                            label={
+                              course.occurrence.includes("Winter") &&
+                              course.occurrence.includes("Summer")
+                                ? "W/S"
+                                : course.occurrence.includes("Winter")
+                                ? "Winter"
+                                : course.occurrence.includes("Summer")
+                                ? "Summer"
+                                : course.occurrence
+                            }
+                            size="small"
+                            sx={{
+                              backgroundColor: getSemesterColor(
+                                course.occurrence
+                              ),
+                              color: "white",
+                              fontSize: "0.7rem",
+                              "& .MuiChip-icon": {
+                                color: "white",
+                                fontSize: "0.9rem",
+                              },
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell
+                          sx={{
+                            color: "white",
+                            textAlign: "center",
+                            display: { xs: "none", lg: "table-cell" },
+                          }}
+                        >
+                          <Chip
+                            label={
+                              course.language === "English"
+                                ? "EN"
+                                : course.language === "German"
+                                ? "DE"
+                                : course.language === "German/English"
+                                ? "EN/DE"
+                                : course.language
+                            }
+                            size="small"
+                            sx={{
+                              backgroundColor:
+                                course.language === "English"
+                                  ? "#4caf50"
+                                  : course.language === "German/English"
+                                  ? "#ff9800"
+                                  : "#2196f3",
+                              color: "white",
+                              fontSize: "0.7rem",
+                              minWidth: "50px",
+                              fontWeight: 600,
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell sx={{ color: "white", textAlign: "center" }}>
+                          <IconButton
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleCourseClick(course);
+                            }}
+                            sx={{
+                              color: "#646cff",
+                              "&:hover": {
+                                backgroundColor: "rgba(100, 108, 255, 0.1)",
+                              },
+                            }}
+                          >
+                            <Info sx={{ fontSize: "1.2rem" }} />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
           )}
         </Box>
 
