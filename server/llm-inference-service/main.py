@@ -665,6 +665,11 @@ async def health_check():
 @app.get("/")
 async def root():
     return {"message": "LLM Inference Service with RAG is running"}
+
+@app.get("/metrics")
+async def metrics():
+    """Prometheus metrics endpoint"""
+    return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
   
 # Prometheus metrics
 REQUEST_COUNT = Counter('http_requests_total', 'Total HTTP requests', ['method', 'endpoint', 'status'])
