@@ -11,7 +11,7 @@ export const STUDY_PLAN_API_URL = window.location.hostname.includes(
   : "http://localhost:8081/api/v1"; // Development
 
 export const AI_ADVISOR_API_URL = window.location.hostname.includes(
-  "tum-study-planner.student.k8s.aet.tum.de"
+  "tum-study-planner.student.k8s.aet.cit.tum.de"
 )
   ? "/api/ai-advisor" // Production
   : "http://localhost:8082/api/v1"; // Development
