@@ -8,6 +8,7 @@ import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,11 +17,14 @@ import java.util.List;
 @Configuration
 public class OpenApiConfig {
 
+    @Value("${server.port:8082}")
+    private String serverPort;
+
+    @Value("${spring.profiles.active:dev}")
+    private String activeProfile;
+
     @Bean
     public OpenAPI aiAdvisorOpenAPI() {
-        Server devServer = new Server();
-        devServer.setUrl("http://localhost:8082/api/v1");
-        devServer.setDescription("Server URL in Development environment");
 
         Contact contact = new Contact();
         contact.setEmail("f.seitz@tum.de");
@@ -48,11 +52,29 @@ public class OpenApiConfig {
         SecurityRequirement securityRequirement = new SecurityRequirement()
                 .addList("Bearer Authentication");
 
-        return new OpenAPI()
-                .info(info)
-                .servers(List.of(devServer))
-                .addSecurityItem(securityRequirement)
-                .components(new Components()
-                        .addSecuritySchemes("Bearer Authentication", jwtScheme));
+        // Only show the appropriate server based on environment
+        if ("prod".equals(activeProfile) || "production".equals(activeProfile)) {
+            Server prodServer = new Server()
+                    .url("https://tum-study-planner.student.k8s.aet.cit.tum.de/api/ai-advisor")
+                    .description("Production Server");
+            
+            return new OpenAPI()
+                    .info(info)
+                    .servers(List.of(prodServer))
+                    .addSecurityItem(securityRequirement)
+                    .components(new Components()
+                            .addSecuritySchemes("Bearer Authentication", jwtScheme));
+        } else {
+            Server devServer = new Server()
+                    .url("http://localhost:" + serverPort + "/api/v1")
+                    .description("Development Server");
+            
+            return new OpenAPI()
+                    .info(info)
+                    .servers(List.of(devServer))
+                    .addSecurityItem(securityRequirement)
+                    .components(new Components()
+                            .addSecuritySchemes("Bearer Authentication", jwtScheme));
+        }
     }
 }

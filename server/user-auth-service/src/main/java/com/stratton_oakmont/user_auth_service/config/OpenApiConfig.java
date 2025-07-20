@@ -5,9 +5,7 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.servers.Server;
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
-import io.swagger.v3.oas.models.security.SecurityScheme;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,13 +14,14 @@ import java.util.List;
 @Configuration
 public class OpenApiConfig {
 
+    @Value("${server.port:8083}")
+    private String serverPort;
+
+    @Value("${spring.profiles.active:dev}")
+    private String activeProfile;
+
     @Bean
     public OpenAPI userAuthOpenAPI() {
-
-        Server currentServer = new Server()
-                .url("/api/v1")
-                .description("Current Environment");
-
         Contact contact = new Contact();
         contact.setEmail("nikolas.lethaus@gmail.com");
         contact.setName("Team Stratton Oakmont");
@@ -38,22 +37,23 @@ public class OpenApiConfig {
                 .description("This API handles user authentication, registration, and JWT token management.")
                 .license(mitLicense);
 
-        // // Define the security scheme for JWT
-        // SecurityScheme jwtScheme = new SecurityScheme()
-        //         .type(SecurityScheme.Type.HTTP)
-        //         .scheme("bearer")
-        //         .bearerFormat("JWT")
-        //         .in(SecurityScheme.In.HEADER)
-        //         .name("Authorization");
-
-        //SecurityRequirement securityRequirement = new SecurityRequirement()
-        //       .addList("Bearer Authentication");
-
-        return new OpenAPI()
-                .info(info)
-                .servers(List.of(currentServer));
-                //.addSecurityItem(securityRequirement)
-                //.components(new Components()
-                //        .addSecuritySchemes("Bearer Authentication", jwtScheme));
+        // Only show the appropriate server based on environment
+        if ("prod".equals(activeProfile) || "production".equals(activeProfile)) {
+            Server prodServer = new Server()
+                    .url("https://tum-study-planner.student.k8s.aet.cit.tum.de/api/user-auth")
+                    .description("Production Server");
+            
+            return new OpenAPI()
+                    .info(info)
+                    .servers(List.of(prodServer));
+        } else {
+            Server devServer = new Server()
+                    .url("http://localhost:" + serverPort + "/api/v1")
+                    .description("Development Server");
+            
+            return new OpenAPI()
+                    .info(info)
+                    .servers(List.of(devServer));
+        }
     }
 }
