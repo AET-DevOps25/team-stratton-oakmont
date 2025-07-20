@@ -19,6 +19,7 @@ spec:
       containers:
         - name: llm-inference-service
           image: "{{ .Values.llmInferenceService.image.repository }}:{{ .Values.llmInferenceService.image.tag }}"
+          imagePullPolicy: Always
           ports:
             - containerPort: 8084
           env:

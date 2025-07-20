@@ -25,6 +25,7 @@ spec:
       containers:
         - name: ai-advisor-service
           image: "{{ .Values.aiAdvisorService.image.repository }}:{{ .Values.aiAdvisorService.image.tag }}"
+          imagePullPolicy: Always
           ports:
             - containerPort: 8082
               name: http

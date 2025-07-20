@@ -19,6 +19,7 @@ spec:
       containers:
         - name: swagger-ui
           image: "{{ .Values.swaggerUi.image.repository }}:{{ .Values.swaggerUi.image.tag }}"
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
           env:

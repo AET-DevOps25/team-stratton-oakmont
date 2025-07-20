@@ -25,6 +25,7 @@ spec:
       containers:
         - name: program-catalog-service
           image: "{{ .Values.programCatalogService.image.repository }}:{{ .Values.programCatalogService.image.tag }}"
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
               name: http
