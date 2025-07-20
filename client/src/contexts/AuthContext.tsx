@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 interface AuthContextType {
   isLoggedIn: boolean;
+  isLoading: boolean;
   userEmail: string | null;
   token: string | null;
   userId: string | null;
@@ -27,6 +28,7 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
@@ -43,6 +45,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setToken(storedToken);
       setUserId(storedUserId);
     }
+    setIsLoading(false);
   }, []);
 
   const login = (token: string, userId: string, email: string) => {
@@ -69,6 +72,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     <AuthContext.Provider
       value={{
         isLoggedIn,
+        isLoading,
         userEmail,
         token,
         userId,
