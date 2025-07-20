@@ -1,370 +1,221 @@
-# 📱 TUM Study Planer powered by Stratton Oakmont
+# 📖 TUM Study Planner
 
-## 🚀 Getting Started
+Planning a study program at TUM can be overwhelming. Students often struggle with:
 
-> _Instructions to run the app locally with Docker._
+- **Information Overload**: Navigating through hundreds of courses across different departments and semesters
+- **Complex Prerequisites**: Understanding which courses need to be completed before others
+- **Planning Uncertainty**: Not knowing which courses align with their career goals or interests
+- **Time Management**: Organizing courses efficiently across semesters to graduate on time
+- **Lack of Guidance**: Limited access to personalized academic advice when needed
 
+Our TUM Study Planner solves these challenges by providing an intelligent, all-in-one platform that guides students through their entire academic journey.
+
+#### ✏️ Student Registration
+
+Getting started is effortless. Students create an account using their email and a password – that’s it. From there, they’re welcomed to explore the course catalog, create study plans and get AI-Powered assistance.
+
+#### 🔍 Explore Course Catalog
+
+No more getting lost in PDFs or scattered links. Our platform offers a powerful, searchable catalog of all TUM courses (currently only MSc Information System courses), neatly organized by programs and departments. Whether you’re curious about Machine Learning, Algorithms, or Digital Ethics, students can search intuitively, filter by requirements, and dive into module details: credits, prerequisites, semesters offered, and more. The entire academic landscape is just a few clicks away.
+
+#### 📚 Smart Study Plan Creation
+
+Building a degree plan has never been easier. Students can design their own semester-by-semester roadmap, check off prerequisites, and monitor progress toward graduation – all visually and interactively. Multiple study plan scenarios? Absolutely. Real-time validation ensures every plan is realistic, rule-compliant, and tailored to each student’s goals.
+
+#### 🤖 AI-Powered Course Assistance
+
+Meet your 24/7 academic co-pilot. Our AI assistant understands TUM’s curriculum and gives intelligent answers in natural language:
+“What’s the difference between the two Machine Learning electives?”
+“What path should I take if I want to become a data scientist?”
+Backed by deep content analysis and confidence scores, the AI suggests optimal course sequences, explains prerequisites, and helps students plan smarter.
+
+## 🚀 Quick Start - One-Command Deployment
+
+Deploy the complete application stack with a single command:
+
+Prerequisite: Get the .env file from project team
 ```bash
+# 1. Clone and navigate to project
+git clone https://github.com/AET-DevOps25/team-stratton-oakmont.git
 cd team-stratton-oakmont
 
-# Create shared network (only needed once)
+# 2. Compose docker
 docker network create stratton-oakmont-network
-
-# Start monitoring stack (independent, keeps historical data)
 docker-compose -f docker-compose.monitoring.yml up -d
-
-# Start application services
 docker-compose -f docker-compose.test.yml up -d --build
 
-# Stop application services (monitoring keeps running)
-docker-compose -f docker-compose.test.yml down
+# 3. Forward ports for weaviate (.kube config from rancher needed)
+kubectl port-forward -n tum-study-planner svc/weaviate-vector-service 8000:8000 50051:50051
 
-# Stop monitoring stack (if needed)
-docker-compose -f docker-compose.monitoring.yml down
+# Wait ~2 minutes for all services to start, then access:
+# 🌐 Application: http://localhost:3000
 ```
 
-**Local URLs:**
+## 🏗️ Architecture Overview
 
-- Frontend: http://localhost:3000
-- Program Catalog Service: http://localhost:8080
-- Study Plan Service: http://localhost:8081
-- AI Advisor Service: http://localhost:8082
-- User Auth Service: http://localhost:8083
-- LLM Service: http://localhost:8084
+The TUM Study Planner follows a modern microservices architecture with AI integration:
 
-### 🤖 AI Chat Feature Setup
+### System Architecture Overview
 
-> _For the AI-powered course Q&A feature._
+- 🎯 [**Use Case Diagram**](./project-documentation/system-overview/use_case_diagram.pdf) - User interactions and system capabilities
+  ![](./project-documentation/system-overview/use_case_diagram.png)
 
-```bash
-# Quick setup for AI chat functionality
-./scripts/setup-ai-chat.sh
+- 📋 [**Top-Level Architecture**](./project-documentation/system-overview/top_level_architecture.pdf) - Complete system overview and component relationships
+  ![](./project-documentation/system-overview/top_level_architecture.png)
 
-# Test the AI chat feature
-./scripts/test-ai-chat.sh
+- 📊 [**Analysis Object Model**](./project-documentation/system-overview/Analysis_Object_Model.pdf) - Data models and business logic structure
+  ![](./project-documentation/system-overview/analysis_object_model.png)
+
+### Tech Stack
+
+- **Frontend**: React + TypeScript + Vite + Material-UI
+- **Backend**: Spring Boot (Java) + FastAPI (Python)
+- **AI/ML**: Open WebUI + LangChain + Weaviate Vector DB
+- **Database**: PostgreSQL + Vector Database (Weaviate)
+- **Infrastructure**: Docker + Docker Compose
+- **Monitoring**: Prometheus + Grafana + Loki + Promtail
+
+## 🤖 GenAI Integration
+
+### Retrieval-Augmented Generation (RAG) Pipeline
+
+The system implements a sophisticated RAG architecture for intelligent course assistance:
+
+#### Core AI Capabilities
+
+- **Natural Language Understanding**: Parse complex student queries about academic planning
+- **Semantic Course Search**: Vector-based similarity search across TUM course catalog
+- **Contextual Response Generation**: GPT-powered responses with course-specific context
+- **Course Code Detection**: Automatic identification and linking of course references
+- **Confidence Scoring**: Reliability assessment for AI-generated responses
+
+#### Technical Implementation
+
+```mermaid
+graph LR
+    A[Student Query] --> B[Query Processing]
+    B --> C[Vector Embedding<br/>OpenAI]
+    C --> D[Semantic Search<br/>Weaviate]
+    D --> E[Context Retrieval<br/>PostgreSQL]
+    E --> F[LLM Generation<br/>GPT-4]
+    F --> G[Response + Confidence<br/>+ Course Links]
 ```
 
-**AI Service URLs:**
+#### Example AI Interactions
 
-- Weaviate Vector DB: http://localhost:8000
-- LLM Inference Service: http://localhost:8084
-- AI Advisor Gateway: http://localhost:8082
+- **"What programming languages are used in IN0001?"** → Identifies course, retrieves content, provides specific language information
+- **"I want to study machine learning. What courses should I take?"** → Multi-course recommendations with prerequisites and sequences
+- **"What are the prerequisites for Advanced Algorithms?"** → Prerequisite analysis with academic planning guidance
 
-> **Note:** You'll need an OpenAI API key for the AI chat feature. See `AI_CHAT_IMPLEMENTATION.md` for detailed setup instructions.
+## 🛠️ Development & Deployment
 
-**Monitoring & Observability:**
+### 🔧 Environment Setup
 
-- Prometheus (Metrics): http://localhost:9090
-- Grafana (Dashboards): http://localhost:3001 (credentials in .env file)
-- Loki (Logs): http://localhost:3100
-
-  \*This is just the API endpoint. If you visit http://localhost:3100/ready or http://localhost:3100/metrics, you should see responses instead of 404.
-
-- Promtail (Log Collector): http://localhost:9084
-
-Prometheus automatically scrapes metrics from all Spring Boot services via internal management ports. The actuator endpoints are secured and only accessible within the Docker network:
-
-- Program Catalog Service: Internal port 9080 (`/actuator/prometheus`)
-- Study Plan Service: Internal port 9081 (`/actuator/prometheus`)
-- AI Advisor Service: Internal port 9082 (`/actuator/prometheus`)
-- User Auth Service: Internal port 9083 (`/actuator/prometheus`)
-
-_Note: These management endpoints are not exposed to the host machine for security reasons. Metrics are collected automatically by Prometheus and can be viewed in Grafana dashboards._
-
-### 📊 Monitoring & Observability
-
-The development environment includes a comprehensive monitoring stack:
-
-- **Prometheus** scrapes metrics from all Spring Boot services via Actuator endpoints
-- **Grafana** provides pre-configured dashboards for visualizing system metrics and logs
-- **Loki** aggregates logs from all containers for centralized log management
-- **Promtail** collects and ships container logs to Loki
-- **Alerts** are configured for service downtime, high response times, and error rates
-
-**Security Features:**
-
-- Management endpoints (actuator) are only accessible within the Docker network
-- External users cannot access monitoring/health endpoints directly
-- Main application APIs remain publicly accessible for legitimate use
-
-All monitoring services can be started independently and provide real-time insights into application performance and health. In development, monitoring runs alongside the application services, while in production, monitoring is deployed as a separate stack for better resource isolation.
-
-**Production Note:** In production deployments, monitoring services are deployed separately for better resource isolation and scalability. Use the dedicated `docker-compose.monitoring.yml` file alongside your production stack.
-
-### 🏭 Production Deployment (Local/Docker)
-
-> _Deploy the complete stack including monitoring for production._
+#### Required Environment Variables
 
 ```bash
-# Deploy complete stack with monitoring (recommended for production)
+# Database Configuration
+DB_STUDY_DATA_URL=jdbc:postgresql://localhost:5432/study_data
+DB_STUDY_PLAN_URL=jdbc:postgresql://localhost:5432/study_plan
+DB_USER_AUTH_URL=jdbc:postgresql://localhost:5432/user_auth
+
+# Security
+JWT_SECRET=your-256-bit-secret-key
+
+# AI Configuration (Optional - for AI features)
+OPENAI_API_KEY=your-openai-api-key
+WEAVIATE_URL=http://localhost:8000
+```
+
+### Quick Local Development Setup
+
+```bash
+# Start databases only
+docker-compose -f docker-compose.test.yml up -d postgres-study-data postgres-study-plan postgres-user-auth weaviate
+
+# Start individual services for development
+cd server
+./gradlew :program-catalog-service:bootRun &
+./gradlew :study-plan-service:bootRun &
+./gradlew :ai-advisor-service:bootRun &
+./gradlew :user-auth-service:bootRun &
+
+cd ../server/llm-inference-service
+pip install -r requirements.txt
+python main.py &
+
+cd ../../client
+npm install && npm run dev
+```
+
+### Production Deployment
+
+```bash
+# Local production deployment
 ./scripts/deploy-with-monitoring.sh
 
-# Clean up everything including monitoring
+# AWS deployment
+./scripts/deploy.sh
+
+# Cleanup
 ./scripts/destroy-with-monitoring.sh
 ```
 
-**What the production scripts do:**
+### Service URLs
 
-- 🔗 Creates shared Docker network for service communication
-- 📊 Starts monitoring stack first (Prometheus, Grafana, Loki, Promtail)
-- 🏗️ Deploys all application services in production mode
-- 🔒 Keeps management endpoints secure (internal network only)
-- 📈 Ensures monitoring is ready to collect metrics from service startup
+| Service         | Local URL             | API Documentation                                          |
+| --------------- | --------------------- | ---------------------------------------------------------- |
+| Frontend        | http://localhost:3000 | User Interface                                             |
+| Program Catalog | http://localhost:8080 | [Swagger UI](http://localhost:8080/api/v1/swagger-ui.html) |
+| Study Plan      | http://localhost:8081 | [Swagger UI](http://localhost:8081/api/v1/swagger-ui.html) |
+| AI Advisor      | http://localhost:8082 | [Swagger UI](http://localhost:8082/api/v1/swagger-ui.html) |
+| User Auth       | http://localhost:8083 | [Swagger UI](http://localhost:8083/api/v1/swagger-ui.html) |
+| LLM Service     | http://localhost:8084 | FastAPI Auto-docs                                          |
+| Monitoring      | http://localhost:3001 | Grafana Dashboards                                         |
 
-**Alternative: Manual Production Deployment**
+### Monitoring & Observability
 
-```bash
-# Create network and start monitoring
-docker network create stratton-oakmont-network
-docker-compose -f docker-compose.monitoring.yml up -d
+- **Prometheus**: Metrics collection from all services
+- **Grafana**: Real-time dashboards and alerting
+- **Loki**: Centralized log aggregation
+- **Health Checks**: Automated service health monitoring
 
-# Start production application services
-docker-compose -f docker-compose.prod.yml up -d --build
-```
+- 📊 [**Monitoring Setup**](./monitoring/README.md) - Observability configuration
 
-### ☁️ AWS Deployment
+## 📚 Documentation
 
-> _One-command deployment to AWS Academy._
+### Service Documentation
 
-```bash
-# Deploy complete infrastructure and application
-./scripts/deploy.sh
+- 🔧 [**Backend Services Overview**](./server/README.md) - Complete backend architecture and setup
+- 📖 [**Program Catalog Service**](./server/program-catalog-service/README.md)
+- 📖 [**Study Plan Service**](./server/study-plan-service/README.md)
+- 📖 [**AI Advisor Service**](./server/ai-advisor-service/README.md)
+- 📖 [**User Auth Service**](./server/user-auth-service/README.md)
+- 📖 [**LLM Inference Service**](./server/llm-inference-service/README.md)
 
-# Clean up resources when done
-./scripts/destroy.sh
-```
+## 👥 Student Responsibilities & Project Mapping
 
-**What the deploy script does:**
+This project was developed by Team Stratton Oakmont as part of the DevOps course. Here's the clear mapping of student responsibilities:
 
-- 🏗️ Creates AWS EC2 instance with Terraform
-- 🎭 Deploys application with Ansible
-- 🐳 Builds and runs all services in Docker
-- 📊 Deploys monitoring stack (Prometheus, Grafana, Loki, Promtail)
-- 🌐 Sets up nginx reverse proxy with CORS
+### Team Contributions
 
-### 🛠️ Manual Development (Alternative)
+**Johannes Guegel** spearheaded data acquisition through comprehensive tumonline website scraping and implemented the complete monitoring stack (prometheus, promtail, loki, grafana, alertmanager). He developed the complex study-plan-service that enables to create and configure a study plan and track progress.
 
-<details>
-<summary>Click to expand manual startup instructions</summary>
+**Florian Seitz** architected the DevOps pipeline, managing Kubernetes deployments, AWS workflows, Docker containerization, and GitHub Actions CI/CD. He created the intelligent AI course chat system using Weaviate vector databases and LangChain integration.
 
-How to start the frontend:
+**Nikolas Lethaus** built the core backend services architecture, implementing secure user authentication and designing the intuitive purple-themed frontend interface. He developed comprehensive API documentation, service testing frameworks, and the complete program catalog system.
 
-```bash
-# start frontend (localhost:3000)
-cd client
-npm install
-npm run dev
-```
+### Prerequisites
 
-How to start the backend services (recommended - uses .env file automatically):
-
-```bash
-# start program-catalog-service (localhost:8080)
-./scripts/start-program-catalog-service.sh
-```
-
-New terminal window:
-
-```bash
-# start study-plan-service (localhost:8081)
-./scripts/start-study-plan-service.sh
-```
-
-New terminal window:
-
-```bash
-# start ai-advisor-service (localhost:8082)
-./scripts/start-ai-advisor-service.sh
-```
-
-New terminal window:
-
-```bash
-# start user-auth-service (localhost:8083)
-./scripts/start-user-auth-service.sh
-```
-
-**Alternative: Manual gradlew commands (requires environment variables):**
-
-```bash
-# start program-catalog-service (localhost:8080)
-cd server
-./gradlew :program-catalog-service:bootRun
-```
-
-New terminal window:
-
-```bash
-# start study-plan-service (localhost:8081)
-cd server
-./gradlew :study-plan-service:bootRun
-```
-
-New terminal window:
-
-```bash
-# start ai-advisor-service (localhost:8082)
-cd server
-./gradlew :ai-advisor-service:bootRun
-```
-
-New terminal window:
-
-```bash
-# start user-auth-service (localhost:8083)
-cd server
-./gradlew :user-auth-service:bootRun
-```
-
-New terminal window:
-
-```bash
-# start llm-service (localhost:8084)
-cd llm-service
-pip install -r requirements.txt
-python app.py
-```
-
-</details>
-
-## Swagger Documentation of Services
-
-### Accessing API Documentation
-
-**📚 Unified API Documentation**: `https://https://tum-study-planner.student.k8s.aet.cit.tum.de/docs`
-
-### Local Development URLs
-
-<details>
-<summary>Urls for local swagger</summary>
-
-### 1. Program Catalog Service
-
-- **Port**: 8080
-- **Swagger UI**: http://localhost:8080/api/v1/swagger-ui.html
-- **OpenAPI JSON**: http://localhost:8080/api/v1/api-docs
-- **Description**: Provides access to TUM degree programs, modules, and course catalog information
-
-### 2. User Authentication Service
-
-- **Port**: 8083
-- **Swagger UI**: http://localhost:8083/api/v1/swagger-ui.html
-- **OpenAPI JSON**: http://localhost:8083/api/v1/api-docs
-- **Description**: Handles user authentication, registration, and JWT token management
-- **Security**: JWT Bearer token authentication configured
-
-### 3. Study Plan Service
-
-- **Port**: 8081
-- **Swagger UI**: http://localhost:8081/api/v1/swagger-ui.html
-- **OpenAPI JSON**: http://localhost:8081/api/v1/api-docs
-- **Description**: Manages student study plans, course selections, and academic progress tracking
-- **Security**: JWT Bearer token authentication configured
-
-### 4. AI Advisor Service
-
-- **Port**: 8082
-- **Swagger UI**: http://localhost:8082/api/v1/swagger-ui.html
-- **OpenAPI JSON**: http://localhost:8082/api/v1/api-docs
-- **Description**: Provides AI-powered academic advice and recommendations for study planning
-
-</details>
-
-## 🧩 Main Functionality
-
-The TUM Study Planner is a comprehensive academic planning tool for Technical University Munich students. The core purpose is to help students:
-
-- **Plan their study program** with course selection and scheduling
-- **Get AI-powered academic advice** through natural language Q&A
-- **Explore course catalog** with detailed course information
-- **Track degree progress** and ensure requirement fulfillment
-
-### 🤖 AI Chat Feature
-
-Ask questions about TUM courses in natural language and get intelligent responses:
-
-- _"What programming languages are used in IN2003?"_
-- _"Tell me about Machine Learning courses at TUM"_
-- _"What are the prerequisites for Advanced Algorithms?"_
-
-The AI extracts course codes, provides confidence scores, and links to official TUM course pages.
-
-## 🎯 Intended Users
-
-**Primary Users:** M.Sc. Information Systems students at TUM
-
-- Need help with course selection and academic planning
-- Want quick access to course information without navigating complex systems
-- Benefit from AI-powered guidance for study decisions
-
-**Secondary Users:** Academic advisors and TUM faculty
-
-- Can leverage the system for student counseling
-- Access comprehensive course data in an accessible format
-
-## 🤖 Integration of GenAI
-
-Generative AI is meaningfully integrated through a **Retrieval-Augmented Generation (RAG) pipeline**:
-
-### Core AI Features:
-
-- **Natural Language Understanding**: Parses student questions about courses and academic planning
-- **Course-Specific Q&A**: Provides accurate answers using official TUM course data
-- **Intelligent Course Detection**: Automatically identifies course codes in questions and responses
-- **Confidence Scoring**: Rates response reliability based on data retrieval quality
-- **Source Attribution**: Links answers to official TUM course pages for verification
-
-### Technical Implementation:
-
-- **Vector Database (Weaviate)**: Stores embedded course descriptions for semantic search
-- **LangChain RAG**: Combines retrieval with OpenAI GPT for contextual responses
-- **Real-time Processing**: Answers within 5 seconds with course-specific information
-- **Fallback Handling**: Graceful degradation when AI services are unavailable
-
-## 💡 Example Scenarios
-
-### Scenario 1: Course Content Inquiry
-
-**Student Question:** _"What programming languages are mainly used in the 'Introduction to C++' course?"_
-
-**AI Response:** The AI identifies course code IN0001, retrieves course description from the vector database, and responds: _"The Introduction to C++ course (IN0001) primarily focuses on C++ programming language fundamentals, including object-oriented programming concepts, memory management, and STL libraries."_
-
-**Enhanced Features:** Course code highlighted, confidence score displayed, link to official TUM course page provided.
-
-### Scenario 2: Study Planning Assistance
-
-**Student Question:** _"I'm interested in Machine Learning. What courses should I take?"_
-
-**AI Response:** The AI searches for ML-related courses, identifies relevant options like "Machine Learning" (IN2064), "Deep Learning" (IN2346), provides course descriptions, prerequisites, and semester information.
-
-**Enhanced Features:** Multiple course codes detected, prerequisite chains explained, study sequence recommendations.
-
-### Scenario 3: Prerequisite Checking
-
-**Student Question:** _"What do I need to complete before taking Advanced Algorithms?"_
-
-**AI Response:** The AI identifies the Advanced Algorithms course, retrieves prerequisite information, and explains the required prior coursework and knowledge areas.
-
-**Enhanced Features:** Prerequisite course codes highlighted, academic planning guidance provided.
-
-## 🛠 Tech Stack
-
-_Key technologies and frameworks used._
-
-- **Frontend**: React + TypeScript + Vite + Material-UI
-- **Backend**: Spring Boot (Java) + Gradle
-- **AI Gateway**: Java Spring Boot (AI Advisor Service)
-- **AI/ML Service**: Python + FastAPI + LangChain + OpenAI
-- **Vector Database**: Weaviate (for semantic search)
-- **Database**: PostgreSQL (in production)
-- **Infrastructure**: AWS EC2 + Terraform + Ansible
-- **Containerization**: Docker + Docker Compose
-- **Web Server**: Nginx (reverse proxy)
-- **GenAI API**: OpenAI GPT (via Python service)
-- **Monitoring**: Prometheus + Grafana + Loki + Promtail
-- **Observability**: Spring Boot Actuator (includes Micrometer for metrics)
+- Docker & Docker Compose
+- Java 17+ (for local development)
+- Python 3.9+ (for AI service development)
+- Node.js 18+ (for frontend development)
 
 ## 📄 License
 
-_MIT, Apache 2.0, etc._
-"""
+MIT License - See [LICENSE](./LICENSE) file for details.
+
+---
+
+**Team Stratton Oakmont** - DevOps Engineering Course, Technical University Munich
