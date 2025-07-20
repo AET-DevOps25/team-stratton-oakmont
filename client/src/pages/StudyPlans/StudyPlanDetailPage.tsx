@@ -33,6 +33,7 @@ import {
   getSemestersByStudyPlan,
   createSemester,
   getCoursesBySemester,
+  toggleSemesterCourseCompletion,
 } from "../../api/studyPlans";
 import type {
   StudyPlanDto,
@@ -115,7 +116,7 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
                         ...s,
                         courses: coursesResponse.map(
                           (course: SemesterCourseDto) => ({
-                            id: course.courseId,
+                            id: course.id?.toString() || course.courseId, // Use database ID as string, fallback to courseId
                             name: course.courseName || course.courseId,
                             code: course.courseCode || course.courseId,
                             credits: course.credits || 0,
@@ -485,7 +486,37 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
         }));
 
         // Create courses in backend
-        await createMultipleCourses(courseRequests);
+        const createdCourses = await createMultipleCourses(courseRequests);
+
+        // Update local state with database IDs from backend response
+        setSemesters(
+          semesters.map((semester) =>
+            semester.id === activeSemesterId
+              ? {
+                  ...semester,
+                  courses: semester.courses.map((course, courseIndex) => {
+                    // Find the corresponding backend course for this local course
+                    const backendCourse = createdCourses.find(
+                      (bc) =>
+                        bc.courseId ===
+                        (courses[courseIndex]?.code ||
+                          courses[courseIndex]?.moduleId ||
+                          courses[courseIndex]?.id.toString())
+                    );
+
+                    if (backendCourse && backendCourse.id) {
+                      return {
+                        ...course,
+                        id: backendCourse.id.toString(), // Update to use database ID as string
+                        completed: backendCourse.isCompleted, // Sync completion status
+                      };
+                    }
+                    return course;
+                  }),
+                }
+              : semester
+          )
+        );
 
         console.log(
           `Successfully added ${courses.length} courses to semester ${activeSemesterId}`
@@ -513,10 +544,26 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
     );
   };
 
-  const handleToggleCourseCompleted = (
+  const handleToggleCourseCompleted = async (
     semesterId: string,
     courseId: string
   ) => {
+    // Find the current course to get its database ID
+    const semester = semesters.find((s) => s.id === semesterId);
+    const course = semester?.courses.find((c) => c.id === courseId);
+
+    if (!course) {
+      console.error("Course not found for completion toggle");
+      return;
+    }
+
+    console.log("Course found for completion toggle:", {
+      courseId,
+      databaseId: course.id,
+      course,
+    });
+
+    // Update local state immediately for better UX
     setSemesters(
       semesters.map((semester) =>
         semester.id === semesterId
@@ -531,6 +578,42 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
           : semester
       )
     );
+
+    // Persist to backend
+    try {
+      // The course.id is already the correct database ID, just convert string to number
+      const courseDbId = Number(course.id);
+
+      if (courseDbId && !isNaN(courseDbId)) {
+        await toggleSemesterCourseCompletion(courseDbId);
+        console.log(
+          `Successfully toggled completion for course ${courseId} (DB ID: ${courseDbId})`
+        );
+      } else {
+        console.warn(
+          "Could not determine database ID for course completion toggle:",
+          { courseId: course.id, course }
+        );
+      }
+    } catch (error) {
+      console.error("Failed to persist course completion to backend:", error);
+
+      // Revert local state if backend call fails
+      setSemesters(
+        semesters.map((semester) =>
+          semester.id === semesterId
+            ? {
+                ...semester,
+                courses: semester.courses.map((course) =>
+                  course.id === courseId
+                    ? { ...course, completed: !course.completed } // Revert the change
+                    : course
+                ),
+              }
+            : semester
+        )
+      );
+    }
   };
 
   // Get used course IDs to exclude from search

@@ -703,6 +703,49 @@ export const deleteSemesterCourse = async (courseId: number): Promise<void> => {
   }
 };
 
+export const toggleSemesterCourseCompletion = async (
+  courseId: number
+): Promise<SemesterCourseDto> => {
+  try {
+    const response = await fetch(
+      `${STUDY_PLAN_API_URL}/semester-courses/${courseId}/completion`,
+      {
+        method: "PUT",
+        headers: getAuthHeaders(),
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      try {
+        const errorData = JSON.parse(errorText) as ApiError;
+        throw new StudyPlanApiError(
+          response.status,
+          errorData.error,
+          errorData.message
+        );
+      } catch {
+        throw new StudyPlanApiError(
+          response.status,
+          "COURSE_COMPLETION_UPDATE_FAILED",
+          `HTTP ${response.status}: ${errorText}`
+        );
+      }
+    }
+
+    return (await response.json()) as SemesterCourseDto;
+  } catch (error) {
+    if (error instanceof StudyPlanApiError) {
+      throw error;
+    }
+    throw new StudyPlanApiError(
+      500,
+      "NETWORK_ERROR",
+      `Failed to toggle course completion: ${error}`
+    );
+  }
+};
+
 // Bulk operations
 export const createMultipleCourses = async (
   courses: CreateSemesterCourseRequest[]

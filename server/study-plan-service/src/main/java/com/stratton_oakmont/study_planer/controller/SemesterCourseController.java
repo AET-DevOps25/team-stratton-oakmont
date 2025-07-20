@@ -72,6 +72,17 @@ public class SemesterCourseController {
     @PostMapping
     public ResponseEntity<?> addCourseToSemester(@Valid @RequestBody SemesterCourseDto courseDto) {
         try {
+            // Get user ID from SecurityContext (set by JWT filter)
+            Long userId = getCurrentUserId();
+            
+            // Verify ownership of the semester
+            if (!verifySemesterOwnership(courseDto.getSemesterId(), userId)) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "ACCESS_DENIED");
+                error.put("message", "You can only add courses to your own semesters");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+            }
+            
             Semester semester = semesterService.getSemesterById(courseDto.getSemesterId());
             
             SemesterCourse semesterCourse = semesterCourseService.addCourseToSemester(
@@ -100,6 +111,17 @@ public class SemesterCourseController {
     @GetMapping("/semester/{semesterId}")
     public ResponseEntity<?> getCoursesBySemester(@PathVariable Long semesterId) {
         try {
+            // Get user ID from SecurityContext (set by JWT filter)
+            Long userId = getCurrentUserId();
+            
+            // Verify ownership of the semester
+            if (!verifySemesterOwnership(semesterId, userId)) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "ACCESS_DENIED");
+                error.put("message", "You can only access courses from your own semesters");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+            }
+            
             List<SemesterCourse> courses = semesterCourseService.getCoursesBySemesterId(semesterId);
             List<SemesterCourseDto> courseDtos = courses.stream()
                     .map(this::convertToDto)
@@ -136,6 +158,18 @@ public class SemesterCourseController {
     @PutMapping("/{id}/completion")
     public ResponseEntity<?> toggleCourseCompletion(@PathVariable Long id) {
         try {
+            // Get user ID from SecurityContext (set by JWT filter)
+            Long userId = getCurrentUserId();
+            
+            // Get the semester course to verify ownership
+            SemesterCourse semesterCourse = semesterCourseService.getSemesterCourseById(id);
+            if (!verifySemesterOwnership(semesterCourse.getSemester().getId(), userId)) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "ACCESS_DENIED");
+                error.put("message", "You can only update your own courses");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+            }
+            
             SemesterCourse updatedCourse = semesterCourseService.toggleCourseCompletion(id);
             SemesterCourseDto responseDto = convertToDto(updatedCourse);
             return ResponseEntity.ok(responseDto);
@@ -178,6 +212,18 @@ public class SemesterCourseController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> removeCourseFromSemester(@PathVariable Long id) {
         try {
+            // Get user ID from SecurityContext (set by JWT filter)
+            Long userId = getCurrentUserId();
+            
+            // Get the semester course to verify ownership
+            SemesterCourse semesterCourse = semesterCourseService.getSemesterCourseById(id);
+            if (!verifySemesterOwnership(semesterCourse.getSemester().getId(), userId)) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "ACCESS_DENIED");
+                error.put("message", "You can only delete your own courses");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+            }
+            
             semesterCourseService.removeCourseFromSemester(id);
             Map<String, String> response = new HashMap<>();
             response.put("message", "Course removed from semester successfully");
