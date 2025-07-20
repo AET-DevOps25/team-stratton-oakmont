@@ -21,6 +21,11 @@ spec:
           image: "{{ .Values.swaggerUi.image.repository }}:{{ .Values.swaggerUi.image.tag }}"
           ports:
             - containerPort: 80
+          env:
+            - name: NGINX_ENVSUBST_OUTPUT_DIR
+              value: "/etc/nginx/conf.d"
+            - name: CACHE_BUST
+              value: "{{ .Release.Revision }}"
           resources:
             requests:
               memory: "64Mi"
@@ -28,3 +33,11 @@ spec:
             limits:
               memory: "128Mi"
               cpu: "100m"
+          volumeMounts:
+            - name: swagger-ui-config
+              mountPath: /usr/share/nginx/html/index.html
+              subPath: index.html
+      volumes:
+        - name: swagger-ui-config
+          configMap:
+            name: swagger-ui-config

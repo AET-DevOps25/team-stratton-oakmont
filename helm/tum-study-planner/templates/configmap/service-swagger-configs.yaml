@@ -1,0 +1,225 @@
+# Individual service Swagger UI configurations
+{{- $services := list "study-plan" "user-auth" "program-catalog" "ai-advisor" }}
+{{- $serviceInfo := dict 
+  "study-plan" (dict "name" "Study Plan Service" "description" "Manage study plans, track progress, and organize academic schedules for students." "port" 8081)
+  "user-auth" (dict "name" "User Authentication Service" "description" "Handle user registration, authentication, authorization, and user management." "port" 8083)
+  "program-catalog" (dict "name" "Program Catalog Service" "description" "Browse and manage academic programs, courses, and curriculum information." "port" 8080)
+  "ai-advisor" (dict "name" "AI Advisor Service" "description" "Get AI-powered academic recommendations and intelligent study plan suggestions." "port" 8082)
+}}
+
+{{- range $service := $services }}
+{{- $info := index $serviceInfo $service }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $service }}-swagger-ui-config
+  namespace: {{ $.Values.namespace }}
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>{{ $info.name }} - API Documentation</title>
+        <link
+          rel="stylesheet"
+          type="text/css"
+          href="https://unpkg.com/swagger-ui-dist@5.10.5/swagger-ui.css"
+        />
+        <style>
+          html {
+            box-sizing: border-box;
+            overflow: -moz-scrollbars-vertical;
+            overflow-y: scroll;
+          }
+          *,
+          *:before,
+          *:after {
+            box-sizing: inherit;
+          }
+          body {
+            margin: 0;
+            background: #fafafa;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+          }
+          .service-header {
+            background: #1b1b1b;
+            padding: 15px 20px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+          }
+          .service-header h1 {
+            color: #fff;
+            margin: 0;
+            font-size: 1.5em;
+          }
+          .nav-link {
+            color: #4a90e2;
+            text-decoration: none;
+            padding: 8px 12px;
+            border: 1px solid #4a90e2;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+          }
+          .nav-link:hover {
+            background: #4a90e2;
+            color: white;
+          }
+          #swagger-ui {
+            max-width: 1200px;
+            margin: 0 auto;
+          }
+          .service-info {
+            background: #e8f4f8;
+            padding: 15px 20px;
+            border-left: 4px solid #4a90e2;
+            margin: 20px;
+            border-radius: 4px;
+          }
+          .service-info h3 {
+            margin: 0 0 10px 0;
+            color: #1b1b1b;
+          }
+          .service-info p {
+            margin: 0;
+            color: #666;
+          }
+          .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
+            color: #666;
+          }
+          .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 20px;
+            margin: 20px;
+            border-left: 4px solid #c62828;
+            border-radius: 4px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="service-header">
+          <h1>🎓 {{ $info.name }}</h1>
+          <a href="/api-docs" class="nav-link">← All Services</a>
+        </div>
+
+        <div class="service-info">
+          <h3>{{ $info.name }}</h3>
+          <p>{{ $info.description }}</p>
+        </div>
+
+        <div id="loading" class="loading">
+          Loading API documentation...
+        </div>
+
+        <div id="swagger-ui"></div>
+
+        <script src="https://unpkg.com/swagger-ui-dist@5.10.5/swagger-ui-bundle.js" 
+                onerror="handleScriptError()"></script>
+        <script src="https://unpkg.com/swagger-ui-dist@5.10.5/swagger-ui-standalone-preset.js"
+                onerror="handleScriptError()"></script>
+        <script>
+          function handleScriptError() {
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("swagger-ui").innerHTML = `
+              <div class="error">
+                <h3>⚠️ Failed to Load Swagger UI Dependencies</h3>
+                <p><strong>External CDN resources could not be loaded.</strong></p>
+                <p>This might be due to:</p>
+                <ul>
+                  <li>Network firewall blocking unpkg.com</li>
+                  <li>Internet connectivity issues</li>
+                  <li>Version compatibility problems</li>
+                </ul>
+                <p><strong>Alternative:</strong> Contact your administrator to whitelist unpkg.com or use local Swagger UI resources.</p>
+              </div>
+            `;
+          }
+
+          function initializeSwagger() {
+            if (typeof SwaggerUIBundle === "undefined" || typeof SwaggerUIStandalonePreset === "undefined") {
+              handleScriptError();
+              return;
+            }
+
+            document.getElementById("loading").style.display = "none";
+
+            function getServiceUrl() {
+              const hostname = window.location.hostname;
+              
+              if (hostname.includes("tum-study-planner.student.k8s.aet.cit.tum.de")) {
+                return "/api-docs/{{ $service }}/api/v1/api-docs";
+              }
+              if (hostname === "localhost" || hostname === "127.0.0.1") {
+                return "http://localhost:{{ $info.port }}/api/v1/api-docs";
+              }
+              return "/api-docs/{{ $service }}/api/v1/api-docs";
+            }
+
+            try {
+              const ui = SwaggerUIBundle({
+                url: getServiceUrl(),
+                dom_id: "#swagger-ui",
+                deepLinking: true,
+                presets: [
+                  SwaggerUIBundle.presets.apis,
+                  SwaggerUIStandalonePreset
+                ],
+                plugins: [SwaggerUIBundle.plugins.DownloadUrl],
+                layout: "StandaloneLayout",
+                requestInterceptor: (req) => {
+                  console.log('Loading API docs from:', req.url);
+                  return req;
+                },
+                onComplete: () => {
+                  console.log(`✅ Successfully loaded {{ $info.name }} documentation`);
+                },
+                onFailure: (err) => {
+                  console.error(`❌ Failed to load {{ $info.name }} documentation:`, err);
+                  document.getElementById("swagger-ui").innerHTML = `
+                    <div class="error">
+                      <h3>❌ Failed to Load API Documentation</h3>
+                      <p><strong>Could not connect to {{ $info.name }}</strong></p>
+                      <p><code>URL: ${getServiceUrl()}</code></p>
+                      <p><strong>Error:</strong> ${err.message || "Unknown error"}</p>
+                      <p><strong>Troubleshooting:</strong></p>
+                      <ul>
+                        <li>Verify the service is running and healthy</li>
+                        <li>Check if the API endpoint is accessible</li>
+                        <li>Ensure OpenAPI spec is available at the URL above</li>
+                      </ul>
+                    </div>
+                  `;
+                },
+              });
+            } catch (error) {
+              console.error("Swagger UI initialization error:", error);
+              document.getElementById("swagger-ui").innerHTML = `
+                <div class="error">
+                  <h3>⚠️ Swagger UI Initialization Error</h3>
+                  <p><strong>Error:</strong> ${error.message}</p>
+                  <p>Please check the browser console for more details.</p>
+                </div>
+              `;
+            }
+          }
+
+          // Initialize when ready
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", () => {
+              setTimeout(initializeSwagger, 200);
+            });
+          } else {
+            setTimeout(initializeSwagger, 200);
+          }
+        </script>
+      </body>
+    </html>
+{{- end }}

@@ -1,48 +1,45 @@
-# prettier-ignore
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: tum-study-planner-api-ingress
-  namespace: {{ .Values.namespace }}
+  name: tum-study-planner-api-docs-ingress
+  namespace: { { .Values.namespace } }
   annotations:
     kubernetes.io/ingress.class: "nginx"
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /api/v1/$2
+    nginx.ingress.kubernetes.io/rewrite-target: /api/v1/api-docs
 spec:
   tls:
     - hosts:
-        - {{ .Values.ingress.host }}
+        - { { .Values.ingress.host } }
       secretName: tum-study-planner-tls
   rules:
-    - host: {{ .Values.ingress.host }}
+    - host: { { .Values.ingress.host } }
       http:
         paths:
-          # Regular API endpoints with rewrite
-          - path: /api/study-plan(/|$)(.*)
-            pathType: ImplementationSpecific
+          - path: /api/study-plan/api/v1/api-docs
+            pathType: Exact
             backend:
               service:
                 name: study-plan-service
                 port:
                   number: 8081
-          - path: /api/user-auth(/|$)(.*)
-            pathType: ImplementationSpecific
+          - path: /api/user-auth/api/v1/api-docs
+            pathType: Exact
             backend:
               service:
                 name: user-auth-service
                 port:
                   number: 8083
-          - path: /api/program-catalog(/|$)(.*)
-            pathType: ImplementationSpecific
+          - path: /api/program-catalog/api/v1/api-docs
+            pathType: Exact
             backend:
               service:
                 name: program-catalog-service
                 port:
                   number: 8080
-          - path: /api/ai-advisor(/|$)(.*)
-            pathType: ImplementationSpecific
+          - path: /api/ai-advisor/api/v1/api-docs
+            pathType: Exact
             backend:
               service:
                 name: ai-advisor-service

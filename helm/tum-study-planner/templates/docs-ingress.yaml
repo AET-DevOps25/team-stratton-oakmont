@@ -1,3 +1,4 @@
+# prettier-ignore
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -12,10 +13,8 @@ metadata:
     nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, PATCH, OPTIONS"
     nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization"
     nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
-    nginx.ingress.kubernetes.io/rewrite-target-0: /$2 # for /docs/study-plan(/|$)(.*)
-    nginx.ingress.kubernetes.io/rewrite-target-1: /$2 # for /docs/user-auth(/|$)(.*)
-    nginx.ingress.kubernetes.io/rewrite-target-2: /$2 # for /docs/program-catalog(/|$)(.*)
-    nginx.ingress.kubernetes.io/rewrite-target-3: /$2 # for /docs/ai-advisor(/|$)(.*)
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+    nginx.ingress.kubernetes.io/upstream-hash-by: "$request_uri"
 spec:
   ingressClassName: nginx
   tls:
@@ -26,46 +25,202 @@ spec:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
-          # API services first (more specific paths)
-          - path: /docs/study-plan(/|$)(.*)
-            pathType: ImplementationSpecific
+          # Individual service Swagger UI (formatted interface)
+          - path: /api-docs/study-plan
+            pathType: Exact
+            backend:
+              service:
+                name: study-plan-swagger-ui-service
+                port:
+                  number: 80
+          
+          - path: /docs/study-plan
+            pathType: Exact
+            backend:
+              service:
+                name: study-plan-swagger-ui-service
+                port:
+                  number: 80
+
+          - path: /api-docs/user-auth
+            pathType: Exact
+            backend:
+              service:
+                name: user-auth-swagger-ui-service
+                port:
+                  number: 80
+                  
+          - path: /docs/user-auth
+            pathType: Exact
+            backend:
+              service:
+                name: user-auth-swagger-ui-service
+                port:
+                  number: 80
+
+          - path: /api-docs/program-catalog
+            pathType: Exact
+            backend:
+              service:
+                name: program-catalog-swagger-ui-service
+                port:
+                  number: 80
+                  
+          - path: /docs/program-catalog
+            pathType: Exact
+            backend:
+              service:
+                name: program-catalog-swagger-ui-service
+                port:
+                  number: 80
+
+          - path: /api-docs/ai-advisor
+            pathType: Exact
+            backend:
+              service:
+                name: ai-advisor-swagger-ui-service
+                port:
+                  number: 80
+                  
+          - path: /docs/ai-advisor
+            pathType: Exact
+            backend:
+              service:
+                name: ai-advisor-swagger-ui-service
+                port:
+                  number: 80
+
+          # Unified Swagger UI (these paths are handled by the separate swagger-ui ingress)
+          # Removed to prevent path conflicts with tum-study-planner-swagger-ui-ingress
+
+---
+# Raw API documentation endpoints with path rewriting
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tum-study-planner-raw-api-docs-ingress
+  namespace: { { .Values.namespace } }
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, PATCH, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+    nginx.ingress.kubernetes.io/rewrite-target: /api/v1/api-docs
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - { { .Values.ingress.host } }
+      secretName: tum-study-planner-tls
+  rules:
+    - host: { { .Values.ingress.host } }
+      http:
+        paths:
+          - path: /api-docs/study-plan/api/v1/api-docs
+            pathType: Exact
             backend:
               service:
                 name: study-plan-service
                 port:
                   number: 8081
-            # This rewrites /docs/study-plan/api/v1/api-docs to /api/v1/api-docs
-            # before sending to the backend service.
-            # The $2 captures everything after /docs/study-plan/
 
-          - path: /docs/user-auth(/|$)(.*)
-            pathType: ImplementationSpecific
+          - path: /docs/study-plan/api/v1/api-docs
+            pathType: Exact
+            backend:
+              service:
+                name: study-plan-service
+                port:
+                  number: 8081
+
+          - path: /api-docs/user-auth/api/v1/api-docs
+            pathType: Exact
             backend:
               service:
                 name: user-auth-service
                 port:
                   number: 8083
 
-          - path: /docs/program-catalog(/|$)(.*)
-            pathType: ImplementationSpecific
+          - path: /docs/user-auth/api/v1/api-docs
+            pathType: Exact
+            backend:
+              service:
+                name: user-auth-service
+                port:
+                  number: 8083
+
+          - path: /api-docs/program-catalog/api/v1/api-docs
+            pathType: Exact
             backend:
               service:
                 name: program-catalog-service
                 port:
                   number: 8080
 
-          - path: /docs/ai-advisor(/|$)(.*)
-            pathType: ImplementationSpecific
+          - path: /docs/program-catalog/api/v1/api-docs
+            pathType: Exact
+            backend:
+              service:
+                name: program-catalog-service
+                port:
+                  number: 8080
+
+          - path: /api-docs/ai-advisor/api/v1/api-docs
+            pathType: Exact
             backend:
               service:
                 name: ai-advisor-service
                 port:
                   number: 8082
-          
-          # Unified Swagger UI last (catch-all for /docs itself)
-          # No rewrite needed here as the HTML content is served directly
+
+          - path: /docs/ai-advisor/api/v1/api-docs
+            pathType: Exact
+            backend:
+              service:
+                name: ai-advisor-service
+                port:
+                  number: 8082
+
+---
+# Separate ingress for unified swagger with path rewriting
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tum-study-planner-swagger-ui-ingress
+  namespace: { { .Values.namespace } }
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, PATCH, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - { { .Values.ingress.host } }
+      secretName: tum-study-planner-tls
+  rules:
+    - host: { { .Values.ingress.host } }
+      http:
+        paths:
+          - path: /api-docs
+            pathType: Exact
+            backend:
+              service:
+                name: unified-swagger-ui-service
+                port:
+                  number: 80
+
           - path: /docs
-            pathType: Prefix
+            pathType: Exact
             backend:
               service:
                 name: unified-swagger-ui-service
