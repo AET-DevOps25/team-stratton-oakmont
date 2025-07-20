@@ -45,23 +45,47 @@ jobs:
 
       - name: Deploy application with Helm
         run: |
+          # Use commit SHA for unique image tags to force updates
+          IMAGE_TAG="main-$(echo ${{ github.sha }} | cut -c1-7)"
+          echo "🚀 Deploying with image tag: $IMAGE_TAG"
+
           helm upgrade --install tum-study-planner ./helm/tum-study-planner \
             --namespace tum-study-planner --create-namespace \
             --set client.image.repository=${{ env.REGISTRY }}/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')/client \
-            --set client.image.tag=latest \
+            --set client.image.tag=$IMAGE_TAG \
             --set studyPlanService.image.repository=${{ env.REGISTRY }}/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')/study-plan-service \
-            --set studyPlanService.image.tag=latest \
+            --set studyPlanService.image.tag=$IMAGE_TAG \
             --set userAuthService.image.repository=${{ env.REGISTRY }}/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')/user-auth-service \
-            --set userAuthService.image.tag=latest \
+            --set userAuthService.image.tag=$IMAGE_TAG \
             --set programCatalogService.image.repository=${{ env.REGISTRY }}/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')/program-catalog-service \
-            --set programCatalogService.image.tag=latest \
+            --set programCatalogService.image.tag=$IMAGE_TAG \
             --set aiAdvisorService.image.repository=${{ env.REGISTRY }}/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')/ai-advisor-service \
-            --set aiAdvisorService.image.tag=latest \
+            --set aiAdvisorService.image.tag=$IMAGE_TAG \
             --set llmInferenceService.image.repository=${{ env.REGISTRY }}/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')/llm-inference-service \
-            --set llmInferenceService.image.tag=latest \
-            --set swaggerUi.image.repository=${{ env.REGISTRY }}/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')/swagger-ui \
-            --set swaggerUi.image.tag=latest \
+            --set llmInferenceService.image.tag=$IMAGE_TAG \
+            --set swaggerUi.image.repository=nginx \
+            --set swaggerUi.image.tag=1.29.0-alpine \
             --wait --timeout=10m
+
+      - name: Force rolling update for latest changes
+        run: |
+          echo "🔄 Forcing rolling restart to ensure latest images are used..."
+          kubectl rollout restart deployment/client -n tum-study-planner
+          kubectl rollout restart deployment/study-plan-service -n tum-study-planner
+          kubectl rollout restart deployment/user-auth-service -n tum-study-planner
+          kubectl rollout restart deployment/program-catalog-service -n tum-study-planner
+          kubectl rollout restart deployment/ai-advisor-service -n tum-study-planner
+          kubectl rollout restart deployment/llm-inference-service -n tum-study-planner
+          kubectl rollout restart deployment/unified-swagger-ui -n tum-study-planner
+
+          echo "⏳ Waiting for rollouts to complete..."
+          kubectl rollout status deployment/client -n tum-study-planner --timeout=300s
+          kubectl rollout status deployment/study-plan-service -n tum-study-planner --timeout=300s
+          kubectl rollout status deployment/user-auth-service -n tum-study-planner --timeout=300s
+          kubectl rollout status deployment/program-catalog-service -n tum-study-planner --timeout=300s
+          kubectl rollout status deployment/ai-advisor-service -n tum-study-planner --timeout=300s
+          kubectl rollout status deployment/llm-inference-service -n tum-study-planner --timeout=300s
+          kubectl rollout status deployment/unified-swagger-ui -n tum-study-planner --timeout=300s
 
       - name: Verify deployment
         run: |
