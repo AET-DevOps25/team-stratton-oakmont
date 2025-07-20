@@ -24,6 +24,7 @@ export interface StudyProgramDto {
 export interface CreateStudyPlanRequest {
   name: string;
   studyProgramId: number;
+  studyProgramName?: string;
 }
 
 export interface ApiError {

@@ -127,6 +127,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
       const request: CreateStudyPlanRequest = {
         name: studyPlanName,
         studyProgramId: studyProgramId,
+        studyProgramName: program.name, // Use the study program name (e.g., "Information Systems")
       };
 
       const newPlan = await createStudyPlan(request);

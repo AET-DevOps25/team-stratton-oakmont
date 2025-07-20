@@ -64,7 +64,8 @@ public class StudyPlanController {
             StudyPlan newPlan = studyPlanService.createStudyPlanForUser(
                 userId,
                 request.getStudyProgramId(), 
-                request.getName()
+                request.getName(),
+                request.getStudyProgramName()
             );
             
             StudyPlanDto responseDto = convertToDto(newPlan);

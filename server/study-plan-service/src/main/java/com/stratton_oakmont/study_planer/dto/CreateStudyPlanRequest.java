@@ -13,6 +13,9 @@ public class CreateStudyPlanRequest {
     @NotNull(message = "Study program ID is required")
     private Long studyProgramId;
 
+    @Size(max = 255, message = "Study program name cannot exceed 255 characters")
+    private String studyProgramName;
+
     // Constructors
     public CreateStudyPlanRequest() {}
 
@@ -22,4 +25,7 @@ public class CreateStudyPlanRequest {
 
     public Long getStudyProgramId() { return studyProgramId; }
     public void setStudyProgramId(Long studyProgramId) { this.studyProgramId = studyProgramId; }
+
+    public String getStudyProgramName() { return studyProgramName; }
+    public void setStudyProgramName(String studyProgramName) { this.studyProgramName = studyProgramName; }
 }
