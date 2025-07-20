@@ -15,6 +15,7 @@ services:
       ENABLE_MODULES: "text2vec-openai"
       CLUSTER_HOSTNAME: "node1"
       HTTP_PORT: "8000"
+
     volumes:
       - weaviate_data:/var/lib/weaviate
 
