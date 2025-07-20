@@ -276,14 +276,9 @@ if [[ "$ssh_ready" != "true" ]]; then
     exit 1
 fi
 
-    fi
-fi
-
-cd ..
-
 # Step 3: Deploy application with Ansible
 echo "🎭 Deploying application with Ansible..."
-cd ../ansible
+cd ansible
 
 if ! ansible-playbook -i inventory.yml deploy.yml \
   -e "instance_ip=$INSTANCE_IP" \
