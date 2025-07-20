@@ -368,9 +368,10 @@ const LandingPage: React.FC = () => {
             }}
           >
             {[
-              { icon: MenuBook, label: "Courses", value: "120+" },
-              { icon: Assignment, label: "Study Plans", value: "50+" },
-              { icon: Business, label: "TUM Schools", value: "15" },
+              // TODO [ ]: do it with GET request depending on data in database
+              { icon: MenuBook, label: "Courses", value: "497" },
+              { icon: Assignment, label: "Study Program", value: "1" },
+              { icon: Business, label: "TUM School", value: "1" },
             ].map((stat, index) => (
               <Box key={index} sx={{ textAlign: "center" }}>
                 <stat.icon sx={{ fontSize: "2rem", color: "#646cff", mb: 1 }} />
