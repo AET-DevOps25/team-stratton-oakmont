@@ -8,6 +8,6 @@ spec:
   selector:
     app: llm-inference-service
   ports:
-    - port: 8082
-      targetPort: 8082
+    - port: {{ .Values.services.llmInferenceService.port }}
+      targetPort: {{ .Values.services.llmInferenceService.targetPort }}
   type: ClusterIP

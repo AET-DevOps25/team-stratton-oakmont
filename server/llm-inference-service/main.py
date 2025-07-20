@@ -19,8 +19,10 @@ from fastapi.responses import Response
 import time
 
 
-# Load environment variables
-load_dotenv()
+# Load environment variables (only for local development)
+# In Kubernetes, environment variables are set directly
+if not os.getenv('KUBERNETES_SERVICE_HOST'):  # Not running in Kubernetes
+    load_dotenv()
 
 class WeaviateCourseStore:
     """Custom Weaviate wrapper for TUM courses"""
