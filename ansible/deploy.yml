@@ -95,17 +95,6 @@
         group: ec2-user
         mode: "0600"
 
-    - name: Copy Weaviate export data
-      copy:
-        src: "{{ playbook_dir }}/../scripts/weaviate-export/"
-        dest: "{{ app_dir }}/weaviate-export/"
-        owner: ec2-user
-        group: ec2-user
-        mode: "0644"
-      when: weaviate_export_dir.stat.exists
-      vars:
-        weaviate_export_dir: "{{ ansible_env }}"
-
     - name: Check if Weaviate export exists locally
       local_action:
         module: stat
@@ -130,8 +119,16 @@
         group: ec2-user
         mode: "{{ item.mode }}"
       loop:
-        - { src: "{{ playbook_dir }}/../scripts/import-weaviate-data.sh", dest: "{{ app_dir }}/import-weaviate-data.sh", mode: "0755" }
-        - { src: "{{ playbook_dir }}/../scripts/import-weaviate-data.py", dest: "{{ app_dir }}/import-weaviate-data.py", mode: "0755" }
+        - {
+            src: "{{ playbook_dir }}/../scripts/import-weaviate-data.sh",
+            dest: "{{ app_dir }}/import-weaviate-data.sh",
+            mode: "0755",
+          }
+        - {
+            src: "{{ playbook_dir }}/../scripts/import-weaviate-data.py",
+            dest: "{{ app_dir }}/import-weaviate-data.py",
+            mode: "0755",
+          }
 
     - name: Stop existing containers
       command: docker-compose -f docker-compose.prod.yml -f docker-compose.ai.yml down --remove-orphans
@@ -142,7 +139,10 @@
     - name: Start application with Docker Compose (with AI services)
       command: docker-compose -f docker-compose.prod.yml -f docker-compose.ai.yml up -d --build --force-recreate
       args:
-        chdir: "{{ app_dir }}"    - name: Show Docker Compose output
+        chdir: "{{ app_dir }}"
+      register: compose_result
+
+    - name: Show Docker Compose output
       debug:
         var: compose_result
 
