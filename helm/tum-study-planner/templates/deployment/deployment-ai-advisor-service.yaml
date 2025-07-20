@@ -41,3 +41,10 @@ spec:
                 secretKeyRef:
                   name: tum-study-planner-secrets
                   key: JWT_SECRET
+          resources:
+            requests:
+              cpu: {{ .Values.resources.aiAdvisorService.requests.cpu }}
+              memory: {{ .Values.resources.aiAdvisorService.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.aiAdvisorService.limits.cpu }}
+              memory: {{ .Values.resources.aiAdvisorService.limits.memory }}

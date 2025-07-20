@@ -29,6 +29,8 @@ spec:
                   key: GOOGLE_API_KEY
             - name: WEAVIATE_URL
               value: {{ .Values.llmInferenceService.env.WEAVIATE_URL | quote }}
+            - name: WEAVIATE_GRPC_URL
+              value: {{ .Values.llmInferenceService.env.WEAVIATE_GRPC_URL | quote }}
             - name: STUDY_DATA_DB_HOST
               value: {{ .Values.llmInferenceService.env.STUDY_DATA_DB_HOST | quote }}
             - name: STUDY_DATA_DB_PORT
@@ -61,6 +63,13 @@ spec:
                 secretKeyRef:
                   name: tum-study-planner-secrets
                   key: STUDY_PLAN_DB_PASSWORD
+          resources:
+            requests:
+              cpu: {{ .Values.resources.llmInferenceService.requests.cpu }}
+              memory: {{ .Values.resources.llmInferenceService.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.llmInferenceService.limits.cpu }}
+              memory: {{ .Values.resources.llmInferenceService.limits.memory }}
           volumeMounts:
             - name: course-data
               mountPath: /app/data

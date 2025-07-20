@@ -17,17 +17,24 @@ public class AiAdvisorService {
 
     private final WebClient webClient;
     
-    @Value("${llm.inference.service.url:http://localhost:8082}")
+    @Value("${llm.inference.service.url:http://localhost:8084}")
     private String llmServiceUrl;
 
     public AiAdvisorService(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.build();
     }
 
-    public Mono<ChatResponse> processChat(ChatRequest request) {
-        return webClient
+    public Mono<ChatResponse> processChat(ChatRequest request, String authorizationHeader) {
+        WebClient.RequestBodySpec requestSpec = webClient
                 .post()
-                .uri(llmServiceUrl + "/chat/")
+                .uri(llmServiceUrl + "/chat/");
+        
+        // Add Authorization header if present
+        if (authorizationHeader != null && !authorizationHeader.trim().isEmpty()) {
+            requestSpec = requestSpec.header("Authorization", authorizationHeader);
+        }
+        
+        return requestSpec
                 .bodyValue(request)
                 .retrieve()
                 .bodyToMono(ChatResponse.class)
@@ -57,6 +64,6 @@ public class AiAdvisorService {
     }
 
     private ChatResponse createFallbackResponse(String message) {
-        return new ChatResponse(message, Arrays.asList(), 0.0, Arrays.asList());
+        return new ChatResponse(message, Arrays.asList());
     }
 }

@@ -21,11 +21,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/modules")
-@CrossOrigin(origins = {
-    "https://tum-study-planner.student.k8s.aet.cit.tum.de",
-    "http://localhost:5173", 
-    "http://localhost:3000"
-})
 @Tag(name = "Module Details", description = "API for managing module details and curriculum information")
 public class ModuleDetailsController {
     

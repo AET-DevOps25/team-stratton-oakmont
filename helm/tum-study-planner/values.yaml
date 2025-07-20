@@ -1,5 +1,76 @@
+# Environment identification
+environment: production
+
 # Global configuration
 namespace: tum-study-planner
+replicaCount: 2 # Default replica count when HPA is disabled
+
+# Self-Healing Configuration
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1 # Ensure at least 1 pod is always running
+
+# Health Check Configuration
+healthChecks:
+  enabled: true
+  livenessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+  readinessProbe:
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+    successThreshold: 1
+  startupProbe:
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 30
+    successThreshold: 1
+
+# Deployment Strategy
+deploymentStrategy:
+  maxUnavailable: "25%"
+  maxSurge: "25%"
+
+# Grace period for pod termination
+terminationGracePeriodSeconds: 30
+
+# Service definitions
+services:
+  client:
+    name: client
+    port: 80
+    targetPort: 80
+
+  studyPlanService:
+    name: study-plan-service
+    port: 8081
+    targetPort: 8081
+
+  programCatalogService:
+    name: program-catalog-service
+    port: 8080
+    targetPort: 8080
+
+  aiAdvisorService:
+    name: ai-advisor-service
+    port: 8082
+    targetPort: 8082
+
+  userAuthService:
+    name: user-auth-service
+    port: 8083
+    targetPort: 8083
+
+  llmInferenceService:
+    name: llm-inference-service
+    port: 8084
+    targetPort: 8084
 
 # Ingress configuration
 ingress:
@@ -8,37 +79,45 @@ ingress:
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/rewrite-target: /
 
-# Client (Frontend) configuration
+# Image configurations
 client:
   image:
     repository: ghcr.io/AET-DevOps25/team-stratton-oakmont/client
     tag: latest
+    pullPolicy: Always
 
-# Study Plan Service configuration
 studyPlanService:
   image:
     repository: ghcr.io/AET-DevOps25/team-stratton-oakmont/study-plan-service
     tag: latest
+    pullPolicy: Always
 
-# Program Catalog Service configuration
 programCatalogService:
   image:
     repository: ghcr.io/AET-DevOps25/team-stratton-oakmont/program-catalog-service
     tag: latest
+    pullPolicy: Always
 
-# AI Advisor Service configuration
 aiAdvisorService:
   image:
     repository: ghcr.io/AET-DevOps25/team-stratton-oakmont/ai-advisor-service
     tag: latest
+    pullPolicy: Always
 
-# LLM Inference Service configuration
+userAuthService:
+  image:
+    repository: ghcr.io/AET-DevOps25/team-stratton-oakmont/user-auth-service
+    tag: latest
+    pullPolicy: Always
+
 llmInferenceService:
   image:
     repository: ghcr.io/AET-DevOps25/team-stratton-oakmont/llm-inference-service
     tag: latest
+    pullPolicy: Always
   env:
     WEAVIATE_URL: "http://weaviate-vector-service.tum-study-planner:8080"
+    WEAVIATE_GRPC_URL: "http://weaviate-vector-service.tum-study-planner:50051"
     STUDY_DATA_DB_HOST: "postgres-study-data-service"
     STUDY_DATA_DB_PORT: "5432"
     STUDY_DATA_DB_NAME: "study_data_db"
@@ -47,21 +126,180 @@ llmInferenceService:
     STUDY_PLAN_DB_NAME: "study_plan_db"
     # GOOGLE_API_KEY: "your_google_api_key_here"
 
-# User Auth Service configuration
-userAuthService:
-  image:
-    repository: ghcr.io/AET-DevOps25/team-stratton-oakmont/user-auth-service
-    tag: latest
-
-# Swagger UI configuration
 swaggerUi:
   image:
     repository: ghcr.io/AET-DevOps25/team-stratton-oakmont/swagger-ui
     tag: latest
+    pullPolicy: Always
 
 # Database configurations (using existing k8s manifests)
 postgresql:
   enabled: false # We're using separate manifests in k8s/base/
 
-# Environment-specific overrides
-environment: production
+# Auto-scaling configuration
+autoscaling:
+  enabled: true
+  services:
+    client:
+      enabled: true
+      component: frontend
+      minReplicas: 1
+      maxReplicas: 10
+      targetCPU: 70
+      targetMemory: 80
+      behavior:
+        scaleUp:
+          stabilization: 60
+          percent: 50
+          pods: 2
+        scaleDown:
+          stabilization: 300
+          percent: 10
+          pods: 1
+
+    study-plan-service:
+      enabled: true
+      component: backend
+      minReplicas: 1
+      maxReplicas: 15
+      targetCPU: 60
+      targetMemory: 80
+      behavior:
+        scaleUp:
+          stabilization: 60
+          percent: 100
+          pods: 4
+        scaleDown:
+          stabilization: 300
+          percent: 20
+          pods: 1
+
+    ai-advisor-service:
+      enabled: true
+      component: backend
+      minReplicas: 1
+      maxReplicas: 20
+      targetCPU: 65
+      targetMemory: 80
+      behavior:
+        scaleUp:
+          stabilization: 30
+          percent: 200
+          pods: 5
+        scaleDown:
+          stabilization: 600
+          percent: 15
+          pods: 1
+
+    program-catalog-service:
+      enabled: true
+      component: backend
+      minReplicas: 1
+      maxReplicas: 8
+      targetCPU: 65
+      targetMemory: 80
+
+    user-auth-service:
+      enabled: true
+      component: backend
+      minReplicas: 1
+      maxReplicas: 8
+      targetCPU: 70
+      targetMemory: 75
+
+    llm-inference-service:
+      enabled: true # Enable for demo purposes
+      component: ai
+      minReplicas: 1
+      maxReplicas: 10
+      targetCPU: 70
+      targetMemory: 80
+
+# Resource limits (reasonable for student demo)
+resources:
+  client:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  studyPlanService:
+    requests:
+      cpu: 200m
+      memory: 384Mi
+    limits:
+      cpu: 1000m
+      memory: 1.5Gi
+
+  aiAdvisorService:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+
+  programCatalogService:
+    requests:
+      cpu: 150m
+      memory: 512Mi
+    limits:
+      cpu: 1500m
+      memory: 3Gi
+
+  userAuthService:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 1.5Gi
+
+  llmInferenceService:
+    requests:
+      cpu: 500m
+      memory: 512Mi
+    limits:
+      cpu: 2000m
+      memory: 2Gi
+
+# Monitoring (for demonstrating observability)
+monitoring:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    interval: 30s
+  prometheusRule:
+    enabled: true
+
+# Security contexts for self-healing
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 2000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: false
+  runAsNonRoot: true
+  runAsUser: 1000
+
+# Node selection and affinity for resilience
+nodeSelector: {}
+
+tolerations: []
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app: tum-study-planner
+          topologyKey: kubernetes.io/hostname

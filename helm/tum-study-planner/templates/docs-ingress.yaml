@@ -1,8 +1,8 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: tum-study-planner-docs-ingress
-  namespace: {{ .Values.namespace }}
+  name: tum-study-planner-docs-ingress # Ingress Name
+  namespace: {{ .Values.namespace }} # This is a Helm/Templating variable, so it will be replaced by a real namespace like tum-study-planner during deployment
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
@@ -12,6 +12,10 @@ metadata:
     nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, PATCH, OPTIONS"
     nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization"
     nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+    nginx.ingress.kubernetes.io/rewrite-target-0: /$2 # for /docs/study-plan(/|$)(.*)
+    nginx.ingress.kubernetes.io/rewrite-target-1: /$2 # for /docs/user-auth(/|$)(.*)
+    nginx.ingress.kubernetes.io/rewrite-target-2: /$2 # for /docs/program-catalog(/|$)(.*)
+    nginx.ingress.kubernetes.io/rewrite-target-3: /$2 # for /docs/ai-advisor(/|$)(.*)
 spec:
   ingressClassName: nginx
   tls:
@@ -23,36 +27,43 @@ spec:
       http:
         paths:
           # API services first (more specific paths)
-          - path: /docs/study-plan
-            pathType: Prefix
+          - path: /docs/study-plan(/|$)(.*)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: study-plan-service
                 port:
                   number: 8081
-          - path: /docs/user-auth
-            pathType: Prefix
+            # This rewrites /docs/study-plan/api/v1/api-docs to /api/v1/api-docs
+            # before sending to the backend service.
+            # The $2 captures everything after /docs/study-plan/
+
+          - path: /docs/user-auth(/|$)(.*)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: user-auth-service
                 port:
                   number: 8083
-          - path: /docs/program-catalog
-            pathType: Prefix
+
+          - path: /docs/program-catalog(/|$)(.*)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: program-catalog-service
                 port:
                   number: 8080
-          - path: /docs/ai-advisor
-            pathType: Prefix
+
+          - path: /docs/ai-advisor(/|$)(.*)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: ai-advisor-service
                 port:
                   number: 8082
           
-          # Unified Swagger UI last (catch-all)
+          # Unified Swagger UI last (catch-all for /docs itself)
+          # No rewrite needed here as the HTML content is served directly
           - path: /docs
             pathType: Prefix
             backend:
