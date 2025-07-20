@@ -234,7 +234,7 @@ def setup_weaviate():
     try:
         import weaviate
         weaviate_host = os.getenv("WEAVIATE_HOST", "localhost")
-        weaviate_port = int(os.getenv("WEAVIATE_PORT", "8080"))
+        weaviate_port = int(os.getenv("WEAVIATE_PORT", "8000"))
         weaviate_grpc_port = int(os.getenv("WEAVIATE_GRPC_PORT", "50051"))
         # Use connect_to_local for robust local/K8s connection
         weaviate_client_local = weaviate.connect_to_local(

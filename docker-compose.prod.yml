@@ -69,7 +69,7 @@ services:
       context: ./server/llm-inference-service
     container_name: llm-inference-service
     ports:
-      - "8000:8000"
+      - "8084:8084"
     env_file:
       - .env
     environment:

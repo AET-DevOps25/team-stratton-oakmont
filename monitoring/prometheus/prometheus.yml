@@ -41,6 +41,6 @@ scrape_configs:
 
   - job_name: "llm-inference-service"
     static_configs:
-      - targets: ["llm-inference-service:8000"]
+      - targets: ["llm-inference-service:8084"]
     metrics_path: "/metrics"
     scrape_interval: 5s
