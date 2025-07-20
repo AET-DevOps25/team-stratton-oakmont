@@ -41,6 +41,10 @@ spec:
                 secretKeyRef:
                   name: tum-study-planner-secrets
                   key: JWT_SECRET
+            - name: LLM_INFERENCE_SERVICE_URL
+              value: "http://llm-inference-service.{{ .Values.namespace }}.svc.cluster.local:{{ .Values.services.llmInferenceService.port }}"
+            - name: llm.inference.service.url
+              value: "http://llm-inference-service.{{ .Values.namespace }}.svc.cluster.local:{{ .Values.services.llmInferenceService.port }}"
           resources:
             requests:
               cpu: {{ .Values.resources.aiAdvisorService.requests.cpu }}
