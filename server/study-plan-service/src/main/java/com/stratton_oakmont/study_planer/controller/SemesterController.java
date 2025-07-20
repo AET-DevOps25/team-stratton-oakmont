@@ -9,12 +9,17 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/semesters")
@@ -27,17 +32,49 @@ public class SemesterController {
 
     private final SemesterService semesterService;
     private final StudyPlanService studyPlanService;
+    private static final Logger logger = LoggerFactory.getLogger(SemesterController.class);
 
     @Autowired
     public SemesterController(SemesterService semesterService, StudyPlanService studyPlanService) {
         this.semesterService = semesterService;
         this.studyPlanService = studyPlanService;
+        logger.info("LOG: SemesterController initialized successfully");
     }
 
-    // POST /api/v1/semesters - Create a new semester
+    // Helper method to get current user ID from SecurityContext
+    private Long getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof Long) {
+            return (Long) authentication.getPrincipal();
+        }
+        throw new RuntimeException("User not authenticated");
+    }
+
+    // Helper method to verify study plan ownership
+    private boolean verifyStudyPlanOwnership(Long studyPlanId, Long userId) {
+        try {
+            StudyPlan studyPlan = studyPlanService.getStudyPlanById(studyPlanId);
+            return studyPlan.getUserId().equals(userId);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    // POST /api/v1/semesters - Create a new semester (with ownership check)
     @PostMapping
     public ResponseEntity<?> createSemester(@Valid @RequestBody SemesterDto semesterDto) {
         try {
+            // Get user ID from SecurityContext (set by JWT filter)
+            Long userId = getCurrentUserId();
+            
+            // Verify ownership of the study plan
+            if (!verifyStudyPlanOwnership(semesterDto.getStudyPlanId(), userId)) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "ACCESS_DENIED");
+                error.put("message", "You can only create semesters for your own study plans");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+            }
+            
             // Get the study plan to verify it exists
             StudyPlan studyPlan = studyPlanService.getStudyPlanById(semesterDto.getStudyPlanId());
             
@@ -61,10 +98,21 @@ public class SemesterController {
         }
     }
 
-    // GET /api/v1/semesters/study-plan/{studyPlanId} - Get all semesters for a study plan
+    // GET /api/v1/semesters/study-plan/{studyPlanId} - Get all semesters for a study plan (with ownership check)
     @GetMapping("/study-plan/{studyPlanId}")
     public ResponseEntity<?> getSemestersByStudyPlan(@PathVariable Long studyPlanId) {
         try {
+            // Get user ID from SecurityContext (set by JWT filter)
+            Long userId = getCurrentUserId();
+            
+            // Verify ownership of the study plan
+            if (!verifyStudyPlanOwnership(studyPlanId, userId)) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "ACCESS_DENIED");
+                error.put("message", "You can only access semesters for your own study plans");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+            }
+            
             List<Semester> semesters = semesterService.getSemestersByStudyPlanId(studyPlanId);
             List<SemesterDto> semesterDtos = semesters.stream()
                     .map(this::convertToDto)
@@ -79,11 +127,22 @@ public class SemesterController {
         }
     }
 
-    // GET /api/v1/semesters/{id} - Get specific semester
+    // GET /api/v1/semesters/{id} - Get specific semester (with ownership check)
     @GetMapping("/{id}")
     public ResponseEntity<?> getSemesterById(@PathVariable Long id) {
         try {
+            // Get user ID from SecurityContext (set by JWT filter)
+            Long userId = getCurrentUserId();
+            
+            // Get semester and verify ownership through study plan
             Semester semester = semesterService.getSemesterById(id);
+            if (!verifyStudyPlanOwnership(semester.getStudyPlan().getId(), userId)) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "ACCESS_DENIED");
+                error.put("message", "You can only access your own semesters");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+            }
+            
             SemesterDto semesterDto = convertToDto(semester);
             return ResponseEntity.ok(semesterDto);
 
@@ -95,13 +154,23 @@ public class SemesterController {
         }
     }
 
-    // PUT /api/v1/semesters/{id} - Update semester
+    // PUT /api/v1/semesters/{id} - Update semester (with ownership check)
     @PutMapping("/{id}")
     public ResponseEntity<?> updateSemester(
             @PathVariable Long id,
             @Valid @RequestBody SemesterDto semesterDto) {
         try {
+            // Get user ID from SecurityContext (set by JWT filter)
+            Long userId = getCurrentUserId();
+            
+            // Get existing semester and verify ownership through study plan
             Semester existingSemester = semesterService.getSemesterById(id);
+            if (!verifyStudyPlanOwnership(existingSemester.getStudyPlan().getId(), userId)) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "ACCESS_DENIED");
+                error.put("message", "You can only update your own semesters");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+            }
             
             // Update fields
             existingSemester.setName(semesterDto.getName());
@@ -124,10 +193,22 @@ public class SemesterController {
         }
     }
 
-    // DELETE /api/v1/semesters/{id} - Delete semester
+    // DELETE /api/v1/semesters/{id} - Delete semester (with ownership check)
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteSemester(@PathVariable Long id) {
         try {
+            // Get user ID from SecurityContext (set by JWT filter)
+            Long userId = getCurrentUserId();
+            
+            // Get semester and verify ownership through study plan
+            Semester semester = semesterService.getSemesterById(id);
+            if (!verifyStudyPlanOwnership(semester.getStudyPlan().getId(), userId)) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "ACCESS_DENIED");
+                error.put("message", "You can only delete your own semesters");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+            }
+            
             semesterService.deleteSemester(id);
             Map<String, String> response = new HashMap<>();
             response.put("message", "Semester deleted successfully");
@@ -141,11 +222,23 @@ public class SemesterController {
         }
     }
 
-    // POST /api/v1/semesters/reorder - Reorder semesters within a study plan
+    // POST /api/v1/semesters/reorder - Reorder semesters within a study plan (with ownership check)
     @PostMapping("/reorder")
     public ResponseEntity<?> reorderSemesters(@RequestBody Map<String, Object> request) {
         try {
+            // Get user ID from SecurityContext (set by JWT filter)
+            Long userId = getCurrentUserId();
+            
             Long studyPlanId = Long.valueOf(request.get("studyPlanId").toString());
+            
+            // Verify ownership of the study plan
+            if (!verifyStudyPlanOwnership(studyPlanId, userId)) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "ACCESS_DENIED");
+                error.put("message", "You can only reorder semesters for your own study plans");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+            }
+            
             @SuppressWarnings("unchecked")
             List<Long> semesterIds = (List<Long>) request.get("semesterIds");
             

@@ -1,20 +1,29 @@
 package com.stratton_oakmont.study_planer.controller;
 
 import com.stratton_oakmont.study_planer.dto.SemesterCourseDto;
+import com.stratton_oakmont.study_planer.dto.ModuleDetailsDto;
 import com.stratton_oakmont.study_planer.model.Semester;
 import com.stratton_oakmont.study_planer.model.SemesterCourse;
 import com.stratton_oakmont.study_planer.service.SemesterCourseService;
 import com.stratton_oakmont.study_planer.service.SemesterService;
+import com.stratton_oakmont.study_planer.service.StudyPlanService;
+import com.stratton_oakmont.study_planer.client.ProgramCatalogClient;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/semester-courses")
@@ -27,11 +36,36 @@ public class SemesterCourseController {
 
     private final SemesterCourseService semesterCourseService;
     private final SemesterService semesterService;
+    private final StudyPlanService studyPlanService;
+    private final ProgramCatalogClient programCatalogClient;
+    private static final Logger logger = LoggerFactory.getLogger(SemesterCourseController.class);
 
     @Autowired
-    public SemesterCourseController(SemesterCourseService semesterCourseService, SemesterService semesterService) {
+    public SemesterCourseController(SemesterCourseService semesterCourseService, SemesterService semesterService, StudyPlanService studyPlanService, ProgramCatalogClient programCatalogClient) {
         this.semesterCourseService = semesterCourseService;
         this.semesterService = semesterService;
+        this.studyPlanService = studyPlanService;
+        this.programCatalogClient = programCatalogClient;
+        logger.info("LOG: SemesterCourseController initialized successfully");
+    }
+
+    // Helper method to get current user ID from SecurityContext
+    private Long getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof Long) {
+            return (Long) authentication.getPrincipal();
+        }
+        throw new RuntimeException("User not authenticated");
+    }
+
+    // Helper method to verify ownership via semester -> study plan
+    private boolean verifySemesterOwnership(Long semesterId, Long userId) {
+        try {
+            Semester semester = semesterService.getSemesterById(semesterId);
+            return semester.getStudyPlan().getUserId().equals(userId);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     // POST /api/v1/semester-courses - Add course to semester
@@ -189,11 +223,28 @@ public class SemesterCourseController {
         dto.setCompletionDate(semesterCourse.getCompletionDate());
         dto.setCourseOrder(semesterCourse.getCourseOrder());
         
-        // TODO: Fetch course details from other service and populate:
-        // dto.setCourseName(...)
-        // dto.setCourseCode(...)
-        // dto.setCredits(...)
-        // etc.
+        // Fetch course details from program catalog service
+        try {
+            Optional<ModuleDetailsDto> moduleDetails = programCatalogClient.getModuleDetails(semesterCourse.getCourseId());
+            if (moduleDetails.isPresent()) {
+                ModuleDetailsDto details = moduleDetails.get();
+                dto.setCourseName(details.getName());
+                dto.setCourseCode(details.getModuleId());
+                dto.setCredits(details.getCredits());
+                dto.setProfessor(details.getResponsible());
+                dto.setOccurrence(details.getOccurrence());
+                dto.setCategory(details.getCategory());
+                dto.setSubcategory(details.getSubcategory());
+            } else {
+                // Fallback to course ID if details not found
+                dto.setCourseName(semesterCourse.getCourseId());
+                dto.setCourseCode(semesterCourse.getCourseId());
+            }
+        } catch (Exception e) {
+            // Fallback to course ID if there's an error
+            dto.setCourseName(semesterCourse.getCourseId());
+            dto.setCourseCode(semesterCourse.getCourseId());
+        }
         
         return dto;
     }

@@ -46,6 +46,24 @@ export class StudyPlanApiError extends Error {
   }
 }
 
+// Helper function to get authenticated headers
+const getAuthHeaders = (): { [key: string]: string } => {
+  const token = localStorage.getItem("jwtToken");
+
+  if (!token) {
+    throw new StudyPlanApiError(
+      401,
+      "NO_TOKEN",
+      "No authentication token found"
+    );
+  }
+
+  return {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
+};
+
 // API service function to get user's study plans
 export const getMyStudyPlans = async (): Promise<StudyPlanDto[]> => {
   // Get JWT token from localStorage (matching the key used in AuthContext)
@@ -146,7 +164,7 @@ export const getStudyPlanById = async (id: string): Promise<StudyPlanDto> => {
   if (!token) {
     throw new StudyPlanApiError(
       401,
-      "NO_TOKEN",
+      "UNAUTHORIZED",
       "No authentication token found"
     );
   }
@@ -154,8 +172,8 @@ export const getStudyPlanById = async (id: string): Promise<StudyPlanDto> => {
   const response = await fetch(`${STUDY_PLAN_API_URL}/${id}`, {
     method: "GET",
     headers: {
-      Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
   });
 
@@ -288,4 +306,416 @@ export const isApiError = (error: unknown): error is ApiError => {
     "error" in error &&
     "message" in error
   );
+};
+
+// ============================================================================
+// SEMESTER AND COURSE API FUNCTIONS
+// ============================================================================
+
+// Interfaces for Semesters and Courses
+export interface SemesterDto {
+  id?: number;
+  name: string;
+  studyPlanId: number;
+  semesterOrder: number;
+  winterOrSummer?: string; // "WINTER" or "SUMMER"
+  courses?: SemesterCourseDto[];
+}
+
+export interface SemesterCourseDto {
+  id?: number;
+  semesterId: number;
+  courseId: string;
+  isCompleted: boolean;
+  completionDate?: string;
+  courseOrder: number;
+  courseName?: string;
+  courseCode?: string;
+  credits?: number;
+  professor?: string;
+  occurrence?: string;
+  category?: string;
+  subcategory?: string;
+}
+
+export interface CreateSemesterRequest {
+  name: string;
+  studyPlanId: number;
+  semesterOrder: number;
+  winterOrSummer?: string;
+}
+
+export interface CreateSemesterCourseRequest {
+  semesterId: number;
+  courseId: string;
+  courseOrder: number;
+  isCompleted?: boolean;
+}
+
+// SEMESTER API FUNCTIONS
+
+export const createSemester = async (
+  request: CreateSemesterRequest
+): Promise<SemesterDto> => {
+  try {
+    const response = await fetch(`${STUDY_PLAN_API_URL}/semesters`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(request),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      try {
+        const errorData = JSON.parse(errorText) as ApiError;
+        throw new StudyPlanApiError(
+          response.status,
+          errorData.error,
+          errorData.message
+        );
+      } catch {
+        throw new StudyPlanApiError(
+          response.status,
+          "SEMESTER_CREATION_FAILED",
+          `HTTP ${response.status}: ${errorText}`
+        );
+      }
+    }
+
+    return (await response.json()) as SemesterDto;
+  } catch (error) {
+    if (error instanceof StudyPlanApiError) {
+      throw error;
+    }
+    throw new StudyPlanApiError(
+      500,
+      "NETWORK_ERROR",
+      `Failed to create semester: ${error}`
+    );
+  }
+};
+
+export const getSemestersByStudyPlan = async (
+  studyPlanId: number
+): Promise<SemesterDto[]> => {
+  try {
+    const response = await fetch(
+      `${STUDY_PLAN_API_URL}/semesters/study-plan/${studyPlanId}`,
+      {
+        method: "GET",
+        headers: getAuthHeaders(),
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      try {
+        const errorData = JSON.parse(errorText) as ApiError;
+        throw new StudyPlanApiError(
+          response.status,
+          errorData.error,
+          errorData.message
+        );
+      } catch {
+        throw new StudyPlanApiError(
+          response.status,
+          "SEMESTER_FETCH_FAILED",
+          `HTTP ${response.status}: ${errorText}`
+        );
+      }
+    }
+
+    return (await response.json()) as SemesterDto[];
+  } catch (error) {
+    if (error instanceof StudyPlanApiError) {
+      throw error;
+    }
+    throw new StudyPlanApiError(
+      500,
+      "NETWORK_ERROR",
+      `Failed to fetch semesters: ${error}`
+    );
+  }
+};
+
+export const updateSemester = async (
+  semesterId: number,
+  updates: Partial<SemesterDto>
+): Promise<SemesterDto> => {
+  try {
+    const response = await fetch(
+      `${STUDY_PLAN_API_URL}/semesters/${semesterId}`,
+      {
+        method: "PUT",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(updates),
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      try {
+        const errorData = JSON.parse(errorText) as ApiError;
+        throw new StudyPlanApiError(
+          response.status,
+          errorData.error,
+          errorData.message
+        );
+      } catch {
+        throw new StudyPlanApiError(
+          response.status,
+          "SEMESTER_UPDATE_FAILED",
+          `HTTP ${response.status}: ${errorText}`
+        );
+      }
+    }
+
+    return (await response.json()) as SemesterDto;
+  } catch (error) {
+    if (error instanceof StudyPlanApiError) {
+      throw error;
+    }
+    throw new StudyPlanApiError(
+      500,
+      "NETWORK_ERROR",
+      `Failed to update semester: ${error}`
+    );
+  }
+};
+
+export const deleteSemester = async (semesterId: number): Promise<void> => {
+  try {
+    const response = await fetch(
+      `${STUDY_PLAN_API_URL}/semesters/${semesterId}`,
+      {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      try {
+        const errorData = JSON.parse(errorText) as ApiError;
+        throw new StudyPlanApiError(
+          response.status,
+          errorData.error,
+          errorData.message
+        );
+      } catch {
+        throw new StudyPlanApiError(
+          response.status,
+          "SEMESTER_DELETE_FAILED",
+          `HTTP ${response.status}: ${errorText}`
+        );
+      }
+    }
+  } catch (error) {
+    if (error instanceof StudyPlanApiError) {
+      throw error;
+    }
+    throw new StudyPlanApiError(
+      500,
+      "NETWORK_ERROR",
+      `Failed to delete semester: ${error}`
+    );
+  }
+};
+
+// SEMESTER COURSE API FUNCTIONS
+
+export const createSemesterCourse = async (
+  request: CreateSemesterCourseRequest
+): Promise<SemesterCourseDto> => {
+  try {
+    const response = await fetch(`${STUDY_PLAN_API_URL}/semester-courses`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(request),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      try {
+        const errorData = JSON.parse(errorText) as ApiError;
+        throw new StudyPlanApiError(
+          response.status,
+          errorData.error,
+          errorData.message
+        );
+      } catch {
+        throw new StudyPlanApiError(
+          response.status,
+          "COURSE_CREATION_FAILED",
+          `HTTP ${response.status}: ${errorText}`
+        );
+      }
+    }
+
+    return (await response.json()) as SemesterCourseDto;
+  } catch (error) {
+    if (error instanceof StudyPlanApiError) {
+      throw error;
+    }
+    throw new StudyPlanApiError(
+      500,
+      "NETWORK_ERROR",
+      `Failed to create course: ${error}`
+    );
+  }
+};
+
+export const getCoursesBySemester = async (
+  semesterId: number
+): Promise<SemesterCourseDto[]> => {
+  try {
+    const response = await fetch(
+      `${STUDY_PLAN_API_URL}/semester-courses/semester/${semesterId}`,
+      {
+        method: "GET",
+        headers: getAuthHeaders(),
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      try {
+        const errorData = JSON.parse(errorText) as ApiError;
+        throw new StudyPlanApiError(
+          response.status,
+          errorData.error,
+          errorData.message
+        );
+      } catch {
+        throw new StudyPlanApiError(
+          response.status,
+          "COURSE_FETCH_FAILED",
+          `HTTP ${response.status}: ${errorText}`
+        );
+      }
+    }
+
+    return (await response.json()) as SemesterCourseDto[];
+  } catch (error) {
+    if (error instanceof StudyPlanApiError) {
+      throw error;
+    }
+    throw new StudyPlanApiError(
+      500,
+      "NETWORK_ERROR",
+      `Failed to fetch courses: ${error}`
+    );
+  }
+};
+
+export const updateSemesterCourse = async (
+  courseId: number,
+  updates: Partial<SemesterCourseDto>
+): Promise<SemesterCourseDto> => {
+  try {
+    const response = await fetch(
+      `${STUDY_PLAN_API_URL}/semester-courses/${courseId}`,
+      {
+        method: "PUT",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(updates),
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      try {
+        const errorData = JSON.parse(errorText) as ApiError;
+        throw new StudyPlanApiError(
+          response.status,
+          errorData.error,
+          errorData.message
+        );
+      } catch {
+        throw new StudyPlanApiError(
+          response.status,
+          "COURSE_UPDATE_FAILED",
+          `HTTP ${response.status}: ${errorText}`
+        );
+      }
+    }
+
+    return (await response.json()) as SemesterCourseDto;
+  } catch (error) {
+    if (error instanceof StudyPlanApiError) {
+      throw error;
+    }
+    throw new StudyPlanApiError(
+      500,
+      "NETWORK_ERROR",
+      `Failed to update course: ${error}`
+    );
+  }
+};
+
+export const deleteSemesterCourse = async (courseId: number): Promise<void> => {
+  const token = localStorage.getItem("jwtToken");
+  if (!token) {
+    throw new StudyPlanApiError(
+      401,
+      "UNAUTHORIZED",
+      "No authentication token found"
+    );
+  }
+
+  try {
+    const response = await fetch(
+      `${STUDY_PLAN_API_URL}/semester-courses/${courseId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      try {
+        const errorData = JSON.parse(errorText) as ApiError;
+        throw new StudyPlanApiError(
+          response.status,
+          errorData.error,
+          errorData.message
+        );
+      } catch {
+        throw new StudyPlanApiError(
+          response.status,
+          "COURSE_DELETE_FAILED",
+          `HTTP ${response.status}: ${errorText}`
+        );
+      }
+    }
+  } catch (error) {
+    if (error instanceof StudyPlanApiError) {
+      throw error;
+    }
+    throw new StudyPlanApiError(
+      500,
+      "NETWORK_ERROR",
+      `Failed to delete course: ${error}`
+    );
+  }
+};
+
+// Bulk operations
+export const createMultipleCourses = async (
+  courses: CreateSemesterCourseRequest[]
+): Promise<SemesterCourseDto[]> => {
+  const results: SemesterCourseDto[] = [];
+  for (const course of courses) {
+    try {
+      const result = await createSemesterCourse(course);
+      results.push(result);
+    } catch (error) {
+      console.error(`Failed to create course ${course.courseId}:`, error);
+      throw error; // Re-throw to stop the process on first failure
+    }
+  }
+  return results;
 };
