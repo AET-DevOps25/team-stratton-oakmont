@@ -101,13 +101,6 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-
-
-    @GetMapping("/ping") // New GET endpoint
-    public ResponseEntity<String> pingAuth() {
-        return ResponseEntity.ok("Auth service is reachable via GET at /auth/ping");
-    }
-
     // Exception handler for validation errors
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
