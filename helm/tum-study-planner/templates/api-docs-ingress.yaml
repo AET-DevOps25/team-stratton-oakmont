@@ -1,8 +1,9 @@
+#prettier-ignore
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: tum-study-planner-api-docs-ingress
-  namespace: { { .Values.namespace } }
+  namespace: {{ .Values.namespace }}
   annotations:
     kubernetes.io/ingress.class: "nginx"
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
@@ -11,10 +12,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - { { .Values.ingress.host } }
+        - {{ .Values.ingress.host }}
       secretName: tum-study-planner-tls
   rules:
-    - host: { { .Values.ingress.host } }
+    - host: {{ .Values.ingress.host }}
       http:
         paths:
           - path: /api/study-plan/api/v1/api-docs
