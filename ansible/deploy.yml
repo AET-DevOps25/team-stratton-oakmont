@@ -67,8 +67,9 @@
     - name: Clone application repository
       git:
         repo: "{{ repo_url }}"
+        # TODO: change to main
         dest: "{{ app_dir }}"
-        version: "main"
+        version: "fix/study-plans"
         force: yes
       become_user: ec2-user
 
