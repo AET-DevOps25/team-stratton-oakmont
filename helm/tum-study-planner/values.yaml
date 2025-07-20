@@ -135,7 +135,7 @@ llmInferenceService:
 swaggerUi:
   image:
     repository: nginx
-    tag: 1.29.0-alpine
+    tag: 1.25.0-alpine
     pullPolicy: Always
 
 # Database configurations (using existing k8s manifests)
