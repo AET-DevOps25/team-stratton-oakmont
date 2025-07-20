@@ -26,6 +26,19 @@ data:
   AUTH_SERVICE_URL: "http://auth-service:8081"
   CATALOG_SERVICE_URL: "http://catalog-service:8082"
   STUDY_PLAN_SERVICE_URL: "http://study-plan-service:8083"
+  LLM_INFERENCE_SERVICE_URL: "http://llm-inference-service:8084"
+
+  # Vector Database
+  WEAVIATE_HOST: "weaviate-vector-service"
+  WEAVIATE_PORT: "8000"
+  WEAVIATE_GRPC_PORT: "50051"
+  WEAVIATE_URL: "http://weaviate-vector-service:8000"
+
+  # Open WebUI Configuration
+  OPENAI_BASE_URL: "https://gpu.aet.cit.tum.de/api"
+  OLLAMA_BASE_URL: "https://gpu.aet.cit.tum.de/ollama"
+  EMBEDDING_MODEL: "llama3.3:latest"
+  CHAT_MODEL: "llama3.3:latest"
 
   # Application settings
   NODE_ENV: "production"

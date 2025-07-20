@@ -122,6 +122,7 @@ llmInferenceService:
     WEAVIATE_GRPC_URL: "http://weaviate-vector-service.tum-study-planner:50051"
     # TUM's Open WebUI LLM service configuration
     OPENAI_BASE_URL: "https://gpu.aet.cit.tum.de/api" # Open WebUI API base
+    OLLAMA_BASE_URL: "https://gpu.aet.cit.tum.de/ollama" # Open WebUI Ollama API base
     CHAT_MODEL: "llama3.3:latest"
     EMBEDDING_MODEL: "llama3.3:latest" # Use Open WebUI embeddings API with same model as chat
     STUDY_DATA_DB_HOST: "postgres-study-data-service"
