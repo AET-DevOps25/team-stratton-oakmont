@@ -5,7 +5,7 @@ services:
   weaviate:
     image: semitechnologies/weaviate:1.24.10
     ports:
-      - "8000:8000" # REST API
+      - "8000:8080" # REST API (Weaviate listens on 8080 internally)
       - "50051:50051" # gRPC API
     environment:
       QUERY_DEFAULTS_LIMIT: 25
@@ -14,7 +14,6 @@ services:
       DEFAULT_VECTORIZER_MODULE: "none"
       ENABLE_MODULES: "text2vec-openai"
       CLUSTER_HOSTNAME: "node1"
-      HTTP_PORT: "8000"
 
     volumes:
       - weaviate_data:/var/lib/weaviate
@@ -32,7 +31,7 @@ services:
       - USE_GEMINI=${USE_GEMINI:-false}
       - OPENAI_BASE_URL=${OPENAI_BASE_URL:-https://gpu.aet.cit.tum.de/api}
       - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-https://gpu.aet.cit.tum.de/ollama}
-      - WEAVIATE_URL=http://weaviate:8000
+      - WEAVIATE_URL=http://weaviate:8080
       - WEAVIATE_HOST=weaviate
       - WEAVIATE_PORT=8080
       - WEAVIATE_GRPC_PORT=50051

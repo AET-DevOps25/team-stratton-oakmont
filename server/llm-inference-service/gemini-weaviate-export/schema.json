@@ -1,0 +1,234 @@
+{
+  "classes": [
+    {
+      "class": "TUMCourse",
+      "description": "TUM course information with Gemini embeddings",
+      "vectorIndexType": "hnsw",
+      "vectorizer": "none",
+      "properties": [
+        {
+          "name": "study_program_id",
+          "dataType": [
+            "int"
+          ]
+        },
+        {
+          "name": "category",
+          "dataType": [
+            "text"
+          ]
+        },
+        {
+          "name": "subcategory",
+          "dataType": [
+            "text"
+          ]
+        },
+        {
+          "name": "course_id_and_name",
+          "dataType": [
+            "text"
+          ]
+        },
+        {
+          "name": "link",
+          "dataType": [
+            "text"
+          ]
+        },
+        {
+          "name": "module_id",
+          "dataType": [
+            "text"
+          ]
+        },
+        {
+          "name": "name",
+          "dataType": [
+            "text"
+          ]
+        },
+        {
+          "name": "credits",
+          "dataType": [
+            "number"
+          ]
+        },
+        {
+          "name": "version",
+          "dataType": [
+            "text"
+          ]
+        },
+        {
+          "name": "valid",
+          "dataType": [
+            "text"
+          ]
+        },
+        {
+          "name": "responsible",
+          "dataType": [
+            "text"
+          ]
+        },
+        {
+          "name": "organisation",
+          "dataType": [
+            "text"
+          ]
+        },
+        {
+          "name": "note",
+          "dataType": [
+            "text"
+          ]
+        },
+        {
+          "name": "module_level",
+          "dataType": [
+            "text"
+          ]
+        },
+        {
+          "name": "abbreviation",
+          "dataType": [
+            "text"
+          ]
+        },
+        {
+          "name": "subtitle",
+          "dataType": [
+            "text"
+          ]
+        },
+        {
+          "name": "duration",
+          "dataType": [
+            "text"
+          ]
+        },
+        {
+          "name": "occurrence",
+          "dataType": [
+            "text"
+          ]
+        },
+        {
+          "name": "language",
+          "dataType": [
+            "text"
+          ]
+        },
+        {
+          "name": "related_programs",
+          "dataType": [
+            "text"
+          ]
+        },
+        {
+          "name": "total_hours",
+          "dataType": [
+            "number"
+          ]
+        },
+        {
+          "name": "contact_hours",
+          "dataType": [
+            "number"
+          ]
+        },
+        {
+          "name": "self_study_hours",
+          "dataType": [
+            "number"
+          ]
+        },
+        {
+          "name": "description_of_achievement_and_assessment_methods",
+          "dataType": [
+            "text"
+          ]
+        },
+        {
+          "name": "exam_retake_next_semester",
+          "dataType": [
+            "text"
+          ]
+        },
+        {
+          "name": "exam_retake_at_the_end_of_semester",
+          "dataType": [
+            "text"
+          ]
+        },
+        {
+          "name": "prerequisites_recommended",
+          "dataType": [
+            "text"
+          ]
+        },
+        {
+          "name": "intended_learning_outcomes",
+          "dataType": [
+            "text"
+          ]
+        },
+        {
+          "name": "content",
+          "dataType": [
+            "text"
+          ]
+        },
+        {
+          "name": "teaching_and_learning_methods",
+          "dataType": [
+            "text"
+          ]
+        },
+        {
+          "name": "media",
+          "dataType": [
+            "text"
+          ]
+        },
+        {
+          "name": "reading_list",
+          "dataType": [
+            "text"
+          ]
+        },
+        {
+          "name": "curriculum_id",
+          "dataType": [
+            "int"
+          ]
+        },
+        {
+          "name": "transformed_link",
+          "dataType": [
+            "text"
+          ]
+        },
+        {
+          "name": "extraction_method",
+          "dataType": [
+            "text"
+          ]
+        },
+        {
+          "name": "csv_id",
+          "dataType": [
+            "int"
+          ]
+        },
+        {
+          "name": "embedding_source",
+          "dataType": [
+            "text"
+          ]
+        }
+      ]
+    }
+  ]
+}

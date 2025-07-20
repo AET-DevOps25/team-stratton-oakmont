@@ -191,7 +191,7 @@ def get_llm_client(temperature: float = 0.7, model: str = None):
         
         return ChatGoogleGenerativeAI(
             google_api_key=gemini_api_key,
-            model=model or "gemini-pro",
+            model=model or "gemini-2.5-flash",
             temperature=temperature,
             convert_system_message_to_human=True
         )
@@ -253,11 +253,22 @@ async def startup_event():
     try:
         print("🔌 Setting up Weaviate connection...")
         import weaviate
-        weaviate_host = os.getenv("WEAVIATE_HOST", "localhost")
-        weaviate_port = int(os.getenv("WEAVIATE_PORT", "8000"))
+        
+        # Determine if running in Docker or locally
+        is_docker = os.getenv('KUBERNETES_SERVICE_HOST') is not None or os.path.exists('/.dockerenv')
+        
+        if is_docker:
+            # Running in Docker/Kubernetes - use service names
+            weaviate_host = os.getenv("WEAVIATE_HOST", "weaviate")
+            weaviate_port = int(os.getenv("WEAVIATE_PORT", "8080"))
+        else:
+            # Running locally - use localhost
+            weaviate_host = "localhost"
+            weaviate_port = 8000  # External port mapping
+            
         weaviate_grpc_port = int(os.getenv("WEAVIATE_GRPC_PORT", "50051"))
         
-        print(f"🌐 Connecting to Weaviate at {weaviate_host}:{weaviate_port}")
+        print(f"🌐 Connecting to Weaviate at {weaviate_host}:{weaviate_port} (Docker: {is_docker})")
         weaviate_client = weaviate.connect_to_local(
             host=weaviate_host,
             port=weaviate_port,
@@ -420,9 +431,21 @@ def setup_weaviate():
     
     try:
         import weaviate
-        weaviate_host = os.getenv("WEAVIATE_HOST", "localhost")
-        weaviate_port = int(os.getenv("WEAVIATE_PORT", "8000"))
+        
+        # Determine if running in Docker or locally
+        is_docker = os.getenv('KUBERNETES_SERVICE_HOST') is not None or os.path.exists('/.dockerenv')
+        
+        if is_docker:
+            # Running in Docker/Kubernetes - use service names
+            weaviate_host = os.getenv("WEAVIATE_HOST", "weaviate")
+            weaviate_port = int(os.getenv("WEAVIATE_PORT", "8080"))
+        else:
+            # Running locally - use localhost
+            weaviate_host = "localhost"
+            weaviate_port = 8000  # External port mapping
+            
         weaviate_grpc_port = int(os.getenv("WEAVIATE_GRPC_PORT", "50051"))
+        
         # Use connect_to_local for robust local/K8s connection
         weaviate_client_local = weaviate.connect_to_local(
             host=weaviate_host,

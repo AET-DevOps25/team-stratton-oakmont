@@ -104,15 +104,30 @@ def main():
     print("📥 Importing Weaviate Data (Python)")
     print("===================================")
     
-    # Configuration
+    # Configuration - always use Gemini export
     weaviate_url = "http://localhost:8000"
-    export_dir = "/opt/tum-study-planner/weaviate-export"
     
-    # If running locally (for testing)
-    if os.path.exists("./weaviate-export"):
-        export_dir = "./weaviate-export"
+    # Try to find the Gemini export directory
+    possible_paths = [
+        "./gemini-weaviate-export",  # Current directory
+        "../server/llm-inference-service/gemini-weaviate-export",  # From scripts dir
+        "/opt/tum-study-planner/gemini-weaviate-export",  # AWS deployment path
+        "./server/llm-inference-service/gemini-weaviate-export"  # From root
+    ]
     
-    print(f"📁 Using export directory: {export_dir}")
+    export_dir = None
+    for path in possible_paths:
+        if os.path.exists(path):
+            export_dir = path
+            break
+    
+    if export_dir is None:
+        print("❌ Gemini export directory not found in any expected location:")
+        for path in possible_paths:
+            print(f"   - {path}")
+        sys.exit(1)
+    
+    print(f"📁 Using Gemini export directory: {export_dir}")
     
     schema_file = os.path.join(export_dir, "schema.json")
     data_file = os.path.join(export_dir, "TUMCourse_data.json")

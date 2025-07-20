@@ -159,6 +159,23 @@ fi
 echo ""
 echo "🏗️  Starting infrastructure deployment..."
 
+# Check for Gemini export before proceeding
+GEMINI_EXPORT_DIR="./server/llm-inference-service/gemini-weaviate-export"
+if [[ ! -d "$GEMINI_EXPORT_DIR" ]]; then
+    echo "⚠️  Gemini Weaviate export not found at: $GEMINI_EXPORT_DIR"
+    echo "   Please run the Gemini population script first:"
+    echo "   cd server/llm-inference-service && python populate_weaviate_gemini.py"
+    echo ""
+    read -p "   Continue anyway? (y/N): " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "❌ Deployment cancelled"
+        exit 1
+    fi
+else
+    echo "✅ Gemini Weaviate export found: $GEMINI_EXPORT_DIR"
+fi
+
 # Step 1: Initialize and apply Terraform
 echo "🔧 Deploying infrastructure with Terraform..."
 cd ../terraform

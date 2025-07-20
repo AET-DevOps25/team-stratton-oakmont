@@ -108,21 +108,25 @@
         - "OPENAI_BASE_URL=https://api.openai.com/v1"
         - "OLLAMA_BASE_URL=https://api.openai.com/v1"
 
-    - name: Check if Weaviate export exists locally
+    - name: Check if Gemini Weaviate export exists locally
       local_action:
         module: stat
-        path: "{{ playbook_dir }}/../scripts/weaviate-export"
-      register: local_weaviate_export
+        path: "{{ playbook_dir }}/../server/llm-inference-service/gemini-weaviate-export"
+      register: local_gemini_export
       become: no
 
-    - name: Copy Weaviate export data if exists
+    - name: Copy Gemini Weaviate export data if exists
       copy:
-        src: "{{ playbook_dir }}/../scripts/weaviate-export/"
-        dest: "{{ app_dir }}/weaviate-export/"
+        src: "{{ playbook_dir }}/../server/llm-inference-service/gemini-weaviate-export/"
+        dest: "{{ app_dir }}/gemini-weaviate-export/"
         owner: ec2-user
         group: ec2-user
         mode: "0644"
-      when: local_weaviate_export.stat.exists
+      when: local_gemini_export.stat.exists
+
+    - name: Debug Gemini export status
+      debug:
+        msg: "Gemini export found: {{ local_gemini_export.stat.exists }}"
 
     - name: Copy Weaviate import scripts
       copy:
@@ -173,17 +177,19 @@
         - 8083 # user-auth-service
         - 8084 # llm-inference-service
 
-    - name: Populate Weaviate with course data
+    - name: Populate Weaviate with Gemini course data
       shell: |
         cd {{ app_dir }}
-        if [ -f "./import-weaviate-data.py" ] && [ -d "./weaviate-export" ]; then
-          echo "🚀 Importing Weaviate data with Python script..."
+        if [ -f "./import-weaviate-data.py" ] && [ -d "./gemini-weaviate-export" ]; then
+          echo "🚀 Importing Gemini Weaviate data with Python script..."
           python3 ./import-weaviate-data.py
-        elif [ -f "./import-weaviate-data.sh" ] && [ -d "./weaviate-export" ]; then
-          echo "🚀 Importing Weaviate data with bash script..."
+        elif [ -f "./import-weaviate-data.sh" ] && [ -d "./gemini-weaviate-export" ]; then
+          echo "🚀 Importing Gemini Weaviate data with bash script..."
           ./import-weaviate-data.sh
         else
-          echo "⚠️  Weaviate export data not found, skipping import"
+          echo "⚠️  Gemini Weaviate export data not found, skipping import"
+          echo "   Looking for: ./gemini-weaviate-export/"
+          ls -la ./
         fi
       become_user: ec2-user
       register: weaviate_import_result
