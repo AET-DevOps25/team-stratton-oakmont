@@ -3,15 +3,18 @@ uvicorn[standard]
 weaviate-client>=4.0.0
 langchain
 langchain-openai
+langchain-huggingface
 langchain-community
 pandas
 numpy
 openai
+sentence-transformers
+torch
+transformers
 python-dotenv
 pydantic
 psycopg2-binary
 sqlalchemy
-langchain-google-genai
 
 prometheus-client
 

@@ -6,14 +6,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 import weaviate
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_community.vectorstores import Weaviate
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 from dotenv import load_dotenv
 from data_service_client import data_service
-from langchain_google_genai import ChatGoogleGenerativeAI
 from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
 from fastapi.responses import Response
 import time
@@ -119,26 +118,155 @@ class WeaviateCourseStore:
         return Retriever(self, search_kwargs)
 
 
-from contextlib import asynccontextmanager
+import requests
+import json
+from typing import List
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    print("Initializing RAG system...")
-    rag_ready = False
-    if setup_weaviate():
-        print("Weaviate connected successfully")
-        if setup_qa_chain():
-            print("QA chain setup successful")
-            print("✅ RAG system ready! Using pre-populated Weaviate database.")
-            rag_ready = True
+class OllamaEmbeddings:
+    """Custom embeddings class for Ollama API via Open WebUI"""
+    
+    def __init__(self, model: str, base_url: str, api_key: str):
+        self.model = model
+        self.base_url = base_url.rstrip('/')
+        self.api_key = api_key
+        
+    def embed_query(self, text: str) -> List[float]:
+        """Embed a single text query"""
+        return self.embed_documents([text])[0]
+    
+    def embed_documents(self, texts: List[str]) -> List[List[float]]:
+        """Embed multiple documents"""
+        url = f"{self.base_url}/api/embed"
+        
+        headers = {
+            'Content-Type': 'application/json'
+        }
+        
+        # Add authorization header if API key is provided
+        if self.api_key:
+            headers['Authorization'] = f'Bearer {self.api_key}'
+        
+        data = {
+            "model": self.model,
+            "input": texts
+        }
+        
+        try:
+            response = requests.post(url, headers=headers, json=data, timeout=30)
+            response.raise_for_status()
+            result = response.json()
+            
+            # Handle both single embedding and multiple embeddings
+            if 'embeddings' in result:
+                return result['embeddings']
+            elif 'embedding' in result:
+                # Single embedding case
+                return [result['embedding']]
+            else:
+                raise ValueError(f"Unexpected response format: {result}")
+                
+        except requests.exceptions.RequestException as e:
+            raise Exception(f"Error calling Ollama embedding API: {e}")
+        except json.JSONDecodeError as e:
+            raise Exception(f"Error parsing Ollama API response: {e}")
+
+
+import time
+
+app = FastAPI(title="LLM Inference Service with RAG")
+
+@app.on_event("startup")
+async def startup_event():
+    """Initialize RAG system on startup"""
+    global weaviate_client, vector_store, embeddings, qa_chain
+    
+    print("🚀 === Starting RAG system initialization ===")
+    
+    try:
+        print("🔌 Setting up Weaviate connection...")
+        import weaviate
+        weaviate_host = os.getenv("WEAVIATE_HOST", "localhost")
+        weaviate_port = int(os.getenv("WEAVIATE_PORT", "8000"))
+        weaviate_grpc_port = int(os.getenv("WEAVIATE_GRPC_PORT", "50051"))
+        
+        print(f"🌐 Connecting to Weaviate at {weaviate_host}:{weaviate_port}")
+        weaviate_client = weaviate.connect_to_local(
+            host=weaviate_host,
+            port=weaviate_port,
+            grpc_port=weaviate_grpc_port
+        )
+        print("✅ Weaviate connection established")
+
+        # Setup Open WebUI embeddings
+        print("Setting up Open WebUI embeddings...")
+        api_key = os.getenv("OPENAI_API_KEY")
+        chat_base_url = os.getenv("OPENAI_BASE_URL", "https://gpu.aet.cit.tum.de/api")
+        ollama_base_url = os.getenv("OLLAMA_BASE_URL", "https://gpu.aet.cit.tum.de/ollama")
+        embedding_model = os.getenv("EMBEDDING_MODEL", "llama3.3:latest")
+        
+        print(f"🔧 Using model: {embedding_model}")
+        print(f"🌐 Using chat API base: {chat_base_url}")
+        print(f"🌐 Using Ollama API base: {ollama_base_url}")
+        print(f"🔑 API key length: {len(api_key) if api_key else 0}")
+        
+        try:
+            # Explicitly disable any Google credential detection
+            for env_var in ['GOOGLE_APPLICATION_CREDENTIALS', 'GOOGLE_API_KEY', 'GOOGLE_CLOUD_PROJECT', 'GCLOUD_PROJECT']:
+                if env_var in os.environ:
+                    print(f"🚫 Clearing {env_var}")
+                    del os.environ[env_var]
+            
+            print("🔧 Initializing Ollama embeddings...")
+            embeddings = OllamaEmbeddings(
+                model=embedding_model,
+                base_url=ollama_base_url,
+                api_key=api_key
+            )
+            
+            # Test embeddings
+            print("🧪 Testing embeddings...")
+            test_embedding = embeddings.embed_query("test")
+            print(f"✅ Ollama embeddings working (dimension: {len(test_embedding)})")
+        except Exception as e:
+            print(f"❌ Ollama embeddings failed: {e}")
+            import traceback
+            traceback.print_exc()
+            embeddings = None
+
+        # Check schema
+        schema = weaviate_client.collections.list_all()
+        if "TUMCourse" not in schema:
+            print("⚠️  TUMCourse schema not found!")
+            print("Available collections:", list(schema.keys()))
         else:
-            print("Failed to setup QA chain")
-    else:
-        print("Failed to setup Weaviate")
-        print("💡 Tip: Make sure Weaviate is running and populated with: python populate_weaviate.py")
-    yield
-
-app = FastAPI(title="LLM Inference Service with RAG", lifespan=lifespan)
+            print("✅ TUMCourse collection found")
+            
+            # Create vector store only if embeddings work
+            if embeddings is not None:
+                print("🔧 Creating vector store...")
+                try:
+                    vector_store = WeaviateCourseStore(
+                        client=weaviate_client,
+                        embedding=embeddings,
+                    )
+                    print("✅ Vector store created")
+                    
+                    # Setup QA chain
+                    if setup_qa_chain():
+                        print("✅ QA chain setup successful")
+                        print("🎉 RAG system fully initialized with Open WebUI!")
+                    else:
+                        print("❌ QA chain setup failed")
+                except Exception as e:
+                    print(f"❌ Vector store creation failed: {e}")
+            else:
+                print("⚠️ Skipping vector store creation due to embeddings failure")
+        
+    except Exception as e:
+        print(f"❌ RAG setup failed: {e}")
+        import traceback
+        traceback.print_exc()
+        print("💡 RAG system not available, chat will use fallback responses")
 
 # Add CORS middleware
 app.add_middleware(
@@ -243,11 +371,24 @@ def setup_weaviate():
             grpc_port=weaviate_grpc_port
         )
         # Assign to global
-        global weaviate_client, embeddings, vector_store
         weaviate_client = weaviate_client_local
 
-        # Use Gemini embeddings
-        embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+        # Use Open WebUI embeddings API (OpenAI-compatible)
+        api_key = os.getenv("OPENAI_API_KEY")
+        base_url = os.getenv("OPENAI_BASE_URL", "https://gpu.aet.cit.tum.de/api")
+        embedding_model = os.getenv("EMBEDDING_MODEL", "llama3.3:latest")  # Use same model as chat
+        
+        print(f"🔧 Initializing Open WebUI embeddings with model: {embedding_model}")
+        print(f"🌐 Using embeddings API base URL: {base_url}")
+        
+        embeddings = OpenAIEmbeddings(
+            model=embedding_model,
+            openai_api_key=api_key,
+            openai_api_base=base_url
+        )
+        # Test the embeddings by embedding a simple query
+        test_embedding = embeddings.embed_query("test")
+        print(f"✅ Open WebUI embeddings initialized successfully (dimension: {len(test_embedding)})")
 
         # Check if TUMCourse schema exists
         schema = weaviate_client.collections.list_all()
@@ -267,6 +408,7 @@ def setup_weaviate():
 
     except Exception as e:
         print(f"Error setting up Weaviate: {e}")
+        return False
 
 def setup_qa_chain():
     """Setup the QA chain with custom prompt"""
@@ -282,12 +424,21 @@ def setup_qa_chain():
             input_variables=["context", "question"]
         )
         
-        # Initialize Gemini LLM
-        llm = ChatGoogleGenerativeAI(
-            model="gemini-2.5-pro",
+        # Initialize OpenAI-compatible LLM (for TUM's Open WebUI service)
+        api_key = os.getenv("OPENAI_API_KEY")
+        base_url = os.getenv("OPENAI_BASE_URL", "https://gpu.aet.cit.tum.de/api")  # Open WebUI API
+        model_name = os.getenv("CHAT_MODEL", "llama3.3:latest")  # Default to TUM's model
+        
+        print(f"🤖 Initializing LLM with model: {model_name}")
+        print(f"🌐 Using API base URL: {base_url}")
+        
+        llm = ChatOpenAI(
+            model=model_name,
             temperature=0,
             max_tokens=None,
-            max_retries=2
+            max_retries=2,
+            openai_api_key=api_key,
+            openai_api_base=base_url
         )
         
         # Create QA chain
@@ -395,7 +546,7 @@ async def chat_with_ai(request: ChatRequest, authorization: Optional[str] = Head
             
             # Create a temporary QA chain with the filtered retriever
             from langchain.chains import RetrievalQA
-            from langchain_google_genai import ChatGoogleGenerativeAI
+            from langchain_openai import ChatOpenAI
             from langchain.prompts import PromptTemplate
             
             # Use the shared conversational prompt template
@@ -404,11 +555,18 @@ async def chat_with_ai(request: ChatRequest, authorization: Optional[str] = Head
                 input_variables=["context", "question"]
             )
             
-            llm = ChatGoogleGenerativeAI(
-                model="gemini-2.5-pro",
+            # Use same OpenAI-compatible configuration (for TUM's Open WebUI service)
+            api_key = os.getenv("OPENAI_API_KEY")
+            base_url = os.getenv("OPENAI_BASE_URL", "https://gpu.aet.cit.tum.de/api")  # Open WebUI API
+            model_name = os.getenv("CHAT_MODEL", "llama3.3:latest")  # Default to TUM's model
+            
+            llm = ChatOpenAI(
+                model=model_name,
                 temperature=0,
                 max_tokens=None,
-                max_retries=2
+                max_retries=2,
+                openai_api_key=api_key,
+                openai_api_base=base_url
             )
             
             filtered_qa_chain = RetrievalQA.from_chain_type(

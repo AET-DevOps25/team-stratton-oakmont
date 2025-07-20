@@ -120,13 +120,16 @@ llmInferenceService:
     WEAVIATE_GRPC_PORT: "50051"
     WEAVIATE_URL: "http://weaviate-vector-service.tum-study-planner:8000"
     WEAVIATE_GRPC_URL: "http://weaviate-vector-service.tum-study-planner:50051"
+    # TUM's Open WebUI LLM service configuration
+    OPENAI_BASE_URL: "https://gpu.aet.cit.tum.de/api" # Open WebUI API base
+    CHAT_MODEL: "llama3.3:latest"
+    EMBEDDING_MODEL: "llama3.3:latest" # Use Open WebUI embeddings API with same model as chat
     STUDY_DATA_DB_HOST: "postgres-study-data-service"
     STUDY_DATA_DB_PORT: "5432"
     STUDY_DATA_DB_NAME: "study_data_db"
     STUDY_PLAN_DB_HOST: "postgres-study-plan-service"
     STUDY_PLAN_DB_PORT: "5432"
     STUDY_PLAN_DB_NAME: "study_plan_db"
-    # GOOGLE_API_KEY: "your_google_api_key_here"
 
 swaggerUi:
   image:
