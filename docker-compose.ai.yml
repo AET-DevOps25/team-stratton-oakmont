@@ -28,6 +28,9 @@ services:
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - WEAVIATE_URL=http://weaviate:8080
+      - WEAVIATE_HOST=weaviate
+      - WEAVIATE_PORT=8080
+      - WEAVIATE_GRPC_PORT=50051
       # PostgreSQL connections
       - STUDY_DATA_DB_HOST=${STUDY_DATA_DB_HOST:-localhost}
       - STUDY_DATA_DB_PORT=${STUDY_DATA_DB_PORT:-5432}
