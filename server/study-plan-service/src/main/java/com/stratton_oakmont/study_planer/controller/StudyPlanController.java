@@ -5,7 +5,6 @@ import com.stratton_oakmont.study_planer.dto.StudyPlanDto;
 import com.stratton_oakmont.study_planer.dto.StudyProgramDto;
 import com.stratton_oakmont.study_planer.model.StudyPlan;
 import com.stratton_oakmont.study_planer.service.StudyPlanService;
-import com.stratton_oakmont.study_planer.service.StudyPlanMigrationService;
 import com.stratton_oakmont.study_planer.client.ProgramCatalogClient;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,14 +34,12 @@ import org.slf4j.LoggerFactory;
 public class StudyPlanController {
 
     private final StudyPlanService studyPlanService;
-    private final StudyPlanMigrationService migrationService;
     private final ProgramCatalogClient programCatalogClient;
     private static final Logger logger = LoggerFactory.getLogger(StudyPlanController.class);
 
     @Autowired
-    public StudyPlanController(StudyPlanService studyPlanService, StudyPlanMigrationService migrationService, ProgramCatalogClient programCatalogClient) {
+    public StudyPlanController(StudyPlanService studyPlanService, ProgramCatalogClient programCatalogClient) {
         this.studyPlanService = studyPlanService;
-        this.migrationService = migrationService;
         this.programCatalogClient = programCatalogClient;
         logger.info("LOG: StudyPlanController initialized successfully");
     }
@@ -69,9 +66,6 @@ public class StudyPlanController {
                 request.getStudyProgramId(), 
                 request.getName()
             );
-            
-            // Ensure basic semester structure for new plan
-            migrationService.ensureBasicSemesterStructure(newPlan);
             
             StudyPlanDto responseDto = convertToDto(newPlan);
             return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
@@ -134,10 +128,6 @@ public class StudyPlanController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
             }
             
-            // Ensure persistence migration if needed
-            migrationService.migratePlanDataIfNeeded(studyPlan);
-            migrationService.ensureBasicSemesterStructure(studyPlan);
-            
             StudyPlanDto studyPlanDto = convertToDto(studyPlan);
             return ResponseEntity.ok(studyPlanDto);
         } catch (Exception e) {
@@ -155,6 +145,7 @@ public class StudyPlanController {
         dto.setName(studyPlan.getName());
         dto.setUserId(studyPlan.getUserId());
         dto.setIsActive(studyPlan.getIsActive());
+        dto.setCreateDate(studyPlan.getCreateDate());
         
         // Set study program info
         dto.setStudyProgramId(studyPlan.getStudyProgramId());

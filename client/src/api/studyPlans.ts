@@ -7,10 +7,8 @@ export interface StudyPlanDto {
   id: number;
   name: string;
   userId: number;
-  planData?: string;
   isActive: boolean;
-  createdDate: string;
-  lastModified: string;
+  createDate: string;
   studyProgramId?: number;
   studyProgramName?: string;
 }
@@ -26,7 +24,6 @@ export interface StudyProgramDto {
 export interface CreateStudyPlanRequest {
   name: string;
   studyProgramId: number;
-  planData?: string;
 }
 
 export interface ApiError {

@@ -142,25 +142,7 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
           }
         }
       } catch (semesterError) {
-        console.warn(
-          "Could not load semesters from database, falling back to legacy data:",
-          semesterError
-        );
-
-        // Fallback: Parse plan data if it exists (legacy support)
-        if (planResponse.planData) {
-          try {
-            const parsedPlanData = JSON.parse(planResponse.planData);
-            if (
-              parsedPlanData.semesters &&
-              Array.isArray(parsedPlanData.semesters)
-            ) {
-              setSemesters(parsedPlanData.semesters);
-            }
-          } catch (parseError) {
-            console.warn("Could not parse plan data:", parseError);
-          }
-        }
+        console.warn("Could not load semesters from database:", semesterError);
       }
     } catch (err) {
       console.error("Error fetching study plan:", err);
@@ -412,66 +394,61 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
     setCourseSearchOpen(true);
   };
 
-  const handleAddCourseToSemester = (course: any) => {
+  const handleAddCourseToSemester = async (course: any) => {
     if (activeSemesterId) {
-      // Convert to SemesterCourse format
-      const semesterCourse = {
-        id: course.id,
-        name: course.name,
-        code: course.code || course.moduleId || "",
-        credits: course.credits,
-        semester: course.semester || "",
-        professor: course.professor || course.responsible || "",
-        occurrence: course.occurrence || "",
-        category: course.category,
-        subcategory: course.subcategory,
-        subSubcategory: course.subSubcategory,
-        completed: false,
-      };
+      try {
+        // Create API request
+        const courseRequest = {
+          semesterId: parseInt(activeSemesterId),
+          courseId: course.code || course.moduleId || course.id.toString(),
+          courseOrder:
+            (semesters.find((s) => s.id === activeSemesterId)?.courses.length ||
+              0) + 1,
+          isCompleted: false,
+        };
 
-      setSemesters(
-        semesters.map((semester) =>
-          semester.id === activeSemesterId
-            ? {
-                ...semester,
-                courses: [...semester.courses, semesterCourse],
-              }
-            : semester
-        )
-      );
+        // Create course in backend first
+        const createdCourse = await createMultipleCourses([courseRequest]);
+
+        if (createdCourse.length > 0) {
+          const backendCourse = createdCourse[0];
+
+          // Convert to frontend format
+          const semesterCourse = {
+            id: backendCourse.id!.toString(), // Use backend database ID
+            name: course.name,
+            code: course.code || course.moduleId || "",
+            credits: course.credits,
+            semester: course.semester || "",
+            professor: course.professor || course.responsible || "",
+            occurrence: course.occurrence || "",
+            category: course.category,
+            subcategory: course.subcategory,
+            subSubcategory: course.subSubcategory,
+            completed: backendCourse.isCompleted,
+          };
+
+          // Update local state with backend data
+          setSemesters(
+            semesters.map((semester) =>
+              semester.id === activeSemesterId
+                ? {
+                    ...semester,
+                    courses: [...semester.courses, semesterCourse],
+                  }
+                : semester
+            )
+          );
+        }
+      } catch (error) {
+        console.error("Failed to add course to backend:", error);
+        // Don't update local state if backend fails
+      }
     }
   };
 
   const handleAddCoursesToSemester = async (courses: any[]) => {
     if (activeSemesterId) {
-      // Convert each course to SemesterCourse format for local state
-      const semesterCourses = courses.map((course) => ({
-        id: course.id,
-        name: course.name,
-        code: course.code || course.moduleId || "",
-        credits: course.credits,
-        semester: course.semester || "",
-        professor: course.professor || course.responsible || "",
-        occurrence: course.occurrence || "",
-        category: course.category,
-        subcategory: course.subcategory,
-        subSubcategory: course.subSubcategory,
-        completed: false,
-      }));
-
-      // Update local state immediately for better UX
-      setSemesters(
-        semesters.map((semester) =>
-          semester.id === activeSemesterId
-            ? {
-                ...semester,
-                courses: [...semester.courses, ...semesterCourses],
-              }
-            : semester
-        )
-      );
-
-      // Now persist to backend
       try {
         // Convert to backend format and create API requests
         const courseRequests = courses.map((course, index) => ({
@@ -485,34 +462,41 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
           isCompleted: false,
         }));
 
-        // Create courses in backend
+        // Create courses in backend first
         const createdCourses = await createMultipleCourses(courseRequests);
 
-        // Update local state with database IDs from backend response
+        // Convert created courses to frontend format
+        const semesterCourses = createdCourses.map((backendCourse) => {
+          // Find the original course data to get name and other details
+          const originalCourse = courses.find(
+            (course) =>
+              (course.code || course.moduleId || course.id.toString()) ===
+              backendCourse.courseId
+          );
+
+          return {
+            id: backendCourse.id!.toString(), // Use backend database ID
+            name: originalCourse?.name || backendCourse.courseId,
+            code: backendCourse.courseId,
+            credits: originalCourse?.credits || 0,
+            semester: "",
+            professor:
+              originalCourse?.professor || originalCourse?.responsible || "",
+            occurrence: originalCourse?.occurrence || "",
+            category: originalCourse?.category || "",
+            subcategory: originalCourse?.subcategory || "",
+            subSubcategory: originalCourse?.subSubcategory || "",
+            completed: backendCourse.isCompleted,
+          };
+        });
+
+        // Update local state with backend data
         setSemesters(
           semesters.map((semester) =>
             semester.id === activeSemesterId
               ? {
                   ...semester,
-                  courses: semester.courses.map((course, courseIndex) => {
-                    // Find the corresponding backend course for this local course
-                    const backendCourse = createdCourses.find(
-                      (bc) =>
-                        bc.courseId ===
-                        (courses[courseIndex]?.code ||
-                          courses[courseIndex]?.moduleId ||
-                          courses[courseIndex]?.id.toString())
-                    );
-
-                    if (backendCourse && backendCourse.id) {
-                      return {
-                        ...course,
-                        id: backendCourse.id.toString(), // Update to use database ID as string
-                        completed: backendCourse.isCompleted, // Sync completion status
-                      };
-                    }
-                    return course;
-                  }),
+                  courses: [...semester.courses, ...semesterCourses],
                 }
               : semester
           )
@@ -523,8 +507,7 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
         );
       } catch (error) {
         console.error("Failed to persist courses to backend:", error);
-        // You might want to show an error message to the user and revert local state
-        // For now, we'll keep the local state updated even if backend fails
+        // Show error to user - don't update local state if backend fails
       }
     }
   };
@@ -709,8 +692,7 @@ const StudyPlanDetailPage: React.FC<StudyPlanDetailPageProps> = () => {
                 "No Program Assigned"}
             </Typography>
             <Typography variant="body2" sx={{ color: "#666" }}>
-              Last modified:{" "}
-              {new Date(studyPlan.lastModified).toLocaleDateString()}
+              Created: {new Date(studyPlan.createDate).toLocaleDateString()}
             </Typography>
           </Box>
           <Button

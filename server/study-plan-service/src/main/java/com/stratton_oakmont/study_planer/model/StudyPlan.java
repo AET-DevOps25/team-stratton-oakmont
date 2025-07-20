@@ -3,6 +3,7 @@ package com.stratton_oakmont.study_planer.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,8 +38,12 @@ public class StudyPlan {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
     
+    @Column(name = "create_date", nullable = false)
+    private LocalDateTime createDate;
+    
     // Constructors
     public StudyPlan() {
+        this.createDate = LocalDateTime.now();
     }
     
     public StudyPlan(String name, Long userId) {
@@ -120,6 +125,14 @@ public class StudyPlan {
     
     public void setIsActive(Boolean isActive) {
         this.isActive = isActive;
+    }
+    
+    public LocalDateTime getCreateDate() {
+        return createDate;
+    }
+    
+    public void setCreateDate(LocalDateTime createDate) {
+        this.createDate = createDate;
     }
     
     @Override

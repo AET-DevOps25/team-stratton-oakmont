@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -38,4 +39,10 @@ public interface StudyPlanRepository extends JpaRepository<StudyPlan, Long> {
     
     // Check if user has any active study plans
     boolean existsByUserIdAndIsActiveTrue(Long userId);
+    
+    // Find study plans created after a specific date
+    List<StudyPlan> findByCreateDateAfter(LocalDateTime date);
+    
+    // Find study plans by user ordered by creation date (newest first)
+    List<StudyPlan> findByUserIdOrderByCreateDateDesc(Long userId);
 }

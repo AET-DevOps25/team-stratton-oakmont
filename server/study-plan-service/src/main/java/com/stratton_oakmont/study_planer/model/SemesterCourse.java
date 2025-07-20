@@ -5,7 +5,12 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "semester_courses")
+@Table(name = "semester_courses",
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"course_id", "semester_id"}, 
+                         name = "uk_semester_course_unique")
+    }
+)
 public class SemesterCourse {
     
     @Id
