@@ -384,7 +384,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
                       color: "rgba(255, 255, 255, 0.5)",
                     }}
                   >
-                    No study plans found
+                    No study plans found...
                   </Typography>
                 }
               />
