@@ -40,6 +40,8 @@ public class SecurityConfig {
             "http://localhost:80",    // Docker/nginx port
             "http://localhost"       // Swagger UI
         ));
+        // Allow any origin for EC2/AWS deployments (you can restrict this to specific IP ranges if needed)
+        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);

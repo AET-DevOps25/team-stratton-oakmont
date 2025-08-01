@@ -20,6 +20,7 @@ public class WebConfig implements WebMvcConfigurer {
                     "http://localhost:80",   // This covers default port 80
                     "http://localhost"       // Your Swagger UI port
                 )
+                .allowedOriginPatterns("*") // Allow any origin for EC2/AWS deployments
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD")
                 .allowedHeaders("*")
                 .allowCredentials(true)
